@@ -31,5 +31,5 @@ jobs:
       run: gradle build
     - uses: actions/upload-artifact@v2
       with:
-        name: Package-${{ env.name }}
+        name: Package-${{ matrix.os }}
         path: build/libs

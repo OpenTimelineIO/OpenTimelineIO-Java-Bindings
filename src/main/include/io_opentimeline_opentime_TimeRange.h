@@ -209,6 +209,22 @@ JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentime_TimeRange_finishes__Lio
 
 /*
  * Class:     io_opentimeline_opentime_TimeRange
+ * Method:    intersects
+ * Signature: (Lio/opentimeline/opentime/TimeRange;D)Z
+ */
+JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentime_TimeRange_intersects__Lio_opentimeline_opentime_TimeRange_2D
+  (JNIEnv *, jobject, jobject, jdouble);
+
+/*
+ * Class:     io_opentimeline_opentime_TimeRange
+ * Method:    intersects
+ * Signature: (Lio/opentimeline/opentime/TimeRange;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentime_TimeRange_intersects__Lio_opentimeline_opentime_TimeRange_2
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     io_opentimeline_opentime_TimeRange
  * Method:    equals
  * Signature: (Lio/opentimeline/opentime/TimeRange;)Z
  */

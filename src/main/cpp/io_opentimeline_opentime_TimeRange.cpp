@@ -401,6 +401,38 @@ JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentime_TimeRange_finishes__Lio
 
 /*
  * Class:     io_opentimeline_opentime_TimeRange
+ * Method:    intersects
+ * Signature: (Lio/opentimeline/opentime/TimeRange;D)Z
+ */
+JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentime_TimeRange_intersects__Lio_opentimeline_opentime_TimeRange_2D
+        (JNIEnv *env, jobject thisObj, jobject otherTimeRangeObj, jdouble epsilon) {
+    if (otherTimeRangeObj == nullptr) {
+        throwNullPointerException(env, "");
+        return false;
+    }
+    auto tr = timeRangeFromJObject(env, thisObj);
+    auto otherTr = timeRangeFromJObject(env, otherTimeRangeObj);
+    return tr.intersects(otherTr, epsilon);
+}
+
+/*
+ * Class:     io_opentimeline_opentime_TimeRange
+ * Method:    intersects
+ * Signature: (Lio/opentimeline/opentime/TimeRange;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentime_TimeRange_intersects__Lio_opentimeline_opentime_TimeRange_2
+        (JNIEnv *env, jobject thisObj, jobject otherTimeRangeObj) {
+    if (otherTimeRangeObj == nullptr) {
+        throwNullPointerException(env, "");
+        return false;
+    }
+    auto tr = timeRangeFromJObject(env, thisObj);
+    auto otherTr = timeRangeFromJObject(env, otherTimeRangeObj);
+    return tr.intersects(otherTr);
+}
+
+/*
+ * Class:     io_opentimeline_opentime_TimeRange
  * Method:    equals
  * Signature: (Lio/opentimeline/opentime/TimeRange;)Z
  */

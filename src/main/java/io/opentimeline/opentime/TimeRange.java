@@ -329,7 +329,7 @@ public class TimeRange {
      * *
      * [ this ]
      *
-     * @param other RationalTime to check for
+     * @param other   RationalTime to check for
      * @param epsilon comparison tolerance
      * @return does the RationalTime match the beginning of this
      */
@@ -398,6 +398,32 @@ public class TimeRange {
      * @return does the RationalTime match the end of this
      */
     public native boolean finishes(RationalTime other);
+
+    /**
+     * The start of <b>this</b> precedes or equals the end of <b>other</b> by a value &gt;= <b>epsilon_s</b>.
+     * The end of <b>this</b> antecedes or equals the start of <b>other</b> by a value &gt;= <b>epsilon_s</b>.
+     * [    this    ]           OR      [    other    ]
+     *    [     other    ]                    [     this    ]
+     * The converse would be <em>other.finishes(this)</em>
+     *
+     * @param other TimeRange to check for
+     * @param epsilon comparison tolerance
+     * @return does the other TimeRange intersect this
+     */
+    public native boolean intersects(TimeRange other, double epsilon);
+
+    /**
+     * The start of <b>this</b> precedes or equals the end of <b>other</b> by a value &gt;= <b>epsilon_s</b>.
+     * The end of <b>this</b> antecedes or equals the start of <b>other</b> by a value &gt;= <b>epsilon_s</b>.
+     * [    this    ]           OR      [    other    ]
+     *    [     other    ]                    [     this    ]
+     * The converse would be <em>other.finishes(this)</em>
+     * Default epsilon value of 1/(2 * 192000) will be used
+     *
+     * @param other TimeRange to check for
+     * @return does the other TimeRange intersect this
+     */
+    public native boolean intersects(TimeRange other);
 
     public native boolean equals(TimeRange other);
 

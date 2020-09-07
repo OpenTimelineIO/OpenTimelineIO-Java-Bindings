@@ -180,6 +180,79 @@ public class TimeRangeTest {
     }
 
     @Test
+    public void testIntersectsTimeRange(){
+        RationalTime tStart = new RationalTime(12,25);
+        RationalTime tDur = new RationalTime(3,25);
+        TimeRange tr = new TimeRange(tStart, tDur);
+
+        tStart = new RationalTime(0,25);
+        tDur = new RationalTime(3,25);
+        TimeRange tr_t = new TimeRange(tStart, tDur);
+
+        assertFalse(tr.intersects(tr_t));
+
+        tStart = new RationalTime(10,25);
+        tDur = new RationalTime(3,25);
+        tr_t = new TimeRange(tStart, tDur);
+
+        assertTrue(tr.intersects(tr_t));
+
+        tStart = new RationalTime(10,25);
+        tDur = new RationalTime(2,25);
+        tr_t = new TimeRange(tStart, tDur);
+
+        assertFalse(tr.intersects(tr_t));
+
+        tStart = new RationalTime(14,25);
+        tDur = new RationalTime(2,25);
+        tr_t = new TimeRange(tStart, tDur);
+
+        assertTrue(tr.intersects(tr_t));
+
+        tStart = new RationalTime(15,25);
+        tDur = new RationalTime(2,25);
+        tr_t = new TimeRange(tStart, tDur);
+
+        assertFalse(tr.intersects(tr_t));
+
+        tStart = new RationalTime(13,25);
+        tDur = new RationalTime(1,25);
+        tr_t = new TimeRange(tStart, tDur);
+
+        assertTrue(tr.intersects(tr_t));
+
+        tStart = new RationalTime(2,25);
+        tDur = new RationalTime(30,25);
+        tr_t = new TimeRange(tStart, tDur);
+
+        assertTrue(tr.intersects(tr_t));
+
+        tStart = new RationalTime(2,50);
+        tDur = new RationalTime(60,50);
+        tr_t = new TimeRange(tStart, tDur);
+
+        assertTrue(tr.intersects(tr_t));
+
+        tStart = new RationalTime(2,50);
+        tDur = new RationalTime(14,50);
+        tr_t = new TimeRange(tStart, tDur);
+
+        assertFalse(tr.intersects(tr_t));
+
+        tStart = new RationalTime(-100,50);
+        tDur = new RationalTime(400,50);
+        tr_t = new TimeRange(tStart, tDur);
+
+        assertTrue(tr.intersects(tr_t));
+
+        tStart = new RationalTime(100,50);
+        tDur = new RationalTime(400,50);
+        tr_t = new TimeRange(tStart, tDur);
+
+        assertFalse(tr.intersects(tr_t));
+    }
+
+    @Test
     public void testBeforeTimeRange() {
         RationalTime tStart = new RationalTime(12, 25);
         RationalTime tDur = new RationalTime(3, 25);

@@ -107,7 +107,7 @@ public class TimeRangeTest {
         assertFalse(tr.contains(tStart.add(tDur)));
         assertFalse(tr.contains(tStart.subtract(tDur)));
 
-        assertTrue(tr.contains(tr));
+        assertFalse(tr.contains(tr));
 
         TimeRange tr2 = new TimeRange(tStart.subtract(tDur), tDur);
         assertFalse(tr.contains(tr2));
@@ -140,25 +140,25 @@ public class TimeRangeTest {
         tDur = new RationalTime(3, 25);
         tr_t = new TimeRange(tStart, tDur);
 
-        assertTrue(tr.overlaps(tr_t));
+        assertFalse(tr.overlaps(tr_t));
 
         tStart = new RationalTime(13, 25);
         tDur = new RationalTime(1, 25);
         tr_t = new TimeRange(tStart, tDur);
 
-        assertTrue(tr.overlaps(tr_t));
+        assertFalse(tr.overlaps(tr_t));
 
         tStart = new RationalTime(2, 25);
         tDur = new RationalTime(30, 25);
         tr_t = new TimeRange(tStart, tDur);
 
-        assertTrue(tr.overlaps(tr_t));
+        assertFalse(tr.overlaps(tr_t));
 
         tStart = new RationalTime(2, 50);
         tDur = new RationalTime(60, 50);
         tr_t = new TimeRange(tStart, tDur);
 
-        assertTrue(tr.overlaps(tr_t));
+        assertFalse(tr.overlaps(tr_t));
 
         tStart = new RationalTime(2, 50);
         tDur = new RationalTime(14, 50);
@@ -170,7 +170,7 @@ public class TimeRangeTest {
         tDur = new RationalTime(400, 50);
         tr_t = new TimeRange(tStart, tDur);
 
-        assertTrue(tr.overlaps(tr_t));
+        assertFalse(tr.overlaps(tr_t));
 
         tStart = new RationalTime(100, 50);
         tDur = new RationalTime(400, 50);

@@ -37,5 +37,5 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 include_directories(src/main/include)
-add_subdirectory(../../ build/natives)
+add_subdirectory(deps/OpenTimelineIO build/natives)
 add_subdirectory(src/main/cpp)

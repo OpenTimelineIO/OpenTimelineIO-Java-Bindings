@@ -23,7 +23,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: ./gradlew build
+      run: gradle build
     - uses: actions/upload-artifact@v2
       with:
         name: Package-${{ env.name }}

@@ -1,4 +1,4 @@
-JOpenTimelineIO
+OpenTimelineIO-Java_bindings
 =======
 [![OpenTimelineIO](images/OpenTimelineIO@3xDark.png)](http://opentimeline.io)
 ==============
@@ -36,25 +36,25 @@ You can provide adapters for your video editing tool or pipeline as needed.
 Quick-Start
 -----------
 
-You can add JOpenTimelineIO as a dependency to your gradle project as:
+You can add OpenTimelineIO as a dependency to your gradle project as:
 ```
 <insert gradle dep>
 ```
 
-You can add JOpenTimelineIO as a dependency to your maven project as:
+You can add OpenTimelineIO as a dependency to your maven project as:
 ```
 <insert maven dep>
 ```
 
 
-Building JOpenTimelineIO
+Building OpenTimelineIO-Java-Bindings
 ------------------------
 
-JOpenTimelineIO has bee built and tested on Ubuntu 18.04LTS, Windows 10 and macOS using [Gradle](https://gradle.org/install/) and [CMake](https://cmake.org/download/).
+OpenTimelineIO-Java-Bindings have been built and tested on Ubuntu 18.04LTS, Windows 10 and macOS using [Gradle](https://gradle.org/install/) and [CMake](https://cmake.org/download/).
 After installing Gradle and CMake follw these steps:
 
 ```console
-git clone --recurse-submodules https://github.com/KarthikRIyer/otio-java
+git clone --recurse-submodules https://github.com/OpenTimelineIO/OpenTimelineIO-Java-Bindings
 
 cd otio-java
 
@@ -67,7 +67,7 @@ Examples
 --------
 
 Looking through the unit tests is a great way to see what OTIO can do. 
-See [here](https://github.com/KarthikRIyer/otio-java/tree/master/src/test/java/io/opentimeline).
+See [here](https://github.com/OpenTimelineIO/OpenTimelineIO-Java-Bindings/tree/master/src/test/java/io/opentimeline).
 
 Developing
 ----------
@@ -76,7 +76,7 @@ If you want to contribute to the project, please see: https://opentimelineio.rea
 
 You can get the latest development version via:
 
-`git clone --recurse-submodules https://github.com/KarthikRIyer/otio-java.git`
+`git clone --recurse-submodules https://github.com/OpenTimelineIO/OpenTimelineIO-Java-Bindings.git`
 
 License
 -------

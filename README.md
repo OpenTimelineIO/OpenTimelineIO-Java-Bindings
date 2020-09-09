@@ -1,4 +1,4 @@
-OpenTimelineIO-Java_bindings
+OpenTimelineIO-Java-bindings
 =======
 [![OpenTimelineIO](images/OpenTimelineIO@3xDark.png)](http://opentimeline.io)
 ==============

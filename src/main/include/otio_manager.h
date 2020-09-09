@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright Contributors to the OpenTimelineIO Project.
+
 #include <jni.h>
 #include <opentimelineio/serializableObject.h>
 #include <opentimelineio/version.h>

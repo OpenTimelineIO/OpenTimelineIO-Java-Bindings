@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright Contributors to the OpenTimelineIO Project.
+
 #include <utilities.h>
 
 std::map<std::type_info const *, std::string> getAnyType() {

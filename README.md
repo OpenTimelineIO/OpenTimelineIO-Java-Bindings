@@ -80,7 +80,7 @@ You can get the latest development version via:
 
 License
 -------
-OpenTimelineIO is open source software. Please see the [LICENSE.txt](LICENSE.txt) for details.
+OpenTimelineIO is open source software. Please see the [LICENSE](LICENSE) for details.
 
 Nothing in the license file or this project grants any right to use Pixar or any other contributor’s trade names, trademarks, service marks, or product names.
 

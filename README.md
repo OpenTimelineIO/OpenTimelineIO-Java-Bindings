@@ -1,7 +1,9 @@
 OpenTimelineIO-Java-bindings
 =======
-[![OpenTimelineIO](images/OpenTimelineIO@3xDark.png)](http://opentimeline.io)
+[![OpenTimelineIO](images/opentimelineio-color.svg)](http://opentimeline.io)
 ==============
+
+[![Supported VFX Platform Versions](https://img.shields.io/badge/vfx%20platform-2016--2020-lightgrey.svg)](http://www.vfxplatform.com/)
 
 Main web site: http://opentimeline.io/
 

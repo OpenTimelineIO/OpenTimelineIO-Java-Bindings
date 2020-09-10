@@ -40,7 +40,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
 }
-version = '1.0.0'
+version = '0.14.0'
 test {
     useJUnitPlatform()
 }
@@ -232,7 +232,7 @@ publishing {
             }
             groupId 'io.opentimeline'
             artifactId 'java-opentimelineio'
-            version '1.0.0'
+            version '0.14.0'
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'OpenTimelineIO is an interchange format and API for editorial cut information. OTIO is not a container format for media, rather it contains information about the order and length of cuts and references to external media.')
@@ -256,8 +256,8 @@ bintray {
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/KarthikRIyer/OpenTimelineIO'
         version {
-            name = '1.0.0'
-            desc = '1.0.0'
+            name = '0.14.0'
+            desc = '0.14.0'
             released = new Date()
         }
     }

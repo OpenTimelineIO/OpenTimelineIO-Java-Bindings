@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class OTIOFactory {
 
-    public static String OTIO_VERSION = "1.0.0";
+    public static String OTIO_VERSION = "0.14.0";
 
     private ReferenceQueue<OTIONative> otioNativeReferenceQueue = new ReferenceQueue<>();
     private List<OTIOFinalizer> references = new LinkedList();

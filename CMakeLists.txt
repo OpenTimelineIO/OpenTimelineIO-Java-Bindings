@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 
-project(jotio VERSION 1.0.0 LANGUAGES CXX)
+project(jotio VERSION 0.14.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 11)

@@ -65,7 +65,7 @@ jobs:
           java-version: 1.8
       - name: Build with Gradle
         run: gradle build -x test
-      - name: Create directories
+      - name: Create directory
         shell: bash
         run: |
           mkdir -p ./build/natives/downloads
@@ -84,18 +84,6 @@ jobs:
         with:
           name: Package-windows-latest
           path: ./build/natives/downloads/
-      - name: Unzip binaries
-        working-directory: build/natives/downloads
-        shell: bash
-        run: |
-          sudo apt-get install unzip
-          ls -a
-          unzip Package-ubuntu-latest.zip
-          unzip Package-macos-latest.zip
-          unzip Package-windows-latest.zip
-          sudo rm -rf Package-ubuntu-latest.zip
-          sudo rm -rf Package-macos-latest.zip
-          sudo rm -rf Package-windows-latest.zip
       - name: Rebuild with Gradle
         run: gradle build
       - uses: actions/upload-artifact@v2

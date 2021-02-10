@@ -84,8 +84,8 @@ jobs:
         with:
           name: Package-windows-latest
           path: ./build/natives/downloads/
-      - name: Rebuild with Gradle
-        run: gradle build
+      - name: Repackage JAR with all binaries
+        run: gradle build -x test
       - uses: actions/upload-artifact@v2
         with:
           name: FinalJAR

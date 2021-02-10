@@ -89,6 +89,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get install unzip
+          ls -a
           unzip Package-ubuntu-latest.zip
           unzip Package-macos-latest.zip
           unzip Package-windows-latest.zip

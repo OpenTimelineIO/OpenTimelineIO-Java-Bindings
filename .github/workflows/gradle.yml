@@ -85,15 +85,16 @@ jobs:
           name: Package-windows-latest
           path: ./build/natives/downloads/
       - name: Unzip binaries
+        working-directory: build/natives/downloads
         shell: bash
         run: |
           sudo apt-get install unzip
-          unzip ./build/natives/downloads/Package-ubuntu-latest.zip -d ./build/natives/downloads/
-          unzip ./build/natives/downloads/Package-macos-latest.zip -d ./build/natives/downloads/
-          unzip ./build/natives/downloads/Package-windows-latest.zip -d ./build/natives/downloads/
-          sudo rm -rf ./build/natives/downloads/Package-ubuntu-latest.zip
-          sudo rm -rf ./build/natives/downloads/Package-macos-latest.zip
-          sudo rm -rf ./build/natives/downloads/Package-windows-latest.zip
+          unzip Package-ubuntu-latest.zip
+          unzip Package-macos-latest.zip
+          unzip Package-windows-latest.zip
+          sudo rm -rf Package-ubuntu-latest.zip
+          sudo rm -rf Package-macos-latest.zip
+          sudo rm -rf Package-windows-latest.zip
       - name: Rebuild with Gradle
         run: gradle build
       - uses: actions/upload-artifact@v2

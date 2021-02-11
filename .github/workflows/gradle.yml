@@ -30,13 +30,7 @@ jobs:
     - name: Build with Gradle
       run: gradle build
     - name: Upload artefact
-      if: matrix.os == 'ubuntu-latest'
-      uses: actions/upload-artifact@v2
-      with:
-        name: Package-${{ matrix.os }}
-        path: build/natives/lib/Release
-    - name: Upload artefact
-      if: matrix.os == 'macOS-latest'
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
       uses: actions/upload-artifact@v2
       with:
         name: Package-${{ matrix.os }}

@@ -13,7 +13,7 @@ jobs:
       with:
         workflow: gradle.yml
         workflow_conclusion: success
-        commit: $(git rev-parse --short "$GITHUB_SHA")
+        commit: ${{ github.sha }}
         name: FinalJAR
         path: ./downloads
     - name: Download POM file

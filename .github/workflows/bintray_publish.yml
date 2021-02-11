@@ -20,8 +20,7 @@ jobs:
       uses: dawidd6/action-download-artifact@v2
       with:
         workflow: gradle.yml
-        workflow_conclusion: success
-        commit: $(git rev-parse --short "$GITHUB_SHA")
+        commit: ${{ github.sha }}
         name: PomFile
         path: ./downloads
     - name: Upload

@@ -139,7 +139,7 @@ task createPom {
     pom {
         project {
             groupId 'io.opentimeline'
-            artifactId 'java-opentimelineio'
+            artifactId 'opentimelineio'
             version version.toString()
             description 'OpenTimelineIO is an interchange format and API for editorial cut information. OTIO is not a container format for media, rather it contains information about the order and length of cuts and references to external media.'
             name 'OpenTimelineIO'
@@ -161,7 +161,7 @@ task createPom {
                 url "https://github.com/PixarAnimationStudios/OpenTimelineIO"
             }
         }
-    }.writeTo("build/pom/java-opentimelineio-" + version.toString() + ".pom")
+    }.writeTo("build/pom/opentimelineio-" + version.toString() + ".pom")
 }
 
 publishing {
@@ -175,7 +175,7 @@ publishing {
                 classifier "javadoc"
             }
             groupId 'io.opentimeline'
-            artifactId 'java-opentimelineio'
+            artifactId 'opentimelineio'
             version version.toString()
             pom.withXml {
                 def root = asNode()
@@ -194,7 +194,7 @@ bintray {
     publications = ['mavenPublication']
 
     pkg {
-        repo = 'java-opentimelineio'
+        repo = 'opentimelineio'
         name = 'OpenTimelineIO'
         userOrg = ''
         licenses = ['Apache-2.0']

@@ -8,7 +8,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
-        classpath 'net.anshulverma.gradle:gradle-fileupload-plugin:1.0.4'
     }
 }
 
@@ -16,9 +15,9 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
+    id 'maven'
 }
 apply plugin: 'com.jfrog.bintray'
-apply plugin: 'net.anshulverma.gradle.fileupload'
 
 repositories {
     // Use jcenter for resolving dependencies.
@@ -31,12 +30,6 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api 'org.apache.commons:commons-math3:3.6.1'
-
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation 'com.google.guava:guava:28.2-jre'
-
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
 }
@@ -116,84 +109,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-task nativeUpload {
-    dependsOn compileJNI
-    doLast {
-        exec {
-            if (OperatingSystem.current().isLinux()) {
-                commandLine 'sh', '-c', 'curl -T build/natives/lib/Release/Linux/libjotio-' + version.toString() + '.so -u' + System.getProperty('bintray.user').toString() + ':' + System.getProperty('bintray.key').toString() + ' https://api.bintray.com/content/karthikriyer/java-opentimelineio/OpenTimelineIO-Linux/' + version.toString() + '/Linux/' + version.toString() + '/libjotio-' + version.toString() + '.so &&' +
-                        'curl -T build/natives/lib/Release/Linux/libopentime.so -u' + System.getProperty('bintray.user').toString() + ':' + System.getProperty('bintray.key').toString() + ' https://api.bintray.com/content/karthikriyer/java-opentimelineio/OpenTimelineIO-Linux/' + version.toString() + '/Linux/' + version.toString() + '/libopentime.so &&' +
-                        'curl -T build/natives/lib/Release/Linux/libopentimelineio.so -u' + System.getProperty('bintray.user').toString() + ':' + System.getProperty('bintray.key').toString() + ' https://api.bintray.com/content/karthikriyer/java-opentimelineio/OpenTimelineIO-Linux/' + version.toString() + '/Linux/' + version.toString() + '/libopentimelineio.so'
-            } else if (OperatingSystem.current().isMacOsX()) {
-                commandLine 'sh', '-c', "cmd", "/c", 'curl -T build/natives/lib/Release/Darwin/jotio-' + version.toString() + '.dylib -u' + System.getProperty('bintray.user').toString() + ':' + System.getProperty('bintray.key').toString() + ' https://api.bintray.com/content/karthikriyer/java-opentimelineio/OpenTimelineIO-Darwin/' + version.toString() + '/Darwin/' + version.toString() + '/libjotio-' + version.toString() + '.dylib &&' +
-                        'curl -T build/natives/lib/Release/Linux/opentime.dylib -u' + System.getProperty('bintray.user').toString() + ':' + System.getProperty('bintray.key').toString() + ' https://api.bintray.com/content/karthikriyer/java-opentimelineio/OpenTimelineIO-Linux/' + version.toString() + '/Linux/' + version.toString() + '/libopentime.dylib &&' +
-                        'curl -T build/natives/lib/Release/Linux/opentimelineio.dylib -u' + System.getProperty('bintray.user').toString() + ':' + System.getProperty('bintray.key').toString() + ' https://api.bintray.com/content/karthikriyer/java-opentimelineio/OpenTimelineIO-Linux/' + version.toString() + '/Linux/' + version.toString() + '/libopentimelineio.dylib'
-            } else if (OperatingSystem.current().isWindows()) {
-                commandLine "cmd", "/c", 'curl -T build\\natives\\bin\\Release\\Windows\\jotio-' + version.toString() + '.dll -u' + System.getProperty('bintray.user').toString() + ':' + System.getProperty('bintray.key').toString() + ' https://api.bintray.com/content/karthikriyer/java-opentimelineio/OpenTimelineIO-Windows/' + version.toString() + '/Windows/' + version.toString() + '/jotio-' + version.toString() + '.dll &&' +
-                        ' curl -T build\\natives\\bin\\Release\\Windows\\opentime.dll -u' + System.getProperty('bintray.user').toString() + ':' + System.getProperty('bintray.key').toString() + ' https://api.bintray.com/content/karthikriyer/java-opentimelineio/OpenTimelineIO-Windows/' + version.toString() + '/Windows/' + version.toString() + '/opentime.dll &&' +
-                        ' curl -T build\\natives\\bin\\Release\\Windows\\opentimelineio.dll -u' + System.getProperty('bintray.user').toString() + ':' + System.getProperty('bintray.key').toString() + ' https://api.bintray.com/content/karthikriyer/java-opentimelineio/OpenTimelineIO-Windows/' + version.toString() + '/Windows/' + version.toString() + '/opentimelineio.dll'
-            }
-        }
-    }
-}
-
-task nativeDownload {
-    outputs.upToDateWhen { false }
-    doLast {
-        exec {
-            if (OperatingSystem.current().isLinux()) {
-                commandLine 'sh', '-c', 'mkdir -p build/natives/downloads/Linux &&' +
-                        'mkdir -p build/natives/downloads/Windows &&' +
-                        'mkdir -p build/natives/downloads/Darwin &&' +
-
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Linux/' + version.toString() + '/libjotio-' + version.toString() + '.so" -o build/natives/downloads/Linux/libjotio-' + version.toString() + '.so && ' +
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Linux/' + version.toString() + '/libopentime.so" -o build/natives/downloads/Linux/libopentime.so && ' +
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Linux/' + version.toString() + '/libopentimelineio.so" -o build/natives/downloads/Linux/libopentimelineio.so &&' +
-
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Windows/' + version.toString() + '/jotio-' + version.toString() + '.dll" > build/natives/downloads/Windows/jotio-' + version.toString() + '.dll && ' +
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Windows/' + version.toString() + '/opentime.dll" > build/natives/downloads/Windows/opentime.dll && ' +
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Windows/' + version.toString() + '/opentimelineio.dll" > build/natives/downloads/Windows/opentimelineio.dll'
-
-//                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Darwin/' + version.toString() + '/libjotio-' + version.toString() + '.dylib -o build/natives/downloads/Darwin/libjotio-' + version.toString() + '.dylib && ' +
-//                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Darwin/' + version.toString() + '/libopentime.dylib -o build/natives/downloads/Darwin/libopentime.dylib && ' +
-//                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Darwin/' + version.toString() + '/libopentimelineio.dylib -o build/natives/downloads/Darwin/libopentimelineio.dylib'
-            } else if (OperatingSystem.current().isMacOsX()) {
-                commandLine 'sh', '-c', 'mkdir -p build/natives/downloads/Linux &&' +
-                        'mkdir -p build/natives/downloads/Windows &&' +
-                        'mkdir -p build/natives/downloads/Darwin &&' +
-
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Linux/' + version.toString() + '/libjotio-' + version.toString() + '.so" -o build/natives/downloads/Linux/libjotio-' + version.toString() + '.so && ' +
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Linux/' + version.toString() + '/libopentime.so" -o build/natives/downloads/Linux/libopentime.so && ' +
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Linux/' + version.toString() + '/libopentimelineio.so" -o build/natives/downloads/Linux/libopentimelineio.so &&' +
-
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Windows/' + version.toString() + '/jotio-' + version.toString() + '.dll" > build/natives/downloads/Windows/jotio-' + version.toString() + '.dll && ' +
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Windows/' + version.toString() + '/opentime.dll" > build/natives/downloads/Windows/opentime.dll && ' +
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Windows/' + version.toString() + '/opentimelineio.dll" > build/natives/downloads/Windows/opentimelineio.dll'
-
-//                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Darwin/' + version.toString() + '/libjotio-' + version.toString() + '.dylib -o build/natives/downloads/Darwin/libjotio-' + version.toString() + '.dylib && ' +
-//                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Darwin/' + version.toString() + '/libopentime.dylib -o build/natives/downloads/Darwin/libopentime.dylib && ' +
-//                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Darwin/' + version.toString() + '/libopentimelineio.dylib -o build/natives/downloads/Darwin/libopentimelineio.dylib'
-            } else if (OperatingSystem.current().isWindows()) {
-                commandLine "cmd", "/c", 'if not exist build\\natives\\downloads\\Windows mkdir build\\natives\\downloads\\Windows &&' +
-                        'if not exist build\\natives\\downloads\\Linux mkdir build\\natives\\downloads\\Linux &&' +
-                        'if not exist build\\natives\\downloads\\Darwin mkdir build\\natives\\downloads\\Darwin &&' +
-
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Windows/' + version.toString() + '/jotio-' + version.toString() + '.dll" -o build\\natives\\downloads\\Windows\\jotio-' + version.toString() + '.dll && ' +
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Windows/' + version.toString() + '/opentime.dll" -o build\\natives\\downloads\\Windows\\opentime.dll && ' +
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Windows/' + version.toString() + '/opentimelineio.dll" -o build\\natives\\downloads\\Windows\\opentimelineio.dll &&' +
-
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Linux/' + version.toString() + '/jotio-' + version.toString() + '.so" -o build\\natives\\downloads\\Linux\\jotio-' + version.toString() + '.so && ' +
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Linux/' + version.toString() + '/opentime.so" -o build\\natives\\downloads\\Linux\\opentime.so && ' +
-                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Linux/' + version.toString() + '/opentimelineio.so" -o build\\natives\\downloads\\Linux\\opentimelineio.so '
-
-//                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Darwin/' + version.toString() + '/jotio-' + version.toString() + '.dylib" -o build\\natives\\downloads\\Darwin\\jotio-' + version.toString() + '.dylib && ' +
-//                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Darwin/' + version.toString() + '/opentime.dylib" -o build\\natives\\downloads\\Darwin\\opentime.dylib && ' +
-//                        'curl -L --fail "https://dl.bintray.com/karthikriyer/java-opentimelineio/Darwin/' + version.toString() + '/opentimelineio.dylib" -o build\\natives\\downloads\\Darwin\\opentimelineio.dylib'
-            }
-        }
-    }
-}
-
 artifacts {
     archives sourcesJar
     archives javadocJar
@@ -220,6 +135,35 @@ def pomConfig = {
     }
 }
 
+task createPom {
+    pom {
+        project {
+            groupId 'io.opentimeline'
+            artifactId 'java-opentimelineio'
+            version version.toString()
+            description 'OpenTimelineIO is an interchange format and API for editorial cut information. OTIO is not a container format for media, rather it contains information about the order and length of cuts and references to external media.'
+            name 'OpenTimelineIO'
+            licenses {
+                license {
+                    name "Modified Apache 2.0 License"
+                    url "https://github.com/PixarAnimationStudios/OpenTimelineIO/blob/master/LICENSE.txt"
+                    distribution "repo"
+                }
+            }
+            developers {
+                developer {
+                    id "OpenTimelineIO"
+                    name "Contributors to the OpenTimelineIO project"
+                    email ""
+                }
+            }
+            scm {
+                url "https://github.com/PixarAnimationStudios/OpenTimelineIO"
+            }
+        }
+    }.writeTo("java-opentimelineio-" + version.toString() + ".pom")
+}
+
 publishing {
     publications {
         mavenPublication(MavenPublication) {
@@ -232,7 +176,7 @@ publishing {
             }
             groupId 'io.opentimeline'
             artifactId 'java-opentimelineio'
-            version '0.14.0'
+            version version.toString()
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'OpenTimelineIO is an interchange format and API for editorial cut information. OTIO is not a container format for media, rather it contains information about the order and length of cuts and references to external media.')
@@ -256,8 +200,8 @@ bintray {
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/KarthikRIyer/OpenTimelineIO'
         version {
-            name = '0.14.0'
-            desc = '0.14.0'
+            name = version.toString()
+            desc = version.toString()
             released = new Date()
         }
     }

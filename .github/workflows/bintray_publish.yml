@@ -1,0 +1,31 @@
+name: Publish to Bintray
+on:
+  release:
+    types: [published]
+    
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download JAR
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: gradle.yml
+        workflow_conclusion: success
+        commit: $(git rev-parse --short "$GITHUB_SHA")
+        name: FinalJAR
+        path: ./downloads
+    - name: Download POM file
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: gradle.yml
+        workflow_conclusion: success
+        commit: $(git rev-parse --short "$GITHUB_SHA")
+        name: PomFile
+        path: ./downloads
+    - name: Upload
+      uses: actions/upload-artifact@v2
+      with:
+        name: Final
+        path: ./downloads

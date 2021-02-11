@@ -80,7 +80,15 @@ jobs:
           path: ./build/natives/downloads/
       - name: Repackage JAR with all binaries
         run: gradle build -x test
-      - uses: actions/upload-artifact@v2
+      - name: Create pom file for maven
+        run: gradle createPom
+      - name: Upload pom file
+        uses: actions/upload-artifact@v2
+        with:
+          name: PomFile
+          path: ./build/pom/
+      - name: Upload final JAR
+        uses: actions/upload-artifact@v2
         with:
           name: FinalJAR
           path: build/libs

@@ -161,7 +161,7 @@ task createPom {
                 url "https://github.com/PixarAnimationStudios/OpenTimelineIO"
             }
         }
-    }.writeTo("java-opentimelineio-" + version.toString() + ".pom")
+    }.writeTo("build/pom/java-opentimelineio-" + version.toString() + ".pom")
 }
 
 publishing {

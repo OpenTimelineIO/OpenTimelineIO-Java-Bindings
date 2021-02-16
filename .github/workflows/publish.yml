@@ -43,9 +43,6 @@ jobs:
         echo "javadoc_jar=$(find . -type f -name "*-javadoc.jar")" >> $GITHUB_ENV
         echo "lib_jar=$(find . -type f -name "*.[0-9].jar")" >> $GITHUB_ENV
         echo "pom_file=$(find . -type f -name "*.pom")" >> $GITHUB_ENV
-        echo $sources_jar
-        echo $javadoc_jar
-        echo $libs_jar
 
     - name: Upload
       working-directory: downloads

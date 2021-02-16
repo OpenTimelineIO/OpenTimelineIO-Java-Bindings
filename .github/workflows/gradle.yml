@@ -29,13 +29,13 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: gradle build
-    - name: Upload artefact
+    - name: Upload artifact
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
       uses: actions/upload-artifact@v2
       with:
         name: Package-${{ matrix.os }}
         path: build/natives/lib/Release
-    - name: Upload artefact
+    - name: Upload artifact
       if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v2
       with:
@@ -47,9 +47,9 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-      - name: Get latest CMake
-        # Using 'latest' branch, the latest CMake is installed.
-        uses: lukka/get-cmake@latest
+      - name: Install CMake
+        shell: bash
+        run: sudo apt-get install cmake
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'

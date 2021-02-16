@@ -33,7 +33,7 @@ jobs:
         sudo apt install gnupg2
         sudo apt install maven
         gpg --import <(printenv secret_key | base64 --decode)
-        echo $settings_xml > settings.xml
+        touch settings.xml; chmod 0644 settings.xml; echo $settings_xml > settings.xml
         echo "sources_jar=$(find . -type f -name "*-sources.jar")" >> $GITHUB_ENV
         echo "javadoc_jar=$(find . -type f -name "*-javadoc.jar")" >> $GITHUB_ENV
         echo "lib_jar=$(find . -type f -name "*.[0-9].jar")" >> $GITHUB_ENV
@@ -49,3 +49,4 @@ jobs:
         mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$lib_jar -Dpackaging=jar -s ./settings.xml
         mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$javadoc_jar -Dpackaging=jar -Dclassifier=javadoc -s ./settings.xml
         mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$sources_jar -Dpackaging=jar -Dclassifier=sources -s ./settings.xml
+        rm -rf settings.xml

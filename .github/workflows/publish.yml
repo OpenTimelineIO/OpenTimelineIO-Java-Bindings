@@ -46,5 +46,5 @@ jobs:
         settings_xml: ${{ secrets.SETTINGS_XML }}
       run: |
         mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$lib_jar -Dpackaging=jar -s - <(printenv settings_xml)
-        mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$javadoc_jar -Dpackaging=jar -Dclassifier=javadoc -s - <(printenv settings_xml)
-        mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$sources_jar -Dpackaging=jar -Dclassifier=sources -s - <(printenv settings_xml)
+        mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$javadoc_jar -Dpackaging=jar -Dclassifier=javadoc -s /dev/stdin < (printenv settings_xml)
+        mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$sources_jar -Dpackaging=jar -Dclassifier=sources -s /dev/stdin < (printenv settings_xml)

@@ -114,27 +114,6 @@ artifacts {
     archives javadocJar
 }
 
-def pomConfig = {
-    licenses {
-        license {
-            name "Modified Apache 2.0 License"
-            url "https://github.com/PixarAnimationStudios/OpenTimelineIO/blob/master/LICENSE.txt"
-            distribution "repo"
-        }
-    }
-    developers {
-        developer {
-            id "OpenTimelineIO"
-            name "Contributors to the OpenTimelineIO project"
-            email ""
-        }
-    }
-
-    scm {
-        url "https://github.com/PixarAnimationStudios/OpenTimelineIO"
-    }
-}
-
 task createPom {
     pom {
         project {
@@ -155,7 +134,7 @@ task createPom {
                 developer {
                     id "OpenTimelineIO"
                     name "Contributors to the OpenTimelineIO project"
-                    email ""
+                    email "otio-discussion@lists.aswf.io"
                 }
             }
             scm {
@@ -163,48 +142,4 @@ task createPom {
             }
         }
     }.writeTo("build/pom/opentimelineio-" + version.toString() + ".pom")
-}
-
-publishing {
-    publications {
-        mavenPublication(MavenPublication) {
-            from components.java
-            artifact sourcesJar {
-                classifier "sources"
-            }
-            artifact javadocJar {
-                classifier "javadoc"
-            }
-            groupId 'io.opentimeline'
-            artifactId 'opentimelineio'
-            version version.toString()
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('description', 'OpenTimelineIO is an interchange format and API for editorial cut information. OTIO is not a container format for media, rather it contains information about the order and length of cuts and references to external media.')
-                root.appendNode('name', 'OpenTimelineIO')
-                root.appendNode('url', 'https://github.com/PixarAnimationStudios/OpenTimelineIO')
-                root.children().last() + pomConfig
-            }
-        }
-    }
-}
-
-bintray {
-    user = System.getProperty('bintray.user')
-    key = System.getProperty('bintray.key')
-    publications = ['mavenPublication']
-
-    pkg {
-        repo = 'opentimelineio'
-        name = 'OpenTimelineIO'
-        userOrg = ''
-        licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/KarthikRIyer/OpenTimelineIO'
-        version {
-            name = version.toString()
-            desc = version.toString()
-            released = new Date()
-        }
-    }
-
 }

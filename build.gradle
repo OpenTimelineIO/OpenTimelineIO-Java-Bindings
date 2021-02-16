@@ -142,6 +142,7 @@ task createPom {
             artifactId 'opentimelineio'
             version version.toString()
             description 'OpenTimelineIO is an interchange format and API for editorial cut information. OTIO is not a container format for media, rather it contains information about the order and length of cuts and references to external media.'
+            url 'opentimeline.io'
             name 'OpenTimelineIO'
             licenses {
                 license {

@@ -28,7 +28,16 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: gradle build
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" == "Linux" || "$RUNNER_OS" == "macOS" ]; then
+          ./gradlew build
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+          .\gradlew build
+        else
+          echo "$RUNNER_OS not supported"
+          exit 1
+        fi
     - name: Upload artifact
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
       uses: actions/upload-artifact@v2
@@ -58,7 +67,7 @@ jobs:
         with:
           java-version: 1.8
       - name: Build with Gradle
-        run: gradle build -x test
+        run: ./gradlew build -x test
       - name: Create directory
         shell: bash
         run: |
@@ -79,7 +88,7 @@ jobs:
           name: Package-windows-latest
           path: ./build/natives/downloads/
       - name: Repackage JAR with all binaries
-        run: gradle build -x test
+        run: ./gradlew build -x test
       - name: Create pom file for maven
         run: gradle createPom
       - name: Upload pom file

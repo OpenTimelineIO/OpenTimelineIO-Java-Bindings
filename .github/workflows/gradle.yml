@@ -34,7 +34,7 @@ jobs:
           chmod +x gradlew
           ./gradlew build
         elif [ "$RUNNER_OS" == 'Windows' ]; then
-          .\gradlew build
+          ./gradlew build
         else
           echo "$RUNNER_OS not supported"
           exit 1

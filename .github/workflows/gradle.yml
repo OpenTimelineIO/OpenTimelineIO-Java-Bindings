@@ -97,7 +97,7 @@ jobs:
           chmod +x gradlew
           ./gradlew build -x test
       - name: Create pom file for maven
-        run: gradle createPom
+        run: ./gradlew createPom
       - name: Upload pom file
         uses: actions/upload-artifact@v2
         with:

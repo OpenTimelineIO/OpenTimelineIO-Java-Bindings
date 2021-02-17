@@ -68,7 +68,10 @@ jobs:
         with:
           java-version: 1.8
       - name: Build with Gradle
-        run: ./gradlew build -x test
+        shell: bash
+        run: |
+          chmod +x gradlew
+          ./gradlew build -x test
       - name: Create directory
         shell: bash
         run: |
@@ -89,7 +92,10 @@ jobs:
           name: Package-windows-latest
           path: ./build/natives/downloads/
       - name: Repackage JAR with all binaries
-        run: ./gradlew build -x test
+        shell: bash
+        run: |
+          chmod +x gradlew
+          ./gradlew build -x test
       - name: Create pom file for maven
         run: gradle createPom
       - name: Upload pom file

@@ -30,9 +30,9 @@ jobs:
     - name: Build with Gradle
       shell: bash
       run: |
-        if [ "$RUNNER_OS" == "Linux" || "$RUNNER_OS" == "macOS" ]; then
+        if [ "$RUNNER_OS" == 'Linux' || "$RUNNER_OS" == 'macOS' ]; then
           ./gradlew build
-        elif [ "$RUNNER_OS" == "Windows" ]; then
+        elif [ "$RUNNER_OS" == 'Windows' ]; then
           .\gradlew build
         else
           echo "$RUNNER_OS not supported"

@@ -28,8 +28,70 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: gradle build
-    - uses: actions/upload-artifact@v2
+      shell: bash
+      run: ./gradlew build
+    - name: Upload artifact
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
+      uses: actions/upload-artifact@v2
       with:
         name: Package-${{ matrix.os }}
-        path: build/libs
+        path: build/natives/lib/Release
+    - name: Upload artifact
+      if: matrix.os == 'windows-latest'
+      uses: actions/upload-artifact@v2
+      with:
+        name: Package-${{ matrix.os }}
+        path: build/natives/bin/Release
+
+  combine:
+    name: Download platform-specific binaries and combine into single JAR
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install CMake
+        shell: bash
+        run: sudo apt-get install cmake
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Build with Gradle
+        shell: bash
+        run: ./gradlew build -x test
+      - name: Create directory
+        shell: bash
+        run: |
+          mkdir -p ./build/natives/downloads
+      - name: Download Linux binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: Package-ubuntu-latest
+          path: ./build/natives/downloads/
+      - name: Download Darwin binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: Package-macos-latest
+          path: ./build/natives/downloads/
+      - name: Download Windows binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: Package-windows-latest
+          path: ./build/natives/downloads/
+      - name: Repackage JAR with all binaries
+        shell: bash
+        run: ./gradlew build -x test
+      - name: Create pom file for maven
+        run: ./gradlew createPom
+      - name: Upload pom file
+        uses: actions/upload-artifact@v2
+        with:
+          name: PomFile
+          path: ./build/pom/
+      - name: Upload final JAR
+        uses: actions/upload-artifact@v2
+        with:
+          name: FinalJAR
+          path: build/libs

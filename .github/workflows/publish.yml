@@ -1,0 +1,54 @@
+name: Publish
+on:
+  release:
+    types: [published]
+    
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download JAR
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: gradle.yml
+        workflow_conclusion: success
+        commit: ${{ github.sha }}
+        name: FinalJAR
+        path: ./downloads
+    - name: Download POM file
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: gradle.yml
+        commit: ${{ github.sha }}
+        name: PomFile
+        path: ./downloads
+    - name: Upload setup
+      working-directory: downloads
+      shell: bash
+      env:
+        secret_key: ${{ secrets.SECRET_KEY }}
+        settings_xml: ${{ secrets.SETTINGS_XML }}
+      run: |
+        sudo apt install gnupg2
+        sudo apt install maven
+        gpg --import <(printenv secret_key | base64 --decode)
+        touch settings.xml && chmod 0600 settings.xml && printenv settings_xml > settings.xml
+        echo "sources_jar=$(find . -type f -name "*-sources.jar")" >> $GITHUB_ENV
+        echo "javadoc_jar=$(find . -type f -name "*-javadoc.jar")" >> $GITHUB_ENV
+        echo "lib_jar=$(find . -type f -name "*.[0-9].jar")" >> $GITHUB_ENV
+        echo "pom_file=$(find . -type f -name "*.pom")" >> $GITHUB_ENV
+
+    - name: Upload
+      working-directory: downloads
+      shell: bash
+      env:
+        secret_key: ${{ secrets.SECRET_KEY }}
+        settings_xml: ${{ secrets.SETTINGS_XML }}
+      run: |
+        {
+          mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$lib_jar -Dpackaging=jar -s ./settings.xml &&
+          mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$javadoc_jar -Dpackaging=jar -Dclassifier=javadoc -s ./settings.xml &&
+          mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$sources_jar -Dpackaging=jar -Dclassifier=sources -s ./settings.xml;
+        } || { rm settings.xml; exit 1}
+        rm settings.xml

@@ -65,6 +65,70 @@ gradle build # this builds and runs all tests
 
 You can find the generated jar file in the `build/libs` directory.
 
+Building OpenTimelineIO-Java-Bindings for Android
+------------------------
+
+This has been built and tested on Ubuntu 18.04LTS.
+
+Install Android Studio according to these [steps](https://developer.android.com/studio).
+
+Install NDK and CMake using [sdkmanager](https://developer.android.com/studio/command-line/sdkmanager) as follows:
+
+`sdkmanager "ndk;22.0.7026061" "cmake;3.10.2.4988404"`
+
+You can find `sdkmanager` in `$ANDROID_HOME/tools/bin/`. `$ANDROID_HOME` is the location of Android SDK which is generally `~/Android/Sdk`.
+
+Set the `ANDROID_HOME` environment variable and from the root directory of the project run:
+
+```console
+gradle clean
+gradle build -x test -PandroidBuild -Psdk_path=$ANDROID_HOME
+```
+
+You'll find the JAR in `build/libs`
+
+#### How to include the Android JAR in your project
+
+Copy the JAR to the `libs` directory and add this to the app level `build.gradle`:
+
+```groovy
+android {
+    ...
+    
+    ndkVersion '22.0.7026061'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    ...
+}
+
+task unjar {
+    ant.unzip(src: 'libs/java-opentimelineio-0.14.0.jar', dest: 'JARUnzip')
+
+    copy {
+        from 'JARUnzip/arm64-v8a'
+        into 'src/main/jniLibs/arm64-v8a'
+    }
+    copy {
+        from 'JARUnzip/x86_64'
+        into 'src/main/jniLibs/x86_64'
+    }
+}
+
+build.dependsOn unjar
+
+dependencies {
+    ...
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation files('libs/java-opentimelineio-0.14.0.jar')
+    ...
+}
+
+```
+
+
 Examples
 --------
 

@@ -50,6 +50,9 @@ jobs:
       - name: Install NDK and CMake
         shell: bash
         run: $ANDROID_HOME/tools/bin/sdkmanager "ndk;22.0.7026061" "cmake;3.10.2.4988404"
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
       - name: Build
         shell: bash
         run: ./gradlew build -x test -PandroidBuild -Psdk_path=$ANDROID_HOME

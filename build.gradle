@@ -66,7 +66,31 @@ task compileJNI {
             if (OperatingSystem.current().isLinux() ||
                     OperatingSystem.current().isMacOsX() ||
                     OperatingSystem.current().isUnix()) {
-                commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. && cmake --build . --config Release'
+                if (project.hasProperty("androidBuild") && project.hasProperty("sdk_path")){
+                    def sdk_path = project.getProperties().getAt('sdk_path').toString()
+//                    commandLine 'sh', '-c', 'mkdir -p build/natives && ' +
+//                            'cd build/natives && ' +
+//                            '/home/karthik/Android/Sdk/cmake/3.10.2.4988404/bin/cmake -G"Ninja" -DANDROID_ABI=arm64-v8a -DANDROID_NDK=/home/karthik/Android/Sdk/ndk/22.0.7026061 -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/home/karthik/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -DCMAKE_TOOLCHAIN_FILE=/home/karthik/Android/Sdk/ndk/22.0.7026061/build/cmake/android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=23 -DANDROID_TOOLCHAIN=clang ../.. && ' +
+//                            'cmake --build . --config Release && ' +
+//                            'mv lib/Release/Android/ lib/Release/arm64-v8a && ' +
+//                            'rm CMakeCache.txt && ' +
+//                            '/home/karthik/Android/Sdk/cmake/3.10.2.4988404/bin/cmake -G"Ninja" -DANDROID_ABI=x86_64 -DANDROID_NDK=/home/karthik/Android/Sdk/ndk/22.0.7026061 -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/home/karthik/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -DCMAKE_TOOLCHAIN_FILE=/home/karthik/Android/Sdk/ndk/22.0.7026061/build/cmake/android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=23 -DANDROID_TOOLCHAIN=clang ../.. && ' +
+//                            'cmake --build . --config Release && ' +
+//                            'mv lib/Release/Android/ lib/Release/x86_64'
+                    commandLine 'sh', '-c', 'mkdir -p build/natives && ' +
+                            'cd build/natives && ' +
+                            sdk_path +'/cmake/3.10.2.4988404/bin/cmake -G"Ninja" -DANDROID_ABI=arm64-v8a -DANDROID_NDK='+sdk_path+'/ndk/22.0.7026061 -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM='+sdk_path+'/cmake/3.10.2.4988404/bin/ninja -DCMAKE_TOOLCHAIN_FILE='+sdk_path+'/ndk/22.0.7026061/build/cmake/android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=23 -DANDROID_TOOLCHAIN=clang ../.. && ' +
+                            'cmake --build . --config Release && ' +
+                            'mv lib/Release/Android/ lib/Release/arm64-v8a && ' +
+                            'rm CMakeCache.txt && ' +
+                            sdk_path +'/cmake/3.10.2.4988404/bin/cmake -G"Ninja" -DANDROID_ABI=x86_64 -DANDROID_NDK='+sdk_path+'/ndk/22.0.7026061 -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM='+sdk_path+'/cmake/3.10.2.4988404/bin/ninja -DCMAKE_TOOLCHAIN_FILE='+sdk_path+'/ndk/22.0.7026061/build/cmake/android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=23 -DANDROID_TOOLCHAIN=clang ../.. && ' +
+                            'cmake --build . --config Release && ' +
+                            'mv lib/Release/Android/ lib/Release/x86_64'
+                }
+                else {
+                    commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. && cmake --build . --config Release'
+                }
+//                commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. && cmake --build . --config Release'
             } else if (OperatingSystem.current().isWindows()) {
                 commandLine "cmd", "/c", 'if not exist "build\\natives" mkdir build\\natives && cd build\\natives && cmake ..\\.. && cmake --build . --config Release'
             }

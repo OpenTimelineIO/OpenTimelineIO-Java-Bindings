@@ -99,9 +99,11 @@ public class NativeUtils {
         try (InputStream is = NativeUtils.class.getResourceAsStream(path)) {
             Files.copy(is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
+            System.out.println("here1");
             temp.delete();
             throw e;
         } catch (NullPointerException e) {
+            System.out.println("here2: " + path);
             temp.delete();
             throw new FileNotFoundException("File " + path + " was not found inside JAR.");
         }

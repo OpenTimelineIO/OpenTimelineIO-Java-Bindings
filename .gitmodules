@@ -1,4 +1,0 @@
-[submodule "deps/OpenTimelineIO"]
-	path = deps/OpenTimelineIO
-	url = https://github.com/PixarAnimationStudios/OpenTimelineIO
-	branch = master

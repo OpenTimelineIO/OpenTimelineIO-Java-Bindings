@@ -40,6 +40,14 @@ if(NOT CMAKE_BUILD_TYPE)
       FORCE)
 endif()
 
+set(OTIO_PYTHON_INSTALL OFF CACHE BOOL "")
+set(OTIO_CXX_INSTALL OFF CACHE BOOL "")
+set(OTIO_DEPENDENCIES_INSTALL OFF CACHE BOOL "")
+set(OTIO_INSTALL_COMMANDLINE_TOOLS OFF CACHE BOOL "")
+set(OTIO_SHARED_LIBS ON)
+
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
 include_directories(src/main/include)
 add_subdirectory(deps/OpenTimelineIO build/natives)
 add_subdirectory(src/main/cpp)

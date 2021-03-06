@@ -42,7 +42,9 @@ add_library(jotio SHARED
         io_opentimeline_opentimelineio_OTIOTest.cpp)
 
 target_include_directories(jotio PUBLIC
-        "${PROJECT_SOURCE_DIR}/../")
+        "${PROJECT_SOURCE_DIR}/deps/OpenTimelineIO/src"
+        "${PROJECT_SOURCE_DIR}/deps/OpenTimelineIO/src/deps"
+        "${PROJECT_SOURCE_DIR}/deps/OpenTimelineIO/src/deps/optional-lite/include")
 
 target_link_libraries(jotio opentime)
 target_link_libraries(jotio opentimelineio)

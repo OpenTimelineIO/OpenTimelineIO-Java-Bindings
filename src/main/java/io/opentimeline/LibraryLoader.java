@@ -29,7 +29,6 @@ public class LibraryLoader {
     public static void load(String name) {
         if (libLoaded)
             return;
-//        name += ("-" + OTIO_VERSION);
         final String libname = System.mapLibraryName(name);
         final String opentimelibname = System.mapLibraryName("opentime");
         final String OTIOlibname = System.mapLibraryName("opentimelineio");

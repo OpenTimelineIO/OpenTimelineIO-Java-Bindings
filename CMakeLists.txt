@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
 project(jotio VERSION 0.14.0 LANGUAGES CXX)
 
@@ -11,7 +11,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>/${CMAKE_SYS
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/${CMAKE_SYSTEM_NAME})
 
 # jvm
-find_package(Java REQUIRED)
+if(NOT DEFINED ANDROID_ABI)
+    find_package(Java REQUIRED)
+else()
+    set(JAVA_INCLUDE_PATH2 NotNeeded)
+endif()
 # https://stackoverflow.com/questions/51047978/cmake-could-not-find-jni
 set(JAVA_AWT_LIBRARY NotNeeded)
 set(JAVA_JVM_LIBRARY NotNeeded)
@@ -35,6 +39,14 @@ if(NOT CMAKE_BUILD_TYPE)
       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
       FORCE)
 endif()
+
+set(OTIO_PYTHON_INSTALL OFF CACHE BOOL "")
+set(OTIO_CXX_INSTALL OFF CACHE BOOL "")
+set(OTIO_DEPENDENCIES_INSTALL OFF CACHE BOOL "")
+set(OTIO_INSTALL_COMMANDLINE_TOOLS OFF CACHE BOOL "")
+set(OTIO_SHARED_LIBS ON)
+
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 include_directories(src/main/include)
 add_subdirectory(deps/OpenTimelineIO build/natives)

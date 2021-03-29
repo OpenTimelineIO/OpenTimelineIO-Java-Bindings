@@ -18,14 +18,17 @@ public class LibraryLoader {
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.contains("win")) return "Windows";
         else if (osName.contains("mac")) return "Darwin";
-        else if (osName.contains("nux")) return "Linux";
+        else if (osName.contains("nux")) {
+            if(System.getProperty("java.vm.name").toLowerCase().contains("dalvik"))
+                return "Android";
+            return "Linux";
+        }
         return "";
     }
 
     public static void load(String name) {
         if (libLoaded)
             return;
-        name += ("-" + OTIO_VERSION);
         final String libname = System.mapLibraryName(name);
         final String opentimelibname = System.mapLibraryName("opentime");
         final String OTIOlibname = System.mapLibraryName("opentimelineio");

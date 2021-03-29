@@ -1,4 +1,4 @@
-add_library(jotio-${CMAKE_PROJECT_VERSION} SHARED
+add_library(jotio SHARED
         io_opentimeline_OTIOFinalizer.cpp
         class_codes.cpp
         utilities.cpp
@@ -41,8 +41,10 @@ add_library(jotio-${CMAKE_PROJECT_VERSION} SHARED
         io_opentimeline_opentimelineio_Deserialization.cpp
         io_opentimeline_opentimelineio_OTIOTest.cpp)
 
-target_include_directories(jotio-${CMAKE_PROJECT_VERSION} PUBLIC
-        "${PROJECT_SOURCE_DIR}/../")
+target_include_directories(jotio PUBLIC
+        "${PROJECT_SOURCE_DIR}/deps/OpenTimelineIO/src"
+        "${PROJECT_SOURCE_DIR}/deps/OpenTimelineIO/src/deps"
+        "${PROJECT_SOURCE_DIR}/deps/OpenTimelineIO/src/deps/optional-lite/include")
 
-target_link_libraries(jotio-${CMAKE_PROJECT_VERSION} opentime)
-target_link_libraries(jotio-${CMAKE_PROJECT_VERSION} opentimelineio)
+target_link_libraries(jotio opentime)
+target_link_libraries(jotio opentimelineio)

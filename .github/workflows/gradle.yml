@@ -43,6 +43,25 @@ jobs:
         name: Package-${{ matrix.os }}
         path: build/natives/bin/Release
 
+  android:
+    name: Build for android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install NDK and CMake
+        shell: bash
+        run: $ANDROID_HOME/tools/bin/sdkmanager "ndk;22.0.7026061" "cmake;3.10.2.4988404"
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Build
+        shell: bash
+        run: ./gradlew build -x test -PandroidBuild -Psdk_path=$ANDROID_HOME
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Android-JAR
+          path: build/libs
+  
   combine:
     name: Download platform-specific binaries and combine into single JAR
     needs: [build]

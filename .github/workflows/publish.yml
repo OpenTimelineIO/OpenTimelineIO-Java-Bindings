@@ -32,7 +32,7 @@ jobs:
       run: |
         sudo apt install gnupg2
         sudo apt install maven
-        gpg --import <(printenv secret_key | base64 --decode)
+        gpg --batch --import <(printenv secret_key | base64 --decode)
         touch settings.xml && chmod 0600 settings.xml && printenv settings_xml > settings.xml
         echo "sources_jar=$(find . -type f -name "*-sources.jar")" >> $GITHUB_ENV
         echo "javadoc_jar=$(find . -type f -name "*-javadoc.jar")" >> $GITHUB_ENV

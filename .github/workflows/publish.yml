@@ -36,7 +36,7 @@ jobs:
         touch settings.xml && chmod 0600 settings.xml && printenv settings_xml > settings.xml
         echo "sources_jar=$(find . -type f -name "*-sources.jar")" >> $GITHUB_ENV
         echo "javadoc_jar=$(find . -type f -name "*-javadoc.jar")" >> $GITHUB_ENV
-        echo "lib_jar=$(find . -type f -name "*.[0-9].jar")" >> $GITHUB_ENV
+        echo "lib_jar=$(find . -type f -regextype posix-egrep -regex '.*/[^/]+-[0-9]+\.[0-9]+\.[0-9]+(-beta-[0-9]+)?\.jar')" >> $GITHUB_ENV
         echo "pom_file=$(find . -type f -name "*.pom")" >> $GITHUB_ENV
 
     - name: Upload

@@ -50,5 +50,5 @@ jobs:
           mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$lib_jar -Dpackaging=jar -s ./settings.xml &&
           mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$javadoc_jar -Dpackaging=jar -Dclassifier=javadoc -s ./settings.xml &&
           mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=$pom_file -Dfile=$sources_jar -Dpackaging=jar -Dclassifier=sources -s ./settings.xml;
-        } || { rm settings.xml; exit 1}
+        } || { rm settings.xml; exit 1;}
         rm settings.xml

@@ -40,14 +40,18 @@ Quick-Start
 
 > :warning: **This is pre-release software**: We're releasing these bindings to encourage feedback and participation, but we expect that there may be some breaking changes along the way. Please consider this if you decide to use the bindings in their current state.
 
-You can add OpenTimelineIO as a dependency to your `build.gradle` as:
+You can add OpenTimelineIO as a gradle dependency to your `build.gradle` with:
 ```
 implementation 'io.opentimeline:opentimelineio:0.14.0-beta-1'
 ```
 
-You can add OpenTimelineIO as a dependency to your maven project as:
+You can add OpenTimelineIO as a maven dependency to your pom.xml with:
 ```
-<insert maven dep>
+<dependency>
+  <groupId>io.opentimeline</groupId>
+  <artifactId>opentimelineio</artifactId>
+  <version>0.14.0-beta-1</version>
+</dependency>
 ```
 
 

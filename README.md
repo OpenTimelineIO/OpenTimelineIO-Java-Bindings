@@ -38,14 +38,22 @@ You can provide adapters for your video editing tool or pipeline as needed.
 Quick-Start
 -----------
 
-You can add OpenTimelineIO as a dependency to your gradle project as:
-```
-<insert gradle dep>
+> :warning: **This is pre-release software**: We're releasing these bindings to encourage feedback and participation, but we expect that there may be some breaking changes along the way. Please consider this if you decide to use the bindings in their current state.
+
+You can add OpenTimelineIO as a gradle dependency to your `build.gradle` with:
+
+```gradle
+implementation 'io.opentimeline:opentimelineio:0.14.0-beta-1'
 ```
 
-You can add OpenTimelineIO as a dependency to your maven project as:
-```
-<insert maven dep>
+You can add OpenTimelineIO as a maven dependency to your pom.xml with:
+
+```xml
+<dependency>
+  <groupId>io.opentimeline</groupId>
+  <artifactId>opentimelineio</artifactId>
+  <version>0.14.0-beta-1</version>
+</dependency>
 ```
 
 
@@ -55,7 +63,7 @@ Building OpenTimelineIO-Java-Bindings
 OpenTimelineIO-Java-Bindings have been built and tested on Ubuntu 18.04LTS, Windows 10 and macOS using [Gradle](https://gradle.org/install/) and [CMake](https://cmake.org/download/).
 After installing Gradle and CMake follw these steps:
 
-```console
+```shell
 git clone --recurse-submodules https://github.com/OpenTimelineIO/OpenTimelineIO-Java-Bindings
 
 cd otio-java
@@ -80,7 +88,7 @@ You can find `sdkmanager` in `$ANDROID_HOME/tools/bin/`. `$ANDROID_HOME` is the 
 
 Set the `ANDROID_HOME` environment variable and from the root directory of the project run:
 
-```console
+```shell
 gradle clean
 gradle build -x test -PandroidBuild -Psdk_path=$ANDROID_HOME
 ```
@@ -94,7 +102,7 @@ Copy the JAR to the `libs` directory and add this to the app level `build.gradle
 ```groovy
 android {
     ...
-    
+
     ndkVersion '22.0.7026061'
 
     compileOptions {

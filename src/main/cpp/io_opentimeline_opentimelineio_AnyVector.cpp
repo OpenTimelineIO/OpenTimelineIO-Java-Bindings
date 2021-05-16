@@ -37,7 +37,7 @@ JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_AnyVector_get
             env->NewObjectArray((jsize)thisHandle->size(), anyClass, nullptr);
     for (int i = 0; i < thisHandle->size(); i++) {
         auto newObj = anyFromNative(env, &thisHandle->at(i));
-        registerObjectToOTIOFactory(env, newObj);
+//        registerObjectToOTIOFactory(env, newObj);
         env->SetObjectArrayElement(
                 result, i, newObj);
     }

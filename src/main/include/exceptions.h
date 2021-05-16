@@ -3,6 +3,7 @@
 
 #include <jni.h>
 #include <opentime/errorStatus.h>
+#include <opentimelineio/errorStatus.h>
 
 #ifndef _EXCEPTIONS_H_INCLUDED_
 #define _EXCEPTIONS_H_INCLUDED_
@@ -31,30 +32,8 @@ inline jint throwRuntimeException(JNIEnv *env, const char *message) {
     return env->ThrowNew(exClass, message);
 }
 
-inline jint processOpenTimeErrorStatus(JNIEnv *env, opentime::ErrorStatus &errorStatus) {
-    std::string otio_msg = "An OpenTime call failed with ";
-    switch (errorStatus.outcome) {
-        case opentime::ErrorStatus::Outcome::INVALID_TIMECODE_RATE:
-        case opentime::ErrorStatus::Outcome::INVALID_TIMECODE_STRING:
-        case opentime::ErrorStatus::Outcome::INVALID_TIME_STRING:
-        case opentime::ErrorStatus::Outcome::INVALID_RATE_FOR_DROP_FRAME_TIMECODE:
-        case opentime::ErrorStatus::Outcome::NON_DROPFRAME_RATE:
-        case opentime::ErrorStatus::Outcome::TIMECODE_RATE_MISMATCH:
-        case opentime::ErrorStatus::Outcome::NEGATIVE_VALUE: {
-            const char *className = "java/lang/IllegalArgumentException";
-            jclass exClass = env->FindClass(className);
-            otio_msg = otio_msg + opentime::ErrorStatus::outcome_to_string(errorStatus.outcome);
-            return env->ThrowNew(exClass, otio_msg.c_str());
-        }
-        case opentime::ErrorStatus::Outcome::OK:
-            return 0;
-        default: {
-            const char *className = "java/lang/Exception";
-            jclass exClass = env->FindClass(className);
-            otio_msg = otio_msg + "an unknown Exception.";
-            return env->ThrowNew(exClass, otio_msg.c_str());
-        }
-    }
-}
+jint processOpenTimeErrorStatus(JNIEnv *env, opentime::ErrorStatus &errorStatus);
+
+jint processOTIOErrorStatus(JNIEnv *env, OTIO_NS::ErrorStatus &errorStatus);
 
 #endif

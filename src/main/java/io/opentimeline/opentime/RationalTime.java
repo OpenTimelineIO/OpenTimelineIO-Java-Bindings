@@ -198,9 +198,8 @@ public class RationalTime implements Comparable<RationalTime> {
     /**
      * Convert timecode to RationalTime.
      *
-     * @param timecode    a colon-delimited timecode
-     * @param rate        the frame-rate to calculate timecode in terms of
-     * @param errorStatus errorStatus to report error in conversion
+     * @param timecode a colon-delimited timecode
+     * @param rate     the frame-rate to calculate timecode in terms of
      * @return RationalTime equivalent to timecode
      */
     public static native RationalTime fromTimecode(String timecode, double rate) throws IllegalArgumentException;
@@ -208,9 +207,8 @@ public class RationalTime implements Comparable<RationalTime> {
     /**
      * Convert a time with microseconds string into a RationalTime
      *
-     * @param timeString  a HH:MM:ss.ms time
-     * @param rate        The frame-rate to calculate timecode in terms of
-     * @param errorStatus errorStatus to report error in conversion
+     * @param timeString a HH:MM:ss.ms time
+     * @param rate       The frame-rate to calculate timecode in terms of
      * @return RationalTime equivalent to timestring
      */
     public static native RationalTime fromTimeString(String timeString, double rate) throws IllegalArgumentException;
@@ -246,9 +244,8 @@ public class RationalTime implements Comparable<RationalTime> {
     /**
      * Convert RationalTime to timecode
      *
-     * @param rate        the frame-rate to calculate timecode in terms of
-     * @param dropFrame   should the algorithm drop frames while conversion? [InferFromRate, ForceYes, ForceNo]
-     * @param errorStatus errorStatus to report error in conversion
+     * @param rate      the frame-rate to calculate timecode in terms of
+     * @param dropFrame should the algorithm drop frames while conversion? [InferFromRate, ForceYes, ForceNo]
      * @return equivalent timecode
      */
     public String toTimecode(double rate, IsDropFrameRate dropFrame) throws IllegalArgumentException {
@@ -258,7 +255,6 @@ public class RationalTime implements Comparable<RationalTime> {
     /**
      * Convert RationalTime to timecode and automatically infer if the frame rate is a Drop FrameRate.
      *
-     * @param errorStatus errorStatus to report error in conversion
      * @return equivalent timecode
      */
     public String toTimecode() throws IllegalArgumentException {

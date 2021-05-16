@@ -5,7 +5,6 @@ package io.opentimeline;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.opentimeline.opentime.ErrorStatus;
 import io.opentimeline.opentime.IsDropFrameRate;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
@@ -434,16 +433,15 @@ public class TimeRangeTest {
     @Test
     public void testToTimecodeMixedRates() {
         String timecode = "00:06:56:17";
-        ErrorStatus errorStatus = new ErrorStatus();
-        RationalTime t = RationalTime.fromTimecode(timecode, 24, errorStatus);
+        RationalTime t = RationalTime.fromTimecode(timecode, 24);
 
-        assertEquals(timecode, t.toTimecode(errorStatus));
-        assertEquals(timecode, t.toTimecode(24, IsDropFrameRate.InferFromRate, errorStatus));
-        assertNotEquals(timecode, t.toTimecode(12, IsDropFrameRate.InferFromRate, errorStatus));
+        assertEquals(timecode, t.toTimecode());
+        assertEquals(timecode, t.toTimecode(24, IsDropFrameRate.InferFromRate));
+        assertNotEquals(timecode, t.toTimecode(12, IsDropFrameRate.InferFromRate));
 
         RationalTime time1 = new RationalTime(24, 24);
         RationalTime time2 = new RationalTime(1, 1);
-        assertEquals(time1.toTimecode(24, IsDropFrameRate.InferFromRate, errorStatus), time2.toTimecode(24, IsDropFrameRate.InferFromRate, errorStatus));
+        assertEquals(time1.toTimecode(24, IsDropFrameRate.InferFromRate), time2.toTimecode(24, IsDropFrameRate.InferFromRate));
     }
 
     @Test

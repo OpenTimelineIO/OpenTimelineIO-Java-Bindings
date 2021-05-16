@@ -203,7 +203,7 @@ public class RationalTime implements Comparable<RationalTime> {
      * @param errorStatus errorStatus to report error in conversion
      * @return RationalTime equivalent to timecode
      */
-    public static native RationalTime fromTimecode(String timecode, double rate, ErrorStatus errorStatus);
+    public static native RationalTime fromTimecode(String timecode, double rate) throws IllegalArgumentException;
 
     /**
      * Convert a time with microseconds string into a RationalTime
@@ -213,7 +213,7 @@ public class RationalTime implements Comparable<RationalTime> {
      * @param errorStatus errorStatus to report error in conversion
      * @return RationalTime equivalent to timestring
      */
-    public static native RationalTime fromTimeString(String timeString, double rate, ErrorStatus errorStatus);
+    public static native RationalTime fromTimeString(String timeString, double rate) throws IllegalArgumentException;
 
     /**
      * Convert RationalTime to integer frames at same rate
@@ -251,8 +251,8 @@ public class RationalTime implements Comparable<RationalTime> {
      * @param errorStatus errorStatus to report error in conversion
      * @return equivalent timecode
      */
-    public String toTimecode(double rate, IsDropFrameRate dropFrame, ErrorStatus errorStatus) {
-        return toTimecodeNative(this, rate, dropFrame.getIndex(), errorStatus);
+    public String toTimecode(double rate, IsDropFrameRate dropFrame) throws IllegalArgumentException {
+        return toTimecodeNative(this, rate, dropFrame.getIndex());
     }
 
     /**
@@ -261,11 +261,11 @@ public class RationalTime implements Comparable<RationalTime> {
      * @param errorStatus errorStatus to report error in conversion
      * @return equivalent timecode
      */
-    public String toTimecode(ErrorStatus errorStatus) {
-        return toTimecodeNative(this, getRate(), IsDropFrameRate.InferFromRate.getIndex(), errorStatus);
+    public String toTimecode() throws IllegalArgumentException {
+        return toTimecodeNative(this, getRate(), IsDropFrameRate.InferFromRate.getIndex());
     }
 
-    private static native String toTimecodeNative(RationalTime rationalTime, double rate, int dropFrameIndex, ErrorStatus errorStatus);
+    private static native String toTimecodeNative(RationalTime rationalTime, double rate, int dropFrameIndex) throws IllegalArgumentException;
 
     /**
      * Convert to time with microseconds as formatted in FFMPEG

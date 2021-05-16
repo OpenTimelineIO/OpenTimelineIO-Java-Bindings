@@ -3,7 +3,6 @@
 
 package io.opentimeline;
 
-import io.opentimeline.opentime.ErrorStatus;
 import io.opentimeline.opentime.IsDropFrameRate;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.util.Pair;
@@ -108,33 +107,31 @@ public class RationalTimeTest {
     @Test
     public void testTimecodeConvert() {
         String timecode = "00:06:56:17";
-        ErrorStatus errorStatus = new ErrorStatus();
-        RationalTime t = RationalTime.fromTimecode(timecode, 24, errorStatus);
-        assertEquals(timecode, t.toTimecode(errorStatus));
+        RationalTime t = RationalTime.fromTimecode(timecode, 24);
+        assertEquals(timecode, t.toTimecode());
     }
 
     @Test
     public void testTimecode24() {
         String timecode = "00:00:01:00";
-        ErrorStatus errorStatus = new ErrorStatus();
         RationalTime t = new RationalTime(24, 24);
-        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24, errorStatus)));
+        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24)));
 
         timecode = "00:01:00:00";
         t = new RationalTime(24 * 60, 24);
-        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24, errorStatus)));
+        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24)));
 
         timecode = "01:00:00:00";
         t = new RationalTime(24 * 60 * 60, 24);
-        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24, errorStatus)));
+        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24)));
 
         timecode = "24:00:00:00";
         t = new RationalTime(24 * 60 * 60 * 24, 24);
-        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24, errorStatus)));
+        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24)));
 
         timecode = "23:59:59:23";
         t = new RationalTime(24 * 60 * 60 * 24 - 1, 24);
-        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24, errorStatus)));
+        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24)));
     }
 
     @Test
@@ -153,17 +150,15 @@ public class RationalTimeTest {
     public void testTimecodeZero() {
         RationalTime t = new RationalTime();
         String timecode = "00:00:00:00";
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertEquals(timecode, t.toTimecode(24, IsDropFrameRate.InferFromRate, errorStatus));
-        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24, errorStatus)));
+        assertEquals(timecode, t.toTimecode(24, IsDropFrameRate.InferFromRate));
+        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24)));
     }
 
     @Test
     public void testLongRunningTimecode() {
         long finalFrameNumber = 24 * 60 * 60 * 24 - 1;
         RationalTime finalTime = RationalTime.fromFrames(finalFrameNumber, 24);
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertEquals(finalTime.toTimecode(errorStatus), "23:59:59:23");
+        assertEquals(finalTime.toTimecode(), "23:59:59:23");
 
         RationalTime step_time = new RationalTime(1, 24);
         RationalTime cumulativeTime = new RationalTime();
@@ -175,10 +170,10 @@ public class RationalTimeTest {
         /* Adding by a non-multiple of 24 */
         for (long fnum = 1113; fnum < finalFrameNumber; fnum += 1113) {
             RationalTime rt = new RationalTime(fnum, 24);
-            String tc = rt.toTimecode(errorStatus);
-            RationalTime rt2 = RationalTime.fromTimecode(tc, 24, errorStatus);
+            String tc = rt.toTimecode();
+            RationalTime rt2 = RationalTime.fromTimecode(tc, 24);
             assertTrue(rt.equals(rt2));
-            assertEquals(tc, rt2.toTimecode(errorStatus));
+            assertEquals(tc, rt2.toTimecode());
         }
     }
 
@@ -186,33 +181,33 @@ public class RationalTimeTest {
     public void testTimecode23967fps() {
         /* This should behave exactly like 24fps */
         String timecode = "00:00:01:00";
-        ErrorStatus errorStatus = new ErrorStatus();
         RationalTime t = new RationalTime(24, 23.976);
-        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 23.976, errorStatus)));
+        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 23.976)));
 
         timecode = "00:01:00:00";
         t = new RationalTime(24 * 60, 23.976);
-        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 23.976, errorStatus)));
+        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 23.976)));
 
         timecode = "01:00:00:00";
         t = new RationalTime(24 * 60 * 60, 23.976);
-        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 23.976, errorStatus)));
+        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 23.976)));
 
         timecode = "24:00:00:00";
         t = new RationalTime(24 * 60 * 60 * 24, 23.976);
-        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 23.976, errorStatus)));
+        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 23.976)));
 
         timecode = "23:59:59:23";
         t = new RationalTime(24 * 60 * 60 * 24 - 1, 24000.0 / 1001.0);
-        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24000.0 / 1001.0, errorStatus)));
+        assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24000.0 / 1001.0)));
     }
 
     @Test
     public void testConvertingNegativeValuesToTimecode() {
-        RationalTime t = new RationalTime(-1, 25);
-        ErrorStatus errorStatus = new ErrorStatus();
-        String tc = t.toTimecode(errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.NEGATIVE_VALUE);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            RationalTime t = new RationalTime(-1, 25);
+            String tc = t.toTimecode();
+        });
+        assertTrue(exception.getMessage().equals("An OpenTime call failed with value cannot be negative here"));
     }
 
     @Test
@@ -304,7 +299,6 @@ public class RationalTimeTest {
         testValues.add(secondAndHalfHour);
         testValues.add(tenthHour);
         testValues.add(tenthHourThirdMinute);
-        ErrorStatus errorStatus = new ErrorStatus();
 
         for (ArrayList<Pair<Double, String>> timeValues : testValues) {
             for (Pair<Double, String> timeValue : timeValues) {
@@ -312,9 +306,9 @@ public class RationalTimeTest {
                 String timecode = timeValue.getSecond();
 
                 RationalTime t = new RationalTime(value, 29.97);
-                assertEquals(timecode, t.toTimecode(29.97, IsDropFrameRate.ForceYes, errorStatus));
+                assertEquals(timecode, t.toTimecode(29.97, IsDropFrameRate.ForceYes));
 
-                RationalTime t1 = RationalTime.fromTimecode(timecode, 29.97, errorStatus);
+                RationalTime t1 = RationalTime.fromTimecode(timecode, 29.97);
                 assertTrue(t.equals(t1));
             }
         }
@@ -325,21 +319,22 @@ public class RationalTimeTest {
         double frames = 1084319;
         double rateFloat = 30000.0 / 1001.0;
         RationalTime t = new RationalTime(frames, rateFloat);
-        ErrorStatus errorStatus = new ErrorStatus();
 
-        String dftc = t.toTimecode(rateFloat, IsDropFrameRate.ForceYes, errorStatus);
+        String dftc = t.toTimecode(rateFloat, IsDropFrameRate.ForceYes);
         assertEquals(dftc, "10:03:00;05");
 
-        String tc = t.toTimecode(rateFloat, IsDropFrameRate.ForceNo, errorStatus);
+        String tc = t.toTimecode(rateFloat, IsDropFrameRate.ForceNo);
         assertEquals(tc, "10:02:23:29");
 
         /* Detect DFTC from rate for backward compatability with old versions */
-        String tcAuto = t.toTimecode(rateFloat, IsDropFrameRate.InferFromRate, errorStatus);
+        String tcAuto = t.toTimecode(rateFloat, IsDropFrameRate.InferFromRate);
         assertEquals(tcAuto, "10:03:00;05");
 
-        RationalTime invalidDFRate = new RationalTime(30, 24000.0 / 1001.0);
-        String tcInvalid = invalidDFRate.toTimecode(24000.0 / 1001.0, IsDropFrameRate.ForceYes, errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.INVALID_RATE_FOR_DROP_FRAME_TIMECODE);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            RationalTime invalidDFRate = new RationalTime(30, 24000.0 / 1001.0);
+            String tcInvalid = invalidDFRate.toTimecode(24000.0 / 1001.0, IsDropFrameRate.ForceYes);
+        });
+        assertTrue(exception.getMessage().equals("An OpenTime call failed with rate is not valid for drop frame timecode"));
     }
 
     @Test
@@ -352,7 +347,6 @@ public class RationalTimeTest {
         refValues.add(new Triplet<>(17983d, "00:09:59:13", "00:10:00;01"));
         refValues.add(new Triplet<>(17984d, "00:09:59:14", "00:10:00;02"));
 
-        ErrorStatus errorStatus = new ErrorStatus();
 
         for (Triplet<Double, String, String> refValue : refValues) {
             Double value = refValue.getFirst();
@@ -360,9 +354,9 @@ public class RationalTimeTest {
             String dftc = refValue.getThird();
 
             RationalTime t = new RationalTime(value, 29.97);
-            String toDfTc = t.toTimecode(29.97, IsDropFrameRate.ForceYes, errorStatus);
-            String toTc = t.toTimecode(29.97, IsDropFrameRate.ForceNo, errorStatus);
-            String toAutoTc = t.toTimecode(29.97, IsDropFrameRate.InferFromRate, errorStatus);
+            String toDfTc = t.toTimecode(29.97, IsDropFrameRate.ForceYes);
+            String toTc = t.toTimecode(29.97, IsDropFrameRate.ForceNo);
+            String toAutoTc = t.toTimecode(29.97, IsDropFrameRate.InferFromRate);
 
             /* 29.97 should auto-detect dftc for backward compatibility */
             assertEquals(toDfTc, toAutoTc);
@@ -372,105 +366,105 @@ public class RationalTimeTest {
             assertEquals(tc, toTc);
 
             /* check they convert back */
-            RationalTime t1 = RationalTime.fromTimecode(toDfTc, 29.97, errorStatus);
+            RationalTime t1 = RationalTime.fromTimecode(toDfTc, 29.97);
             assertTrue(t1.equals(t));
 
-            RationalTime t2 = RationalTime.fromTimecode(toTc, 29.97, errorStatus);
+            RationalTime t2 = RationalTime.fromTimecode(toTc, 29.97);
             assertTrue(t2.equals(t));
         }
     }
 
     @Test
     public void testFaultyFormattedTimecode() {
-        ErrorStatus errorStatus = new ErrorStatus();
-        RationalTime t = RationalTime.fromTimecode("01:00:13;23", 24, errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.NON_DROPFRAME_RATE);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            RationalTime t = RationalTime.fromTimecode("01:00:13;23", 24);
+        });
+        assertTrue(exception.getMessage().equals("An OpenTime call failed with rate is not a dropframe rate"));
     }
 
     @Test
     public void testInvalidRateToTimecodeFunctions() {
         RationalTime t = new RationalTime(100, 29.98);
-        ErrorStatus errorStatus = new ErrorStatus();
 
-        String tc = t.toTimecode(29.98, IsDropFrameRate.InferFromRate, errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.INVALID_TIMECODE_RATE);
-
-        tc = t.toTimecode(errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.INVALID_TIMECODE_RATE);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            String tc = t.toTimecode(29.98, IsDropFrameRate.InferFromRate);
+        });
+        String expectedMessage = "An OpenTime call failed with invalid timecode rate";
+        assertTrue(exception.getMessage().equals(expectedMessage));
+        exception = assertThrows(IllegalArgumentException.class, () -> {
+            String tc = t.toTimecode();
+        });
+        assertTrue(exception.getMessage().equals(expectedMessage));
     }
 
     @Test
     public void testTimeString24() {
-        ErrorStatus errorStatus = new ErrorStatus();
-
         String timeString = "00:00:00.041667";
         RationalTime t = new RationalTime(1, 24);
-        RationalTime timeObj = RationalTime.fromTimeString(timeString, 24, errorStatus);
+        RationalTime timeObj = RationalTime.fromTimeString(timeString, 24);
         assertTrue(t.almostEqual(timeObj, 0.001));
         assertEquals(timeObj.getRate(), 24);
 
         timeString = "00:00:01";
         t = new RationalTime(24, 24);
-        timeObj = RationalTime.fromTimeString(timeString, 24, errorStatus);
+        timeObj = RationalTime.fromTimeString(timeString, 24);
         assertTrue(t.almostEqual(timeObj, 0.001));
         assertEquals(timeObj.getRate(), 24);
 
         timeString = "00:01:00";
         t = new RationalTime(24 * 60, 24);
-        timeObj = RationalTime.fromTimeString(timeString, 24, errorStatus);
+        timeObj = RationalTime.fromTimeString(timeString, 24);
         assertTrue(t.almostEqual(timeObj, 0.001));
         assertEquals(timeObj.getRate(), 24);
 
         timeString = "01:00:00";
         t = new RationalTime(24 * 60 * 60, 24);
-        timeObj = RationalTime.fromTimeString(timeString, 24, errorStatus);
+        timeObj = RationalTime.fromTimeString(timeString, 24);
         assertTrue(t.almostEqual(timeObj, 0.001));
         assertEquals(timeObj.getRate(), 24);
 
         timeString = "24:00:00";
         t = new RationalTime(24 * 60 * 60 * 24, 24);
-        timeObj = RationalTime.fromTimeString(timeString, 24, errorStatus);
+        timeObj = RationalTime.fromTimeString(timeString, 24);
         assertTrue(t.almostEqual(timeObj, 0.001));
         assertEquals(timeObj.getRate(), 24);
 
         timeString = "23:59:59.958333";
         t = new RationalTime(24 * 60 * 60 * 24 - 1, 24);
-        timeObj = RationalTime.fromTimeString(timeString, 24, errorStatus);
+        timeObj = RationalTime.fromTimeString(timeString, 24);
         assertTrue(t.almostEqual(timeObj, 0.001));
         assertEquals(timeObj.getRate(), 24);
     }
 
     @Test
     public void testTimeString25() {
-        ErrorStatus errorStatus = new ErrorStatus();
-
         String timeString = "00:00:01";
         RationalTime t = new RationalTime(25, 25);
-        RationalTime timeObj = RationalTime.fromTimeString(timeString, 25, errorStatus);
+        RationalTime timeObj = RationalTime.fromTimeString(timeString, 25);
         assertTrue(t.almostEqual(timeObj, 0.001));
         assertEquals(timeObj.getRate(), 25);
 
         timeString = "00:01:00";
         t = new RationalTime(25 * 60, 25);
-        timeObj = RationalTime.fromTimeString(timeString, 25, errorStatus);
+        timeObj = RationalTime.fromTimeString(timeString, 25);
         assertTrue(t.almostEqual(timeObj, 0.001));
         assertEquals(timeObj.getRate(), 25);
 
         timeString = "01:00:00";
         t = new RationalTime(25 * 60 * 60, 25);
-        timeObj = RationalTime.fromTimeString(timeString, 25, errorStatus);
+        timeObj = RationalTime.fromTimeString(timeString, 25);
         assertTrue(t.almostEqual(timeObj, 0.001));
         assertEquals(timeObj.getRate(), 25);
 
         timeString = "24:00:00";
         t = new RationalTime(25 * 60 * 60 * 24, 25);
-        timeObj = RationalTime.fromTimeString(timeString, 25, errorStatus);
+        timeObj = RationalTime.fromTimeString(timeString, 25);
         assertTrue(t.almostEqual(timeObj, 0.001));
         assertEquals(timeObj.getRate(), 25);
 
         timeString = "23:59:59.92";
         t = new RationalTime(25 * 60 * 60 * 24 - 2, 25);
-        timeObj = RationalTime.fromTimeString(timeString, 25, errorStatus);
+        timeObj = RationalTime.fromTimeString(timeString, 25);
         assertTrue(t.almostEqual(timeObj, 0.001));
         assertEquals(timeObj.getRate(), 25);
     }
@@ -492,9 +486,8 @@ public class RationalTimeTest {
     public void testTimeStringZero() {
         RationalTime t = new RationalTime();
         String timeString = "00:00:00.0";
-        ErrorStatus errorStatus = new ErrorStatus();
 
-        RationalTime timeObj = RationalTime.fromTimeString(timeString, 24, errorStatus);
+        RationalTime timeObj = RationalTime.fromTimeString(timeString, 24);
         assertEquals(timeString, t.toTimeString());
         assertTrue(t.almostEqual(timeObj, 0.001));
     }
@@ -505,9 +498,8 @@ public class RationalTimeTest {
         this number has a leading 0 in the fractional part when converted to
         time string (ie 27.08333)
         */
-        ErrorStatus errorStatus = new ErrorStatus();
         RationalTime rt = new RationalTime(2090, 24);
-        RationalTime compareRt = RationalTime.fromTimeString(rt.toTimeString(), 24, errorStatus);
+        RationalTime compareRt = RationalTime.fromTimeString(rt.toTimeString(), 24);
 //        assertTrue(rt.equals(compareRt));
         // TODO: both are not equal but almost equal. So do we need to check using the almost equal function?
     }
@@ -525,12 +517,11 @@ public class RationalTimeTest {
         }
         assertTrue(cumulativeTime.almostEqual(finalTime, 0.001));
 
-        ErrorStatus errorStatus = new ErrorStatus();
         /* Adding by a non-multiple of 24 */
         for (int fnum = 1113; fnum < finalFrameNumber; fnum += 1113) {
             RationalTime rt = RationalTime.fromFrames(fnum, 24);
             String tc = rt.toTimeString();
-            RationalTime rt2 = RationalTime.fromTimeString(tc, 24, errorStatus);
+            RationalTime rt2 = RationalTime.fromTimeString(tc, 24);
             assertTrue(rt.equals(rt2));
             assertEquals(tc, rt2.toTimeString());
         }
@@ -682,18 +673,17 @@ public class RationalTimeTest {
         String DF_TC = "01:00:02;05";
         String NDF_TC = "00:59:58:17";
         int frames = 107957;
-        ErrorStatus errorStatus = new ErrorStatus();
 
-        String tc1 = (new RationalTime(frames, 29.97).toTimecode(errorStatus));
+        String tc1 = (new RationalTime(frames, 29.97).toTimecode());
         assertEquals(tc1, DF_TC);
 
-        String tc2 = (new RationalTime(frames, 29.97).toTimecode(29.97, IsDropFrameRate.ForceNo, errorStatus));
+        String tc2 = (new RationalTime(frames, 29.97).toTimecode(29.97, IsDropFrameRate.ForceNo));
         assertEquals(tc2, NDF_TC);
 
-        RationalTime t1 = RationalTime.fromTimecode(DF_TC, 29.97, errorStatus);
+        RationalTime t1 = RationalTime.fromTimecode(DF_TC, 29.97);
         assertEquals(t1.getValue(), frames);
 
-        RationalTime t2 = RationalTime.fromTimecode(NDF_TC, 29.97, errorStatus);
+        RationalTime t2 = RationalTime.fromTimecode(NDF_TC, 29.97);
         assertEquals(t2.getValue(), frames);
     }
 }

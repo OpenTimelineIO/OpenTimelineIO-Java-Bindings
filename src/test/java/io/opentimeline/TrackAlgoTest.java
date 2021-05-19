@@ -5,6 +5,7 @@ package io.opentimeline;
 
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
+import io.opentimeline.opentimelineio.exception.*;
 import io.opentimeline.opentimelineio.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +20,7 @@ public class TrackAlgoTest {
     Track sampleTrack = null;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws Exception {
         String sampleTrackStr = "{\n" +
                 "            \"OTIO_SCHEMA\": \"Track.1\",\n" +
                 "            \"children\": [\n" +
@@ -94,19 +95,12 @@ public class TrackAlgoTest {
                 "            \"name\": \"Sequence1\",\n" +
                 "            \"source_range\": null\n" +
                 "        }";
-        ErrorStatus errorStatus = new ErrorStatus();
-        sampleTrack = (Track) SerializableObject.fromJSONString(sampleTrackStr, errorStatus);
-        try {
-            errorStatus.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        sampleTrack = (Track) SerializableObject.fromJSONString(sampleTrackStr);
     }
 
     @Test
-    public void testTrimToExistingRange() {
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertEquals(sampleTrack.getTrimmedRange(errorStatus),
+    public void testTrimToExistingRange() throws Exception {
+        assertEquals(sampleTrack.getTrimmedRange(),
                 new TimeRange(
                         new RationalTime(0, 24),
                         new RationalTime(150, 24)));
@@ -116,11 +110,10 @@ public class TrackAlgoTest {
                 sampleTrack,
                 new TimeRange(
                         new RationalTime(0, 24),
-                        new RationalTime(150, 24)), errorStatus);
+                        new RationalTime(150, 24)));
         // it shouldn't have changed at all
         assertEquals(sampleTrack, trimmed);
         try {
-            errorStatus.close();
             trimmed.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,18 +121,16 @@ public class TrackAlgoTest {
     }
 
     @Test
-    public void testTrimToLongerRange() {
-        ErrorStatus errorStatus = new ErrorStatus();
-
+    public void testTrimToLongerRange() throws Exception {
         // trim to the exact range it already has
         Track trimmed = new Algorithms().trackTrimmedToRange(
                 sampleTrack,
                 new TimeRange(
                         new RationalTime(60, 24),
-                        new RationalTime(90, 24)), errorStatus);
+                        new RationalTime(90, 24)));
         assertNotEquals(sampleTrack, trimmed);
         assertEquals(trimmed.getChildren().size(), 2);
-        assertEquals(trimmed.getTrimmedRange(errorStatus),
+        assertEquals(trimmed.getTrimmedRange(),
                 new TimeRange(
                         new RationalTime(0, 24),
                         new RationalTime(90, 24)));
@@ -147,7 +138,7 @@ public class TrackAlgoTest {
         // did clipB get trimmed?
         List<Composable> trimmedChildren = trimmed.getChildren();
         assertEquals(trimmedChildren.get(0).getName(), "B");
-        assertEquals(((Clip) trimmedChildren.get(0)).getTrimmedRange(errorStatus),
+        assertEquals(((Clip) trimmedChildren.get(0)).getTrimmedRange(),
                 new TimeRange(
                         new RationalTime(10, 24),
                         new RationalTime(40, 24)));
@@ -156,25 +147,22 @@ public class TrackAlgoTest {
         assertEquals(trimmedChildren.get(1), sampleTrack.getChildren().get(2));
         try {
             trimmed.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testTrimEnd() {
-        ErrorStatus errorStatus = new ErrorStatus();
-
+    public void testTrimEnd() throws Exception {
         // trim off the end (clip C and part of B)
         Track trimmed = new Algorithms().trackTrimmedToRange(
                 sampleTrack,
                 new TimeRange(
                         new RationalTime(0, 24),
-                        new RationalTime(90, 24)), errorStatus);
+                        new RationalTime(90, 24)));
         assertNotEquals(sampleTrack, trimmed);
         assertEquals(trimmed.getChildren().size(), 2);
-        assertEquals(trimmed.getTrimmedRange(errorStatus),
+        assertEquals(trimmed.getTrimmedRange(),
                 new TimeRange(
                         new RationalTime(0, 24),
                         new RationalTime(90, 24)));
@@ -185,22 +173,20 @@ public class TrackAlgoTest {
 
         // did clip B get trimmed?
         assertEquals(trimmedChildren.get(1).getName(), "B");
-        assertEquals(((Clip) trimmedChildren.get(1)).getTrimmedRange(errorStatus),
+        assertEquals(((Clip) trimmedChildren.get(1)).getTrimmedRange(),
                 new TimeRange(
                         new RationalTime(0, 24),
                         new RationalTime(40, 24)));
         try {
             trimmed.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testTrimWithTransitions() {
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertEquals(sampleTrack.getDuration(errorStatus),
+    public void testTrimWithTransitions() throws Exception {
+        assertEquals(sampleTrack.getDuration(),
                 new RationalTime(150, 24));
         assertEquals(sampleTrack.getChildren().size(), 3);
 
@@ -209,33 +195,37 @@ public class TrackAlgoTest {
                 .setInOffset(new RationalTime(12, 24))
                 .setOutOffset(new RationalTime(20, 24))
                 .build();
-        assertTrue(sampleTrack.insertChild(1, transition, errorStatus));
+        assertTrue(sampleTrack.insertChild(1, transition));
         assertEquals(sampleTrack.getChildren().size(), 4);
-        assertEquals(sampleTrack.getDuration(errorStatus),
+        assertEquals(sampleTrack.getDuration(),
                 new RationalTime(150, 24));
 
-        // if you try to sever a Transition in the middle it should fail
+        Exception exception = assertThrows(TransitionTrimException.class, () -> {
+            // if you try to sever a Transition in the middle it should fail
+            Track trimmed = new Algorithms().trackTrimmedToRange(
+                    sampleTrack,
+                    new TimeRange(
+                            new RationalTime(5, 24),
+                            new RationalTime(50, 24)));
+        });
+        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: cannot trim transition: " +
+                "Cannot trim in the middle of a transition"));
+
+        exception = assertThrows(TransitionTrimException.class, () -> {
+            Track trimmed = new Algorithms().trackTrimmedToRange(
+                    sampleTrack,
+                    new TimeRange(
+                            new RationalTime(45, 24),
+                            new RationalTime(50, 24)));
+        });
+        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: cannot trim transition: " +
+                "Cannot trim in the middle of a transition"));
+
         Track trimmed = new Algorithms().trackTrimmedToRange(
                 sampleTrack,
                 new TimeRange(
-                        new RationalTime(5, 24),
-                        new RationalTime(50, 24)), errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.CANNOT_TRIM_TRANSITION);
-        assertNull(trimmed);
-
-        trimmed = new Algorithms().trackTrimmedToRange(
-                sampleTrack,
-                new TimeRange(
-                        new RationalTime(45, 24),
-                        new RationalTime(50, 24)), errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.CANNOT_TRIM_TRANSITION);
-        assertNull(trimmed);
-
-        trimmed = new Algorithms().trackTrimmedToRange(
-                sampleTrack,
-                new TimeRange(
                         new RationalTime(25, 24),
-                        new RationalTime(50, 24)), errorStatus);
+                        new RationalTime(50, 24)));
         assertNotEquals(sampleTrack, trimmed);
 
         String expected = "{\n" +
@@ -307,10 +297,9 @@ public class TrackAlgoTest {
                 "            \"name\": \"Sequence1\",\n" +
                 "            \"source_range\": null\n" +
                 "        }";
-        SerializableObject expectedObj = SerializableObject.fromJSONString(expected, errorStatus);
+        SerializableObject expectedObj = SerializableObject.fromJSONString(expected);
         assertEquals(expectedObj, trimmed);
         try {
-            errorStatus.close();
             trimmed.close();
             expectedObj.close();
         } catch (Exception e) {

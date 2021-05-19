@@ -6,6 +6,7 @@ package io.opentimeline;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -24,18 +25,17 @@ public class StackTest {
     }
 
     @Test
-    public void testSerialize() {
+    public void testSerialize() throws Exception {
         Stack stack = new Stack.StackBuilder()
                 .setName("test")
                 .build();
         Clip clip = new Clip.ClipBuilder()
                 .setName("testClip")
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(stack.appendChild(clip, errorStatus));
+        assertTrue(stack.appendChild(clip));
 
-        String encoded = stack.toJSONString(errorStatus);
-        SerializableObject decoded = SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = stack.toJSONString();
+        SerializableObject decoded = SerializableObject.fromJSONString(encoded);
         assertEquals(decoded, stack);
         Stack decodedStack = (Stack) decoded;
         assertNotNull(decodedStack.getChildren().get(0).parent());
@@ -93,7 +93,7 @@ public class StackTest {
     }
 
     @Test
-    public void testRangeOfChild() {
+    public void testRangeOfChild() throws ChildAlreadyParentedException, CannotComputeAvailableRangeException, NotAChildException, ObjectWithoutDurationException {
         Clip clip1 = new Clip.ClipBuilder()
                 .setName("clip1")
                 .setSourceRange(
@@ -122,41 +122,40 @@ public class StackTest {
         children.add(clip1);
         children.add(clip2);
         children.add(clip3);
-        ErrorStatus errorStatus = new ErrorStatus();
         Stack stack = new Stack.StackBuilder()
                 .setName("foo")
                 .build();
-        stack.setChildren(children, errorStatus);
+        stack.setChildren(children);
 
-        assertEquals(stack.getDuration(errorStatus), new RationalTime(50, 24));
+        assertEquals(stack.getDuration(), new RationalTime(50, 24));
 
         assertEquals(
-                stack.rangeOfChildAtIndex(0, errorStatus)
+                stack.rangeOfChildAtIndex(0)
                         .getStartTime(), new RationalTime());
         assertEquals(
-                stack.rangeOfChildAtIndex(1, errorStatus)
+                stack.rangeOfChildAtIndex(1)
                         .getStartTime(), new RationalTime());
         assertEquals(
-                stack.rangeOfChildAtIndex(2, errorStatus)
+                stack.rangeOfChildAtIndex(2)
                         .getStartTime(), new RationalTime());
 
         assertEquals(
-                stack.rangeOfChildAtIndex(0, errorStatus)
+                stack.rangeOfChildAtIndex(0)
                         .getDuration(), new RationalTime(50, 24));
         assertEquals(
-                stack.rangeOfChildAtIndex(1, errorStatus)
+                stack.rangeOfChildAtIndex(1)
                         .getDuration(), new RationalTime(50, 24));
         assertEquals(
-                stack.rangeOfChildAtIndex(2, errorStatus)
+                stack.rangeOfChildAtIndex(2)
                         .getDuration(), new RationalTime(50, 24));
 
-        assertEquals(stack.rangeOfChildAtIndex(2, errorStatus)
+        assertEquals(stack.rangeOfChildAtIndex(2)
                 , stack.getRangeOfChild(
-                        stack.getChildren().get(2), errorStatus));
+                        stack.getChildren().get(2)));
     }
 
     @Test
-    public void testRangeOfChildWithDuration() {
+    public void testRangeOfChildWithDuration() throws NotAChildException, ChildAlreadyParentedException, ObjectWithoutDurationException, CannotComputeAvailableRangeException, InvalidTimeRangeException {
 
         TimeRange stSourceRange = new TimeRange(
                 new RationalTime(5, 24),
@@ -194,43 +193,40 @@ public class StackTest {
         children.add(clip1);
         children.add(clip2);
         children.add(clip3);
-        ErrorStatus errorStatus = new ErrorStatus();
-        st.setChildren(children, errorStatus);
+        st.setChildren(children);
 
         // getRangeOfChild always returns the pre-trimmed range
         // To get post-trim range call getTrimmedRangeOfChild
-        assertEquals(st.getRangeOfChild(st.getChildren().get(0), errorStatus)
+        assertEquals(st.getRangeOfChild(st.getChildren().get(0))
                 , new TimeRange(
                         new RationalTime(0, 24),
                         new RationalTime(50, 24)));
 
         assertEquals(st.getTransformedTime(
                 new RationalTime(25, 24),
-                (Item) st.getChildren().get(0),
-                errorStatus), new RationalTime(125, 24));
+                (Item) st.getChildren().get(0)), new RationalTime(125, 24));
         assertEquals(
                 (((Clip) st.getChildren().get(0)).getTransformedTime(
                         new RationalTime(125, 24),
-                        st,
-                        errorStatus)), new RationalTime(25, 24));
+                        st)), new RationalTime(25, 24));
 
-        assertEquals(st.trimmedRangeOfChildAtIndex(0, errorStatus), st.getSourceRange());
+        assertEquals(st.trimmedRangeOfChildAtIndex(0), st.getSourceRange());
 
         assertEquals(((Clip) st.getChildren().get(0))
-                        .getTrimmedRangeInParent(errorStatus),
-                st.getTrimmedRangeOfChild(st.getChildren().get(0), errorStatus));
+                        .getTrimmedRangeInParent(),
+                st.getTrimmedRangeOfChild(st.getChildren().get(0)));
 
         // same test but via iteration
         for (int i = 0; i < st.getChildren().size(); i++) {
             assertEquals(
                     ((Clip) st.getChildren().get(i))
-                            .getTrimmedRangeInParent(errorStatus),
-                    st.getTrimmedRangeOfChild(st.getChildren().get(i), errorStatus));
+                            .getTrimmedRangeInParent(),
+                    st.getTrimmedRangeOfChild(st.getChildren().get(i)));
         }
     }
 
     @Test
-    public void testTransformedTime() {
+    public void testTransformedTime() throws ChildAlreadyParentedException, NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException{
 
         TimeRange stSourceRange = new TimeRange(
                 new RationalTime(5, 24),
@@ -268,8 +264,7 @@ public class StackTest {
         children.add(clip1);
         children.add(clip2);
         children.add(clip3);
-        ErrorStatus errorStatus = new ErrorStatus();
-        st.setChildren(children, errorStatus);
+        st.setChildren(children);
         children = st.getChildren();
         assertEquals(children.get(0).getName(), "clip1");
         assertEquals(children.get(1).getName(), "clip2");
@@ -277,47 +272,47 @@ public class StackTest {
 
         RationalTime testTime = new RationalTime(0, 24);
         assertEquals(
-                st.getTransformedTime(testTime, clip1, errorStatus),
+                st.getTransformedTime(testTime, clip1),
                 new RationalTime(100, 24));
 
         // ensure that transformed_time does not edit in place
         assertEquals(testTime, new RationalTime(0, 24));
 
         assertEquals(
-                st.getTransformedTime(new RationalTime(0, 24), clip2, errorStatus),
+                st.getTransformedTime(new RationalTime(0, 24), clip2),
                 new RationalTime(101, 24));
         assertEquals(
-                st.getTransformedTime(new RationalTime(0, 24), clip3, errorStatus),
+                st.getTransformedTime(new RationalTime(0, 24), clip3),
                 new RationalTime(102, 24));
 
         assertEquals(
-                st.getTransformedTime(new RationalTime(50, 24), clip1, errorStatus),
+                st.getTransformedTime(new RationalTime(50, 24), clip1),
                 new RationalTime(150, 24));
         assertEquals(
-                st.getTransformedTime(new RationalTime(50, 24), clip2, errorStatus),
+                st.getTransformedTime(new RationalTime(50, 24), clip2),
                 new RationalTime(151, 24));
         assertEquals(
-                st.getTransformedTime(new RationalTime(50, 24), clip3, errorStatus),
+                st.getTransformedTime(new RationalTime(50, 24), clip3),
                 new RationalTime(152, 24));
 
         assertEquals(
-                clip1.getTransformedTime(new RationalTime(100, 24), st, errorStatus),
+                clip1.getTransformedTime(new RationalTime(100, 24), st),
                 new RationalTime(0, 24));
         assertEquals(
-                clip2.getTransformedTime(new RationalTime(101, 24), st, errorStatus),
+                clip2.getTransformedTime(new RationalTime(101, 24), st),
                 new RationalTime(0, 24));
         assertEquals(
-                clip3.getTransformedTime(new RationalTime(102, 24), st, errorStatus),
+                clip3.getTransformedTime(new RationalTime(102, 24), st),
                 new RationalTime(0, 24));
 
         assertEquals(
-                clip1.getTransformedTime(new RationalTime(150, 24), st, errorStatus),
+                clip1.getTransformedTime(new RationalTime(150, 24), st),
                 new RationalTime(50, 24));
         assertEquals(
-                clip2.getTransformedTime(new RationalTime(151, 24), st, errorStatus),
+                clip2.getTransformedTime(new RationalTime(151, 24), st),
                 new RationalTime(50, 24));
         assertEquals(
-                clip3.getTransformedTime(new RationalTime(152, 24), st, errorStatus),
+                clip3.getTransformedTime(new RationalTime(152, 24), st),
                 new RationalTime(50, 24));
     }
 }

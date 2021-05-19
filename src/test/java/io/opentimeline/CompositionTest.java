@@ -4,6 +4,7 @@
 package io.opentimeline;
 
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -17,20 +18,18 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CompositionTest {
 
     @Test
-    public void testConstructor() {
+    public void testConstructor() throws ChildAlreadyParentedException {
         Item item = new Item.ItemBuilder().build();
         Composition composition = new Composition.CompositionBuilder()
                 .setName("test")
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(composition.appendChild(item, errorStatus));
+        assertTrue(composition.appendChild(item));
         assertEquals(composition.getName(), "test");
         assertTrue(composition.getChildren().get(0).isEquivalentTo(item));
         assertEquals(composition.getCompositionKind(), "Composition");
         try {
             item.close();
             composition.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,7 +53,7 @@ public class CompositionTest {
     }
 
     @Test
-    public void testEquality() {
+    public void testEquality() throws ChildAlreadyParentedException {
         Composition c0 = new Composition.CompositionBuilder().build();
         Composition c00 = new Composition.CompositionBuilder().build();
         assertTrue(c0.isEquivalentTo(c00));
@@ -69,12 +68,10 @@ public class CompositionTest {
                 .setName("C")
                 .build();
 
-        ErrorStatus errorStatus = new ErrorStatus();
-
         Composition co1 = new Composition.CompositionBuilder().build();
-        assertTrue(co1.appendChild(a, errorStatus));
-        assertTrue(co1.appendChild(b, errorStatus));
-        assertTrue(co1.appendChild(c, errorStatus));
+        assertTrue(co1.appendChild(a));
+        assertTrue(co1.appendChild(b));
+        assertTrue(co1.appendChild(c));
 
         Item x = new Item.ItemBuilder()
                 .setName("X")
@@ -87,9 +84,9 @@ public class CompositionTest {
                 .build();
 
         Composition co2 = new Composition.CompositionBuilder().build();
-        assertTrue(co2.appendChild(x, errorStatus));
-        assertTrue(co2.appendChild(y, errorStatus));
-        assertTrue(co2.appendChild(z, errorStatus));
+        assertTrue(co2.appendChild(x));
+        assertTrue(co2.appendChild(y));
+        assertTrue(co2.appendChild(z));
 
         Item a2 = new Item.ItemBuilder()
                 .setName("A")
@@ -102,9 +99,9 @@ public class CompositionTest {
                 .build();
 
         Composition co3 = new Composition.CompositionBuilder().build();
-        assertTrue(co2.appendChild(a2, errorStatus));
-        assertTrue(co2.appendChild(b2, errorStatus));
-        assertTrue(co2.appendChild(c2, errorStatus));
+        assertTrue(co2.appendChild(a2));
+        assertTrue(co2.appendChild(b2));
+        assertTrue(co2.appendChild(c2));
 
         assertNotEquals(co1.getNativeManager().nativeHandle, co2.getNativeManager().nativeHandle);
         assertFalse(co1.isEquivalentTo(co2));
@@ -118,7 +115,6 @@ public class CompositionTest {
             c.close();
             b.close();
             a.close();
-            errorStatus.close();
             co1.close();
             z.close();
             y.close();
@@ -134,7 +130,7 @@ public class CompositionTest {
     }
 
     @Test
-    public void testReplacingChildren() {
+    public void testReplacingChildren() throws ChildAlreadyParentedException {
         Item a = new Item.ItemBuilder()
                 .setName("A")
                 .build();
@@ -145,17 +141,16 @@ public class CompositionTest {
                 .setName("C")
                 .build();
         Composition co = new Composition.CompositionBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(co.appendChild(a, errorStatus));
-        assertTrue(co.appendChild(b, errorStatus));
+        assertTrue(co.appendChild(a));
+        assertTrue(co.appendChild(b));
         List<Composable> children = co.getChildren();
         assertEquals(children.size(), 2);
         assertTrue(children.get(0).isEquivalentTo(a));
         assertTrue(children.get(1).isEquivalentTo(b));
-        assertTrue(co.removeChild(1, errorStatus));
+        assertTrue(co.removeChild(1));
         children = co.getChildren();
         assertEquals(children.size(), 1);
-        assertTrue(co.setChild(0, c, errorStatus));
+        assertTrue(co.setChild(0, c));
         children = co.getChildren();
         assertEquals(children.size(), 1);
         assertTrue(children.get(0).isEquivalentTo(c));
@@ -165,7 +160,7 @@ public class CompositionTest {
         children = new ArrayList<>();
         children.add(a);
         children.add(b);
-        co.setChildren(children, errorStatus);
+        co.setChildren(children);
         children = co.getChildren();
         assertEquals(children.size(), 2);
         assertTrue(children.get(0).isEquivalentTo(a));
@@ -179,7 +174,7 @@ public class CompositionTest {
         children.add(c);
         children.add(b);
         children.add(a);
-        co.setChildren(children, errorStatus);
+        co.setChildren(children);
         children = co.getChildren();
         assertEquals(children.size(), 3);
         assertTrue(children.get(0).isEquivalentTo(c));
@@ -191,69 +186,59 @@ public class CompositionTest {
             b.close();
             c.close();
             co.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testIsParentOf() {
+    public void testIsParentOf() throws NotAChildException, ChildAlreadyParentedException{
         Composition co = new Composition.CompositionBuilder().build();
         Composition co2 = new Composition.CompositionBuilder().build();
         assertFalse(co.isParentOf(co2));
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(co.appendChild(co2, errorStatus));
+        assertTrue(co.appendChild(co2));
         assertTrue(co.isParentOf(co2));
         try {
             co.close();
             co2.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testParentManip() {
+    public void testParentManip() throws ChildAlreadyParentedException {
         Item it = new Item.ItemBuilder().build();
         Composition co = new Composition.CompositionBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(co.appendChild(it, errorStatus));
+        assertTrue(co.appendChild(it));
         assertTrue(it.parent().isEquivalentTo(co));
         try {
             it.close();
             co.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testMoveChild() {
+    public void testMoveChild() throws ChildAlreadyParentedException {
         Item it = new Item.ItemBuilder().build();
         Composition co = new Composition.CompositionBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(co.appendChild(it, errorStatus));
+        assertTrue(co.appendChild(it));
         assertTrue(it.parent().isEquivalentTo(co));
 
         Composition co2 = new Composition.CompositionBuilder().build();
-        assertFalse(co2.appendChild(it, errorStatus));
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.CHILD_ALREADY_PARENTED);
-        try {
-            errorStatus.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        errorStatus = new ErrorStatus();
-        assertTrue(co.removeChild(0, errorStatus));
-        assertTrue(co2.appendChild(it, errorStatus));
+        Exception exception = assertThrows(ChildAlreadyParentedException.class, () -> {
+            co2.appendChild(it);
+        });
+        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: child already has a parent"));
+
+        assertTrue(co.removeChild(0));
+        assertTrue(co2.appendChild(it));
         assertTrue(it.parent().isEquivalentTo(co2));
         try {
             it.close();
             co.close();
-            errorStatus.close();
             co2.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -261,11 +246,10 @@ public class CompositionTest {
     }
 
     @Test
-    public void testEachChildRecursion() {
+    public void testEachChildRecursion() throws ChildAlreadyParentedException, NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         Timeline tl = new Timeline.TimelineBuilder()
                 .setName("TL")
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
         Track tr1 = new Track.TrackBuilder()
                 .setName("tr1")
                 .build();
@@ -278,9 +262,9 @@ public class CompositionTest {
         Clip c3 = new Clip.ClipBuilder()
                 .setName("c3")
                 .build();
-        assertTrue(tr1.appendChild(c1, errorStatus));
-        assertTrue(tr1.appendChild(c2, errorStatus));
-        assertTrue(tr1.appendChild(c3, errorStatus));
+        assertTrue(tr1.appendChild(c1));
+        assertTrue(tr1.appendChild(c2));
+        assertTrue(tr1.appendChild(c3));
 
         Track tr2 = new Track.TrackBuilder()
                 .setName("tr2")
@@ -291,22 +275,22 @@ public class CompositionTest {
         Clip c5 = new Clip.ClipBuilder()
                 .setName("c5")
                 .build();
-        assertTrue(tr2.appendChild(c4, errorStatus));
-        assertTrue(tr2.appendChild(c5, errorStatus));
+        assertTrue(tr2.appendChild(c4));
+        assertTrue(tr2.appendChild(c5));
 
         Stack tlStack = new Stack.StackBuilder().build();
-        assertTrue(tlStack.appendChild(tr1, errorStatus));
-        assertTrue(tlStack.appendChild(tr2, errorStatus));
+        assertTrue(tlStack.appendChild(tr1));
+        assertTrue(tlStack.appendChild(tr2));
         tl.setTracks(tlStack);
 
         Stack st = new Stack.StackBuilder()
                 .setName("st")
                 .build();
-        assertTrue(tr2.appendChild(st, errorStatus));
+        assertTrue(tr2.appendChild(st));
         Clip c6 = new Clip.ClipBuilder()
                 .setName("c6")
                 .build();
-        assertTrue(st.appendChild(c6, errorStatus));
+        assertTrue(st.appendChild(c6));
 
         Track tr3 = new Track.TrackBuilder()
                 .setName("tr3")
@@ -317,9 +301,9 @@ public class CompositionTest {
         Clip c8 = new Clip.ClipBuilder()
                 .setName("c8")
                 .build();
-        assertTrue(tr3.appendChild(c7, errorStatus));
-        assertTrue(tr3.appendChild(c8, errorStatus));
-        assertTrue(st.appendChild(tr3, errorStatus));
+        assertTrue(tr3.appendChild(c7));
+        assertTrue(tr3.appendChild(c8));
+        assertTrue(st.appendChild(tr3));
 
         tlStack = tl.getTracks();
         assertEquals(tlStack.getChildren().size(), 2);
@@ -328,25 +312,24 @@ public class CompositionTest {
         assertEquals(st.getChildren().size(), 2);
         assertEquals(tr3.getChildren().size(), 2);
 
-        List<Clip> clips = tl.eachClip(errorStatus).collect(Collectors.toList());
+        List<Clip> clips = tl.eachClip().collect(Collectors.toList());
         List<Clip> clipsCompare = Arrays.asList(c1, c2, c3, c4, c5, c6, c7, c8);
         assertEquals(clips, clipsCompare);
 
-        List<Track> allTracks = tl.eachChild(Track.class, errorStatus).collect(Collectors.toList());
+        List<Track> allTracks = tl.eachChild(Track.class).collect(Collectors.toList());
         List<Track> tracksCompare = Arrays.asList(tr1, tr2, tr3);
         assertEquals(allTracks, tracksCompare);
 
-        List<Stack> allStacks = tl.eachChild(Stack.class, errorStatus).collect(Collectors.toList());
+        List<Stack> allStacks = tl.eachChild(Stack.class).collect(Collectors.toList());
         List<Stack> stacksCompare = Collections.singletonList(st);
         assertEquals(allStacks, stacksCompare);
 
-        List<Composable> allChildren = tl.eachChild(null, Composable.class, errorStatus).collect(Collectors.toList());
+        List<Composable> allChildren = tl.eachChild(null, Composable.class).collect(Collectors.toList());
         List<Composable> childrenCompare = Arrays.asList(tr1, c1, c2, c3, tr2, c4, c5, st, c6, tr3, c7, c8);
         assertEquals(allChildren, childrenCompare);
 
         try {
             tl.close();
-            errorStatus.close();
             c1.close();
             c2.close();
             c3.close();
@@ -366,26 +349,24 @@ public class CompositionTest {
     }
 
     @Test
-    public void testRemoveActuallyRemoves() {
+    public void testRemoveActuallyRemoves() throws ChildAlreadyParentedException {
         Track track = new Track.TrackBuilder().build();
         Clip clip = new Clip.ClipBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(track.appendChild(clip, errorStatus));
+        assertTrue(track.appendChild(clip));
         assertTrue(track.getChildren().get(0).isEquivalentTo(clip));
         // delete by index
-        assertTrue(track.removeChild(0, errorStatus));
+        assertTrue(track.removeChild(0));
         assertEquals(track.getChildren().size(), 0);
-        assertTrue(track.appendChild(clip, errorStatus));
+        assertTrue(track.appendChild(clip));
         Clip clip2 = new Clip.ClipBuilder()
                 .setName("test")
                 .build();
-        assertTrue(track.setChild(0, clip2, errorStatus));
+        assertTrue(track.setChild(0, clip2));
         assertTrue(track.getChildren().get(0).isEquivalentTo(clip2));
         assertFalse(track.getChildren().get(0).isEquivalentTo(clip));
         try {
             track.close();
             clip.close();
-            errorStatus.close();
             clip2.close();
         } catch (Exception e) {
             e.printStackTrace();

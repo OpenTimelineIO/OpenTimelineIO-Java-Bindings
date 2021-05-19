@@ -6,6 +6,7 @@ package io.opentimeline;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ public class TimelineAlgoTest {
     Timeline timeline = null;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws Exception {
         String tlString = "{\n" +
                 "                \"OTIO_SCHEMA\": \"Timeline.1\",\n" +
                 "                \"metadata\": {},\n" +
@@ -109,22 +110,15 @@ public class TimelineAlgoTest {
                 "                    \"source_range\": null\n" +
                 "                }\n" +
                 "            }";
-        ErrorStatus errorStatus = new ErrorStatus();
-        timeline = (Timeline) SerializableObject.fromJSONString(tlString, errorStatus);
-        try {
-            errorStatus.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        timeline = (Timeline) SerializableObject.fromJSONString(tlString);
     }
 
     @Test
-    public void testTrimToExistingRange() {
-        ErrorStatus errorStatus = new ErrorStatus();
+    public void testTrimToExistingRange() throws Exception{
         Stack stack = timeline.getTracks();
         List<Composable> tracks = stack.getChildren();
         Track originalTrack = (Track) tracks.get(0);
-        assertEquals(originalTrack.getTrimmedRange(errorStatus),
+        assertEquals(originalTrack.getTrimmedRange(),
                 new TimeRange(
                         new RationalTime(0, 24),
                         new RationalTime(150, 24)));
@@ -133,15 +127,13 @@ public class TimelineAlgoTest {
         Timeline trimmed = new Algorithms().timelineTrimmedToRange(timeline,
                 new TimeRange(
                         new RationalTime(0, 24),
-                        new RationalTime(150, 24)),
-                errorStatus);
+                        new RationalTime(150, 24)));
 
         // it shouldn't have changes at all
         assertEquals(timeline, trimmed);
 
         try {
             trimmed.close();
-            errorStatus.close();
             originalTrack.close();
             stack.close();
         } catch (Exception e) {
@@ -150,30 +142,25 @@ public class TimelineAlgoTest {
     }
 
     @Test
-    public void testTrimToLongerRange() {
-        ErrorStatus errorStatus = new ErrorStatus();
-
+    public void testTrimToLongerRange() throws Exception {
         // trim to a larger range
         Timeline trimmed = new Algorithms().timelineTrimmedToRange(timeline,
                 new TimeRange(
                         new RationalTime(-10, 24),
-                        new RationalTime(160, 24)),
-                errorStatus);
+                        new RationalTime(160, 24)));
 
         // it shouldn't have changes at all
         assertEquals(timeline, trimmed);
 
         try {
             trimmed.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testTrimFront() {
-        ErrorStatus errorStatus = new ErrorStatus();
+    public void testTrimFront() throws Exception {
         Stack stack = timeline.getTracks();
         List<Composable> tracks = stack.getChildren();
         Track originalTrack = (Track) tracks.get(0);
@@ -182,8 +169,7 @@ public class TimelineAlgoTest {
         Timeline trimmed = new Algorithms().timelineTrimmedToRange(timeline,
                 new TimeRange(
                         new RationalTime(60, 24),
-                        new RationalTime(90, 24)),
-                errorStatus);
+                        new RationalTime(90, 24)));
         // it shouldn't have changes at all
         assertNotEquals(timeline, trimmed);
         try {
@@ -196,14 +182,14 @@ public class TimelineAlgoTest {
         tracks = stack.getChildren();
         Track trimmedTrack = (Track) tracks.get(0);
         assertEquals(trimmedTrack.getChildren().size(), 2);
-        assertEquals(trimmedTrack.getTrimmedRange(errorStatus),
+        assertEquals(trimmedTrack.getTrimmedRange(),
                 new TimeRange(
                         new RationalTime(0, 24),
                         new RationalTime(90, 24)));
 
         // did clip B get trimmed?
         assertEquals(trimmedTrack.getChildren().get(0).getName(), "B");
-        assertEquals(((Clip) trimmedTrack.getChildren().get(0)).getTrimmedRange(errorStatus),
+        assertEquals(((Clip) trimmedTrack.getChildren().get(0)).getTrimmedRange(),
                 new TimeRange(
                         new RationalTime(10, 24),
                         new RationalTime(40, 24)));
@@ -214,7 +200,6 @@ public class TimelineAlgoTest {
         try {
             trimmed.close();
             trimmedTrack.close();
-            errorStatus.close();
             originalTrack.close();
             stack.close();
         } catch (Exception e) {
@@ -223,53 +208,43 @@ public class TimelineAlgoTest {
     }
 
     @Test
-    public void testTrimWithTransitions() {
-        ErrorStatus errorStatus = new ErrorStatus();
+    public void testTrimWithTransitions() throws Exception {
         Stack stack = timeline.getTracks();
         List<Composable> tracks = stack.getChildren();
         Track originalTrack = (Track) tracks.get(0);
 
-        assertEquals(timeline.getDuration(errorStatus), new RationalTime(150, 24));
+        assertEquals(timeline.getDuration(), new RationalTime(150, 24));
         assertEquals(originalTrack.getChildren().size(), 3);
 
         Transition tr = new Transition.TransitionBuilder()
                 .setInOffset(new RationalTime(12, 24))
                 .setOutOffset(new RationalTime(20, 24))
                 .build();
-        assertTrue(originalTrack.insertChild(1, tr, errorStatus));
+        assertTrue(originalTrack.insertChild(1, tr));
         assertEquals(originalTrack.getChildren().size(), 4);
-        assertEquals(timeline.getDuration(errorStatus), new RationalTime(150, 24));
+        assertEquals(timeline.getDuration(), new RationalTime(150, 24));
 
-        // if you try to sever a Transition in the middle it should fail
+        Exception exception = assertThrows(TransitionTrimException.class, () -> {
+            // if you try to sever a Transition in the middle it should fail
+            Timeline trimmed = new Algorithms().timelineTrimmedToRange(timeline,
+                    new TimeRange(
+                            new RationalTime(5, 24),
+                            new RationalTime(50, 24)));
+        });
+        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: cannot trim transition: Cannot trim in the middle of a transition"));
+
+        exception = assertThrows(TransitionTrimException.class, () -> {
+            Timeline trimmed = new Algorithms().timelineTrimmedToRange(timeline,
+                    new TimeRange(
+                            new RationalTime(45, 24),
+                            new RationalTime(50, 24)));
+        });
+        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: cannot trim transition: Cannot trim in the middle of a transition"));
+
         Timeline trimmed = new Algorithms().timelineTrimmedToRange(timeline,
                 new TimeRange(
-                        new RationalTime(5, 24),
-                        new RationalTime(50, 24)),
-                errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.CANNOT_TRIM_TRANSITION);
-        try {
-            errorStatus.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        errorStatus = new ErrorStatus();
-        trimmed = new Algorithms().timelineTrimmedToRange(timeline,
-                new TimeRange(
-                        new RationalTime(45, 24),
-                        new RationalTime(50, 24)),
-                errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.CANNOT_TRIM_TRANSITION);
-        try {
-            errorStatus.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        errorStatus = new ErrorStatus();
-        trimmed = new Algorithms().timelineTrimmedToRange(timeline,
-                new TimeRange(
                         new RationalTime(25, 24),
-                        new RationalTime(50, 24)),
-                errorStatus);
+                        new RationalTime(50, 24)));
         assertNotEquals(timeline, trimmed);
 
         String expectedStr = "{\n" +
@@ -357,14 +332,13 @@ public class TimelineAlgoTest {
                 "                }\n" +
                 "            }";
 
-        Timeline expected = (Timeline) SerializableObject.fromJSONString(expectedStr, errorStatus);
+        Timeline expected = (Timeline) SerializableObject.fromJSONString(expectedStr);
 
         assertEquals(expected, trimmed);
 
         try {
             trimmed.close();
             expected.close();
-            errorStatus.close();
             originalTrack.close();
             stack.close();
         } catch (Exception e) {

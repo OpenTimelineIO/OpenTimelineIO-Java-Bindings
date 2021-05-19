@@ -42,10 +42,10 @@ JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Composable_parent
 /*
  * Class:     io_opentimeline_opentimelineio_Composable
  * Method:    getDuration
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/RationalTime;
+ * Signature: ()Lio/opentimeline/opentime/RationalTime;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Composable_getDuration
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

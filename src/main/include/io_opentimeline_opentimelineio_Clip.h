@@ -34,10 +34,10 @@ JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Clip_getMediaRefer
 /*
  * Class:     io_opentimeline_opentimelineio_Clip
  * Method:    getAvailableRange
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Clip_getAvailableRange
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

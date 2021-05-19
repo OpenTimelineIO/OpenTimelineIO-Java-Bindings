@@ -7,6 +7,7 @@ import io.opentimeline.OTIONative;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.util.Pair;
+import io.opentimeline.opentimelineio.exception.*;
 
 /**
  * An ImageSequenceReference refers to a numbered series of single-frame image files.
@@ -258,11 +259,11 @@ public class ImageSequenceReference extends MediaReference {
 
     public native int getNumberOfImagesInSequence();
 
-    public native int getFrameForTime(RationalTime rationalTime, ErrorStatus errorStatus);
+    public native int getFrameForTime(RationalTime rationalTime) throws InvalidTimeRangeException;
 
-    public native String getTargetURLForImageNumber(int imageNumber, ErrorStatus errorStatus);
+    public native String getTargetURLForImageNumber(int imageNumber) throws IndexOutOfBoundsException;
 
-    public native RationalTime presentationTimeForImageNumber(int imageNumber, ErrorStatus errorStatus);
+    public native RationalTime presentationTimeForImageNumber(int imageNumber) throws IndexOutOfBoundsException;
 
     /**
      * Generates a target url for a frame where `symbol` is used in place
@@ -285,12 +286,11 @@ public class ImageSequenceReference extends MediaReference {
      * the given time range in the reference.
      *
      * @param timeRange   range fore which first and last frame numbers are to be found
-     * @param errorStatus errorStatus to report error while fetching frame numbers
      * @return pair of frame numbers
      */
-    public Pair<Integer, Integer> getFrameRangeForTimeRange(TimeRange timeRange, ErrorStatus errorStatus) {
-        return new Pair<>(this.getFrameForTime(timeRange.getStartTime(), errorStatus),
-                this.getFrameForTime(timeRange.endTimeInclusive(), errorStatus));
+    public Pair<Integer, Integer> getFrameRangeForTimeRange(TimeRange timeRange) throws InvalidTimeRangeException {
+        return new Pair<>(this.getFrameForTime(timeRange.getStartTime()),
+                this.getFrameForTime(timeRange.endTimeInclusive()));
     }
 
     @Override

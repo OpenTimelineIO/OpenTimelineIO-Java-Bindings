@@ -83,20 +83,16 @@ Java_io_opentimeline_opentimelineio_Clip_getMediaReference(
 /*
  * Class:     io_opentimeline_opentimelineio_Clip
  * Method:    getAvailableRange
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL
 Java_io_opentimeline_opentimelineio_Clip_getAvailableRange(
-        JNIEnv *env, jobject thisObj, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+        JNIEnv *env, jobject thisObj) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Clip>>(env, thisObj);
     auto clip = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = clip->available_range(errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = clip->available_range(&errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     return timeRangeToJObject(env, result);
 }

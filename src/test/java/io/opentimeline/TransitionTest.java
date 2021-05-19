@@ -4,6 +4,7 @@
 package io.opentimeline;
 
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,7 +52,7 @@ public class TransitionTest {
     }
 
     @Test
-    public void testSerialize() {
+    public void testSerialize() throws Exception {
         AnyDictionary metadata = new AnyDictionary();
         Any any = new Any("bar");
         metadata.put("foo", any);
@@ -60,15 +61,13 @@ public class TransitionTest {
                 .setTransitionType("SMPTE.Dissolve")
                 .setMetadata(metadata)
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        String encoded = transition.toJSONString(errorStatus);
-        SerializableObject decoded = SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = transition.toJSONString();
+        SerializableObject decoded = SerializableObject.fromJSONString(encoded);
         assertTrue(decoded.isEquivalentTo(transition));
         try {
             metadata.close();
             any.close();
             transition.close();
-            errorStatus.close();
             decoded.close();
         } catch (Exception e) {
             e.printStackTrace();

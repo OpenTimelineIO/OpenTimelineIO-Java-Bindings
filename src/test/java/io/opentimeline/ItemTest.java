@@ -6,6 +6,7 @@ package io.opentimeline;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ItemTest {
 
     @Test
-    public void testConstructor() {
+    public void testConstructor() throws Exception {
         TimeRange tr = new TimeRange(
                 new RationalTime(0, 1),
                 new RationalTime(10, 1));
@@ -27,13 +28,11 @@ public class ItemTest {
                 .build();
         assertEquals(it.getSourceRange(), tr);
         assertEquals(it.getName(), "foo");
-        ErrorStatus errorStatus = new ErrorStatus();
-        String encoded = it.toJSONString(errorStatus);
-        Item decoded = (Item) SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = it.toJSONString();
+        Item decoded = (Item) SerializableObject.fromJSONString(encoded);
         assertEquals(it, decoded);
         try {
             it.close();
-            errorStatus.close();
             decoded.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,18 +101,16 @@ public class ItemTest {
     }
 
     @Test
-    public void testDuration() {
+    public void testDuration() throws CannotComputeAvailableRangeException {
         TimeRange tr = new TimeRange(
                 new RationalTime(0, 1),
                 new RationalTime(10, 1));
         Item it = new Item.ItemBuilder()
                 .setSourceRange(tr)
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertEquals(it.getDuration(errorStatus), tr.getDuration());
+        assertEquals(it.getDuration(), tr.getDuration());
         try {
             it.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -122,29 +119,25 @@ public class ItemTest {
     @Test
     public void testAvailableRange() {
         Item it = new Item.ItemBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        it.getAvailableRange(errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.NOT_IMPLEMENTED);
+        Exception exception = assertThrows(UnsupportedOperationException.class, () -> {
+            it.getAvailableRange();
+        });
+        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: method not implemented for this class"));
         try {
             it.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testDurationAndSourceRange() {
+    public void testDurationAndSourceRange() throws CannotComputeAvailableRangeException {
         Item it = new Item.ItemBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        it.getDuration(errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.NOT_IMPLEMENTED);
-        try {
-            errorStatus.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        errorStatus = new ErrorStatus();
+        Exception exception = assertThrows(UnsupportedOperationException.class, () -> {
+            it.getDuration();
+        });
+        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: method not implemented for this class"));
+
         assertNull(it.getSourceRange());
         TimeRange tr = new TimeRange(
                 new RationalTime(1, 1),
@@ -153,67 +146,59 @@ public class ItemTest {
                 .setSourceRange(tr)
                 .build();
         assertEquals(tr, it2.getSourceRange());
-        assertEquals(it2.getDuration(errorStatus), tr.getDuration());
+        assertEquals(it2.getDuration(), tr.getDuration());
         try {
             it.close();
             it2.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testTrimmedRange() {
+    public void testTrimmedRange() throws CannotComputeAvailableRangeException {
         Item it = new Item.ItemBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        it.getTrimmedRange(errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.NOT_IMPLEMENTED);
-        try {
-            errorStatus.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        errorStatus = new ErrorStatus();
+        Exception exception = assertThrows(UnsupportedOperationException.class, () -> {
+            it.getTrimmedRange();
+        });
+        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: method not implemented for this class"));
+
         TimeRange tr = new TimeRange(
                 new RationalTime(1, 1),
                 new RationalTime(10, 1));
         Item it2 = new Item.ItemBuilder()
                 .setSourceRange(tr)
                 .build();
-        assertEquals(it2.getTrimmedRange(errorStatus), tr);
+        assertEquals(it2.getTrimmedRange(), tr);
         try {
             it.close();
             it2.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testSerialize() {
+    public void testSerialize() throws Exception {
         TimeRange tr = new TimeRange(
                 new RationalTime(0, 1),
                 new RationalTime(10, 1));
         Item it = new Item.ItemBuilder()
                 .setSourceRange(tr)
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        String encoded = it.toJSONString(errorStatus);
-        Item decoded = (Item) SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = it.toJSONString();
+        Item decoded = (Item) SerializableObject.fromJSONString(encoded);
         assertEquals(it, decoded);
         try {
             it.close();
             decoded.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testMetadata() {
+    public void testMetadata() throws Exception {
         TimeRange tr = new TimeRange(new RationalTime(10, 1));
         AnyDictionary metadata = new AnyDictionary();
         metadata.put("foo", new Any("bar"));
@@ -221,9 +206,8 @@ public class ItemTest {
                 .setSourceRange(tr)
                 .setMetadata(metadata)
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        String encoded = it.toJSONString(errorStatus);
-        Item decoded = (Item) SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = it.toJSONString();
+        Item decoded = (Item) SerializableObject.fromJSONString(encoded);
         assertEquals(it, decoded);
         assertEquals(it.getMetadata().size(),
                 decoded.getMetadata().size());
@@ -239,7 +223,7 @@ public class ItemTest {
     }
 
     @Test
-    public void testAddEffect() {
+    public void testAddEffect() throws Exception {
         TimeRange tr = new TimeRange(new RationalTime(10, 1));
         AnyDictionary metadata = new AnyDictionary();
         metadata.put("amount", new Any("100"));
@@ -253,16 +237,14 @@ public class ItemTest {
                 .setSourceRange(tr)
                 .setEffects(effects)
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        String encoded = it.toJSONString(errorStatus);
-        Item decoded = (Item) SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = it.toJSONString();
+        Item decoded = (Item) SerializableObject.fromJSONString(encoded);
         assertEquals(it, decoded);
         assertEquals(it.getEffects(), decoded.getEffects());
         try {
             metadata.close();
             it.close();
             effect.close();
-            errorStatus.close();
             decoded.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -270,7 +252,7 @@ public class ItemTest {
     }
 
     @Test
-    public void testAddMarker() {
+    public void testAddMarker() throws Exception {
         TimeRange tr = new TimeRange(new RationalTime(10, 1));
         AnyDictionary metadata = new AnyDictionary();
         metadata.put("some stuff to mark", new Any("100"));
@@ -285,16 +267,14 @@ public class ItemTest {
                 .setSourceRange(tr)
                 .setMarkers(markers)
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        String encoded = it.toJSONString(errorStatus);
-        Item decoded = (Item) SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = it.toJSONString();
+        Item decoded = (Item) SerializableObject.fromJSONString(encoded);
         assertEquals(it, decoded);
         assertEquals(it.getMarkers(), decoded.getMarkers());
         try {
             metadata.close();
             it.close();
             marker.close();
-            errorStatus.close();
             decoded.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -302,7 +282,7 @@ public class ItemTest {
     }
 
     @Test
-    public void testVisibleRange() {
+    public void testVisibleRange() throws ChildAlreadyParentedException, CannotComputeAvailableRangeException, NotAChildException {
         Clip A = new Clip.ClipBuilder()
                 .setName("A")
                 .setSourceRange(new TimeRange(
@@ -338,16 +318,15 @@ public class ItemTest {
         Track track = new Track.TrackBuilder()
                 .setName("V1")
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(track.appendChild(A, errorStatus));
-        assertTrue(track.appendChild(transition1, errorStatus));
-        assertTrue(track.appendChild(B, errorStatus));
-        assertTrue(track.appendChild(transition2, errorStatus));
-        assertTrue(track.appendChild(C, errorStatus));
-        assertTrue(track.appendChild(D, errorStatus));
+        assertTrue(track.appendChild(A));
+        assertTrue(track.appendChild(transition1));
+        assertTrue(track.appendChild(B));
+        assertTrue(track.appendChild(transition2));
+        assertTrue(track.appendChild(C));
+        assertTrue(track.appendChild(D));
         Stack stack = new Stack.StackBuilder()
                 .build();
-        assertTrue(stack.appendChild(track, errorStatus));
+        assertTrue(stack.appendChild(track));
         Timeline timeline = new Timeline.TimelineBuilder().build();
         timeline.setTracks(stack);
 
@@ -358,8 +337,8 @@ public class ItemTest {
         for (Composable composable : trackChildren) {
             if (composable instanceof Clip) {
                 clipNames.add(composable.getName());
-                clipTrimmedRanges.add(((Clip) composable).getTrimmedRange(errorStatus));
-                clipVisibleRanges.add(((Clip) composable).getVisibleRange(errorStatus));
+                clipTrimmedRanges.add(((Clip) composable).getTrimmedRange());
+                clipVisibleRanges.add(((Clip) composable).getVisibleRange());
             }
         }
         assertEquals(clipNames, new ArrayList<>(Arrays.asList("A", "B", "C", "D")));
@@ -393,7 +372,6 @@ public class ItemTest {
         )));
         try {
             timeline.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

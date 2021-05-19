@@ -50,18 +50,18 @@ JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_Timeline_setGlobalSta
 /*
  * Class:     io_opentimeline_opentimelineio_Timeline
  * Method:    getDuration
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/RationalTime;
+ * Signature: ()Lio/opentimeline/opentime/RationalTime;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Timeline_getDuration
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Timeline
  * Method:    getRangeOfChild
- * Signature: (Lio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (Lio/opentimeline/opentimelineio/Composable;)Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Timeline_getRangeOfChild
-  (JNIEnv *, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Timeline

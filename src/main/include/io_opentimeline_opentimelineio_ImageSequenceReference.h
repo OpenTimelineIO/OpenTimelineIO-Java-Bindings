@@ -162,26 +162,26 @@ JNIEXPORT jint JNICALL Java_io_opentimeline_opentimelineio_ImageSequenceReferenc
 /*
  * Class:     io_opentimeline_opentimelineio_ImageSequenceReference
  * Method:    getFrameForTime
- * Signature: (Lio/opentimeline/opentime/RationalTime;Lio/opentimeline/opentimelineio/ErrorStatus;)I
+ * Signature: (Lio/opentimeline/opentime/RationalTime;)I
  */
 JNIEXPORT jint JNICALL Java_io_opentimeline_opentimelineio_ImageSequenceReference_getFrameForTime
-  (JNIEnv *, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_ImageSequenceReference
  * Method:    getTargetURLForImageNumber
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Ljava/lang/String;
+ * Signature: (I)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_io_opentimeline_opentimelineio_ImageSequenceReference_getTargetURLForImageNumber
-  (JNIEnv *, jobject, jint, jobject);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     io_opentimeline_opentimelineio_ImageSequenceReference
  * Method:    presentationTimeForImageNumber
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/RationalTime;
+ * Signature: (I)Lio/opentimeline/opentime/RationalTime;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_ImageSequenceReference_presentationTimeForImageNumber
-  (JNIEnv *, jobject, jint, jobject);
+  (JNIEnv *, jobject, jint);
 
 #ifdef __cplusplus
 }

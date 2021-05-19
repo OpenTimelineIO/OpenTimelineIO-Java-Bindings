@@ -74,26 +74,26 @@ JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_Transition_setOutOffs
 /*
  * Class:     io_opentimeline_opentimelineio_Transition
  * Method:    getDuration
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/RationalTime;
+ * Signature: ()Lio/opentimeline/opentime/RationalTime;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Transition_getDuration
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Transition
  * Method:    getRangeInParent
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Transition_getRangeInParent
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Transition
  * Method:    getTrimmedRangeInParent
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Transition_getTrimmedRangeInParent
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

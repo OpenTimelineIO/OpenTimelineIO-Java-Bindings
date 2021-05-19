@@ -4,6 +4,7 @@
 package io.opentimeline;
 
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,23 +43,21 @@ public class ComposableTest {
     }
 
     @Test
-    public void testSerialize() {
+    public void testSerialize() throws Exception {
         AnyDictionary metadata = new AnyDictionary();
         Any bar = new Any("bar");
         metadata.put("foo", bar);
         Composable seqi = new Composable("test", metadata);
-        ErrorStatus errorStatus = new ErrorStatus();
         Any seqiAny = new Any(seqi);
         Serialization serialization = new Serialization();
-        String encoded = serialization.serializeJSONToString(seqiAny, errorStatus);
-        SerializableObject decoded = SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = serialization.serializeJSONToString(seqiAny);
+        SerializableObject decoded = SerializableObject.fromJSONString(encoded);
         assertTrue(seqi.isEquivalentTo(decoded));
 
         try {
             metadata.close();
             bar.close();
             seqi.close();
-            errorStatus.close();
             seqiAny.close();
             decoded.close();
         } catch (Exception e) {

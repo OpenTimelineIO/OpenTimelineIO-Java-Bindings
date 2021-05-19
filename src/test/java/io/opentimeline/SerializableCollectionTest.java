@@ -4,6 +4,7 @@
 package io.opentimeline;
 
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,17 +70,15 @@ public class SerializableCollectionTest {
     }
 
     @Test
-    public void testSerialize() {
+    public void testSerialize() throws Exception {
         Any scAny = new Any(sc);
-        ErrorStatus errorStatus = new ErrorStatus();
         Serialization serialization = new Serialization();
-        String encoded = serialization.serializeJSONToString(scAny, errorStatus);
-        SerializableObject decoded = SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = serialization.serializeJSONToString(scAny);
+        SerializableObject decoded = SerializableObject.fromJSONString(encoded);
         assertTrue(decoded.isEquivalentTo(sc));
         try {
             scAny.close();
             decoded.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

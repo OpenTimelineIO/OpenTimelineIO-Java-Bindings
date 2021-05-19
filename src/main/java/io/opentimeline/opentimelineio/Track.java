@@ -7,6 +7,7 @@ import io.opentimeline.OTIONative;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.util.Pair;
+import io.opentimeline.opentimelineio.exception.*;
 
 import java.util.HashMap;
 import java.util.stream.Stream;
@@ -111,11 +112,11 @@ public class Track extends Composition {
 
     public native void setKind(String kind);
 
-    public native TimeRange rangeOfChildAtIndex(int index, ErrorStatus errorStatus);
+    public native TimeRange rangeOfChildAtIndex(int index) throws IndexOutOfBoundsException, UnsupportedOperationException, CannotComputeAvailableRangeException;
 
-    public native TimeRange trimmedRangeOfChildAtIndex(int index, ErrorStatus errorStatus);
+    public native TimeRange trimmedRangeOfChildAtIndex(int index) throws IndexOutOfBoundsException, UnsupportedOperationException, CannotComputeAvailableRangeException;
 
-    public native TimeRange getAvailableRange(ErrorStatus errorStatus);
+    public native TimeRange getAvailableRange() throws UnsupportedOperationException, CannotComputeAvailableRangeException;
 
     /**
      * If media beyond the ends of this child are visible due to adjacent
@@ -125,16 +126,14 @@ public class Track extends Composition {
      * RationalTime.
      *
      * @param child       child Composable to get handles
-     * @param errorStatus errorStatus to report error while fetching handles
      * @return head and tail offsets as a Pair of RationalTime objects
      */
     public native Pair<RationalTime, RationalTime> getHandlesOfChild(
-            Composable child, ErrorStatus errorStatus);
+            Composable child) throws NotAChildException;
 
     public Pair<Composable, Composable> getNeighborsOf(
-            Composable item,
-            ErrorStatus errorStatus) {
-        return getNeighborsOfNative(item, errorStatus, NeighborGapPolicy.never.ordinal());
+            Composable item) throws NotAChildException {
+        return getNeighborsOfNative(item, NeighborGapPolicy.never.ordinal());
     }
 
     /**
@@ -153,41 +152,36 @@ public class Track extends Composition {
      * [A] :: getNeighborsOf(A) -&gt; (Gap, Gap)
      *
      * @param item              Composable whose neighbors are to be fetched
-     * @param errorStatus       errorStatus to report error while fetching neighbors
      * @param neighborGapPolicy optionally fill in gaps when transitions have no gaps next to them? [never, around_transitions]
      * @return neighbors of the item as a Pair
      */
     public Pair<Composable, Composable> getNeighborsOf(
             Composable item,
-            ErrorStatus errorStatus,
-            NeighborGapPolicy neighborGapPolicy) {
-        return getNeighborsOfNative(item, errorStatus, neighborGapPolicy.ordinal());
+            NeighborGapPolicy neighborGapPolicy) throws NotAChildException {
+        return getNeighborsOfNative(item, neighborGapPolicy.ordinal());
     }
 
     private native Pair<Composable, Composable> getNeighborsOfNative(
             Composable item,
-            ErrorStatus errorStatus,
-            int neighbourGapPolicyIndex);
+            int neighbourGapPolicyIndex) throws NotAChildException;
 
     /**
      * Return a HashMap mapping children to their range in this track.
      *
-     * @param errorStatus errorStatus to report any error while fetching ranges
      * @return a HashMap mapping children to their range in this track.
      */
-    public native HashMap<Composable, TimeRange> getRangeOfAllChildren(ErrorStatus errorStatus);
+    public native HashMap<Composable, TimeRange> getRangeOfAllChildren() throws IndexOutOfBoundsException, UnsupportedOperationException, CannotComputeAvailableRangeException;
 
     /**
      * Return a flat Stream of each clip, limited to the search_range.
      *
      * @param searchRange   TimeRange to search in
      * @param shallowSearch should the algorithm recurse into compositions or not?
-     * @param errorStatus   errorStatus to report any error while iterating
      * @return a Stream of all clips in the timeline (in the searchRange) in the order they are found
      */
     public Stream<Clip> eachClip(
-            TimeRange searchRange, boolean shallowSearch, ErrorStatus errorStatus) {
-        return this.eachChild(searchRange, Clip.class, shallowSearch, errorStatus);
+            TimeRange searchRange, boolean shallowSearch) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return this.eachChild(searchRange, Clip.class, shallowSearch);
     }
 
     /**
@@ -195,11 +189,10 @@ public class Track extends Composition {
      * This recurses into compositions.
      *
      * @param searchRange TimeRange to search in
-     * @param errorStatus errorStatus to report any error while iterating
      * @return a Stream of all clips in the timeline (in the searchRange) in the order they are found
      */
     public Stream<Clip> eachClip(
-            TimeRange searchRange, ErrorStatus errorStatus) {
-        return this.eachChild(searchRange, Clip.class, false, errorStatus);
+            TimeRange searchRange) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return this.eachChild(searchRange, Clip.class, false);
     }
 }

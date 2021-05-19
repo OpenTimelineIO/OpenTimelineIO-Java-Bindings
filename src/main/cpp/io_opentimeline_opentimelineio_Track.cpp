@@ -76,79 +76,62 @@ Java_io_opentimeline_opentimelineio_Track_setKind(
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    rangeOfChildAtIndex
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (I)Lio/opentimeline/opentime/TimeRange;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Track_rangeOfChildAtIndex(
-        JNIEnv *env, jobject thisObj, jint index, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_rangeOfChildAtIndex(
+        JNIEnv *env, jobject thisObj, jint index) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Track>>(env, thisObj);
     auto track = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = track->range_of_child_at_index(index, errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = track->range_of_child_at_index(index, &errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     return timeRangeToJObject(env, result);
 }
 
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    trimmedRangeOfChildAtIndex
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (I)Lio/opentimeline/opentime/TimeRange;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Track_trimmedRangeOfChildAtIndex(
-        JNIEnv *env, jobject thisObj, jint index, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_trimmedRangeOfChildAtIndex(
+        JNIEnv *env, jobject thisObj, jint index) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Track>>(env, thisObj);
     auto track = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
+    auto errorStatus = OTIO_NS::ErrorStatus();
     auto result =
-            track->trimmed_range_of_child_at_index(index, errorStatusHandle);
+            track->trimmed_range_of_child_at_index(index, &errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     return timeRangeToJObject(env, result);
 }
 
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    getAvailableRange
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Track_getAvailableRange(
-        JNIEnv *env, jobject thisObj, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_getAvailableRange(
+        JNIEnv *env, jobject thisObj) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Track>>(env, thisObj);
     auto track = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = track->available_range(errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = track->available_range(&errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     return timeRangeToJObject(env, result);
 }
 
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    getHandlesOfChild
- * Signature: (Lio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/util/Pair;
+ * Signature: (Lio/opentimeline/opentimelineio/Composable;)Lio/opentimeline/util/Pair;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Track_getHandlesOfChild(
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_getHandlesOfChild(
         JNIEnv *env,
         jobject thisObj,
-        jobject composableChild,
-        jobject errorStatusObj) {
-    if (errorStatusObj == nullptr || composableChild == nullptr) {
+        jobject composableChild) {
+    if (composableChild == nullptr) {
         throwNullPointerException(env, "");
         return nullptr;
     }
@@ -158,9 +141,9 @@ Java_io_opentimeline_opentimelineio_Track_getHandlesOfChild(
     auto childHandle =
             getHandle<SerializableObject::Retainer<Composable>>(env, composableChild);
     auto child = childHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = track->handles_of_child(child, errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = track->handles_of_child(child, &errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
 
     jobject first = (result.first != OTIO_NS::nullopt)
                     ? rationalTimeToJObject(env, result.first.value())
@@ -179,16 +162,14 @@ Java_io_opentimeline_opentimelineio_Track_getHandlesOfChild(
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    getNeighborsOfNative
- * Signature: (Lio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;I)Lio/opentimeline/util/Pair;
+ * Signature: (Lio/opentimeline/opentimelineio/Composable;I)Lio/opentimeline/util/Pair;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Track_getNeighborsOfNative(
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_getNeighborsOfNative(
         JNIEnv *env,
         jobject thisObj,
         jobject itemComposableObj,
-        jobject errorStatusObj,
         jint neighbourGapPolicyIndex) {
-    if (errorStatusObj == nullptr || itemComposableObj == nullptr) {
+    if (itemComposableObj == nullptr) {
         throwNullPointerException(env, "");
         return nullptr;
     }
@@ -198,15 +179,15 @@ Java_io_opentimeline_opentimelineio_Track_getNeighborsOfNative(
     auto itemHandle =
             getHandle<SerializableObject::Retainer<Composable>>(env, itemComposableObj);
     auto item = itemHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
+    auto errorStatus = OTIO_NS::ErrorStatus();
     std::pair<
             SerializableObject::Retainer<Composable>,
             SerializableObject::Retainer<Composable>>
             result = track->neighbors_of(
             item,
-            errorStatusHandle,
+            &errorStatus,
             Track::NeighborGapPolicy(neighbourGapPolicyIndex));
+    processOTIOErrorStatus(env, errorStatus);
 
     jobject first = composableFromNative(env, result.first);
     jobject second = composableFromNative(env, result.second);
@@ -221,21 +202,16 @@ Java_io_opentimeline_opentimelineio_Track_getNeighborsOfNative(
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    getRangeOfAllChildren
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Ljava/util/HashMap;
+ * Signature: ()Ljava/util/HashMap;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Track_getRangeOfAllChildren(
-        JNIEnv *env, jobject thisObj, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_getRangeOfAllChildren(
+        JNIEnv *env, jobject thisObj) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Track>>(env, thisObj);
     auto track = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = track->range_of_all_children(errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = track->range_of_all_children(&errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
 
     jclass hashMapClass = env->FindClass("java/util/HashMap");
     jmethodID hashMapInit = env->GetMethodID(hashMapClass, "<init>", "(I)V");

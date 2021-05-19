@@ -6,6 +6,7 @@ package io.opentimeline.opentimelineio;
 import io.opentimeline.OTIONative;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
+import io.opentimeline.opentimelineio.exception.*;
 
 /**
  * Represents a transition between two items.
@@ -147,23 +148,21 @@ public class Transition extends Composable {
      */
     public native void setOutOffset(RationalTime outOffset);
 
-    public native RationalTime getDuration(ErrorStatus errorStatus);
+    public native RationalTime getDuration() throws UnsupportedOperationException, CannotComputeAvailableRangeException;
 
     /**
      * Find and return the range of this item in the parent.
      *
-     * @param errorStatus errorStatus to report error while fetching range
      * @return the range of this item in the parent
      */
-    public native TimeRange getRangeInParent(ErrorStatus errorStatus);
+    public native TimeRange getRangeInParent() throws NotAChildException, UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException;
 
     /**
      * Find and return the trimmed range of this item in the parent.
      *
-     * @param errorStatus errorStatus to report error while fetching trimmed range
      * @return the trimmed range of this item in the parent.
      */
-    public native TimeRange getTrimmedRangeInParent(ErrorStatus errorStatus);
+    public native TimeRange getTrimmedRangeInParent() throws NotAChildException, UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException, InvalidTimeRangeException;
 
     @Override
     public String toString() {

@@ -93,28 +93,27 @@ Java_io_opentimeline_opentimelineio_SerializableCollection_clearChildren(
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableCollection
  * Method:    setChild
- * Signature: (ILio/opentimeline/opentimelineio/SerializableObject;Lio/opentimeline/opentimelineio/ErrorStatus;)Z
+ * Signature: (ILio/opentimeline/opentimelineio/SerializableObject;)Z
  */
-JNIEXPORT jboolean JNICALL
-Java_io_opentimeline_opentimelineio_SerializableCollection_setChild(
+JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_SerializableCollection_setChild(
         JNIEnv *env,
         jobject thisObj,
         jint index,
-        jobject childObj,
-        jobject errorStatusObj) {
-    if (childObj == nullptr || errorStatusObj == nullptr) {
+        jobject childObj) {
+    if (childObj == nullptr) {
         throwNullPointerException(env, "");
         return false;
     }
     auto thisHandle =
             getHandle<SerializableObject::Retainer<SerializableCollection>>(env, thisObj);
     auto serializableCollection = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
+    auto errorStatus = OTIO_NS::ErrorStatus();
     auto childHandle =
             getHandle<SerializableObject::Retainer<SerializableObject>>(env, thisObj);
     auto child = childHandle->value;
-    return serializableCollection->set_child(index, child, errorStatusHandle);
+    auto result = serializableCollection->set_child(index, child, &errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
+    return result;
 }
 
 /*
@@ -140,19 +139,15 @@ JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_SerializableCollectio
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableCollection
  * Method:    removeChild
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Z
+ * Signature: (I)Z
  */
-JNIEXPORT jboolean JNICALL
-Java_io_opentimeline_opentimelineio_SerializableCollection_removeChild(
-        JNIEnv *env, jobject thisObj, jint index, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return false;
-    }
+JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_SerializableCollection_removeChild(
+        JNIEnv *env, jobject thisObj, jint index) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<SerializableCollection>>(env, thisObj);
     auto serializableCollection = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    return serializableCollection->remove_child(index, errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = serializableCollection->remove_child(index, &errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
+    return result;
 }

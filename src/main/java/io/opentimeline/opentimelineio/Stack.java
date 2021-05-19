@@ -5,6 +5,7 @@ package io.opentimeline.opentimelineio;
 
 import io.opentimeline.OTIONative;
 import io.opentimeline.opentime.TimeRange;
+import io.opentimeline.opentimelineio.exception.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -119,20 +120,20 @@ public class Stack extends Composition {
         }
     }
 
-    public native TimeRange rangeOfChildAtIndex(int index, ErrorStatus errorStatus);
+    public native TimeRange rangeOfChildAtIndex(int index) throws IndexOutOfBoundsException, UnsupportedOperationException, CannotComputeAvailableRangeException;
 
-    public native TimeRange trimmedRangeOfChildAtIndex(int index, ErrorStatus errorStatus);
+    public native TimeRange trimmedRangeOfChildAtIndex(int index) throws IndexOutOfBoundsException, UnsupportedOperationException, CannotComputeAvailableRangeException;
 
-    public native TimeRange getAvailableRange(ErrorStatus errorStatus);
+    public native TimeRange getAvailableRange() throws UnsupportedOperationException, CannotComputeAvailableRangeException;
 
-    public native HashMap<Composable, TimeRange> getRangeOfAllChildren(ErrorStatus errorStatus);
+    public native HashMap<Composable, TimeRange> getRangeOfAllChildren() throws IndexOutOfBoundsException, UnsupportedOperationException, CannotComputeAvailableRangeException;
 
     public Stream<Clip> eachClip(
-            TimeRange searchRange, ErrorStatus errorStatus) {
-        return this.eachChild(searchRange, Clip.class, false, errorStatus);
+            TimeRange searchRange) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return this.eachChild(searchRange, Clip.class, false);
     }
 
-    public Stream<Clip> eachClip(ErrorStatus errorStatus) {
-        return this.eachChild(null, errorStatus);
+    public Stream<Clip> eachClip() throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return this.eachChild(null);
     }
 }

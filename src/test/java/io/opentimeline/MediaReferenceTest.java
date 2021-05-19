@@ -6,6 +6,7 @@ package io.opentimeline;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,18 +42,16 @@ public class MediaReferenceTest {
     }
 
     @Test
-    public void testSerialization() {
+    public void testSerialization() throws Exception {
         MissingReference mr = new MissingReference.MissingReferenceBuilder().build();
         Any mrAny = new Any(mr);
-        ErrorStatus errorStatus = new ErrorStatus();
         Serialization serialization = new Serialization();
-        String encoded = serialization.serializeJSONToString(mrAny, errorStatus);
-        SerializableObject decoded = SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = serialization.serializeJSONToString(mrAny);
+        SerializableObject decoded = SerializableObject.fromJSONString(encoded);
         assertTrue(decoded.isEquivalentTo(mr));
         try {
             mr.close();
             mrAny.close();
-            errorStatus.close();
             decoded.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,20 +74,18 @@ public class MediaReferenceTest {
     }
 
     @Test
-    public void testFilepath() {
+    public void testFilepath() throws Exception {
         ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
                 .setTargetURL("/var/tmp/foo.mov")
                 .build();
         Any mrAny = new Any(mr);
-        ErrorStatus errorStatus = new ErrorStatus();
         Serialization serialization = new Serialization();
-        String encoded = serialization.serializeJSONToString(mrAny, errorStatus);
-        SerializableObject decoded = SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = serialization.serializeJSONToString(mrAny);
+        SerializableObject decoded = SerializableObject.fromJSONString(encoded);
         assertTrue(decoded.isEquivalentTo(mr));
         try {
             mr.close();
             mrAny.close();
-            errorStatus.close();
             decoded.close();
         } catch (Exception e) {
             e.printStackTrace();

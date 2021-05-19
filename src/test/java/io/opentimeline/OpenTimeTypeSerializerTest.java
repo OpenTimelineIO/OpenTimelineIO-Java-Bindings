@@ -7,6 +7,7 @@ import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentime.TimeTransform;
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,15 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class OpenTimeTypeSerializerTest {
 
     @Test
-    public void testSerializeTime() {
-        ErrorStatus errorStatus = new ErrorStatus();
+    public void testSerializeTime() throws Exception {
         RationalTime rt = new RationalTime(15, 24);
         Any rtAny = new Any(rt);
         Serialization serialization = new Serialization();
         Deserialization deserialization = new Deserialization();
-        String encoded = serialization.serializeJSONToString(rtAny, errorStatus);
+        String encoded = serialization.serializeJSONToString(rtAny);
         Any destination = new Any(new RationalTime());
-        assertTrue(deserialization.deserializeJSONFromString(encoded, destination, errorStatus));
+        assertTrue(deserialization.deserializeJSONFromString(encoded, destination));
         assertTrue(destination.safelyCastRationalTime().equals(rt));
         try {
             destination.close();
@@ -33,9 +33,9 @@ public class OpenTimeTypeSerializerTest {
         RationalTime rtDur = new RationalTime(10, 20);
         TimeRange tr = new TimeRange(rt, rtDur);
         Any trAny = new Any(tr);
-        encoded = serialization.serializeJSONToString(trAny, errorStatus);
+        encoded = serialization.serializeJSONToString(trAny);
         destination = new Any(new TimeRange());
-        assertTrue(deserialization.deserializeJSONFromString(encoded, destination, errorStatus));
+        assertTrue(deserialization.deserializeJSONFromString(encoded, destination));
         assertTrue(destination.safelyCastTimeRange().equals(tr));
         try {
             destination.close();
@@ -48,12 +48,11 @@ public class OpenTimeTypeSerializerTest {
                 .setScale(1.5)
                 .build();
         Any ttAny = new Any(tt);
-        encoded = serialization.serializeJSONToString(ttAny, errorStatus);
+        encoded = serialization.serializeJSONToString(ttAny);
         destination = new Any(new TimeTransform());
-        assertTrue(deserialization.deserializeJSONFromString(encoded, destination, errorStatus));
+        assertTrue(deserialization.deserializeJSONFromString(encoded, destination));
         assertTrue(destination.safelyCastTimeTransform().equals(tt));
         try {
-            errorStatus.close();
             rtAny.close();
             destination.close();
             trAny.close();

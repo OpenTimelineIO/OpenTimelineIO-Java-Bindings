@@ -6,6 +6,7 @@ package io.opentimeline.opentimelineio;
 import io.opentimeline.OTIONative;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
+import io.opentimeline.opentimelineio.exception.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -140,52 +141,46 @@ public class Item extends Composable {
     /**
      * Convience wrapper for the trimmed_range.duration of the item.
      *
-     * @param errorStatus errorStatus to report in case this is not implemented in a sub-class.
      * @return getTrimmedRange().duration
      */
-    public native RationalTime getDuration(ErrorStatus errorStatus);
+    public native RationalTime getDuration() throws UnsupportedOperationException, CannotComputeAvailableRangeException;
 
     /**
      * Implemented by child classes, available range of media.
      *
-     * @param errorStatus errorStatus to report in case this is not implemented in a sub-class.
      * @return available range of media
      */
-    public native TimeRange getAvailableRange(ErrorStatus errorStatus);
+    public native TimeRange getAvailableRange() throws UnsupportedOperationException, CannotComputeAvailableRangeException;
 
     /**
      * The range after applying the source range.
      *
-     * @param errorStatus errorStatus to report in case this is not implemented in a sub-class.
      * @return range after applying the source range.
      */
-    public native TimeRange getTrimmedRange(ErrorStatus errorStatus);
+    public native TimeRange getTrimmedRange() throws UnsupportedOperationException, CannotComputeAvailableRangeException;
 
     /**
      * The range of this item's media visible to its parent.
      * Includes handles revealed by adjacent transitions (if any).
      * This will always be larger or equal to trimmedRange.
      *
-     * @param errorStatus errorStatus to report error in fetching visible range
      * @return range of this item's media visible to its parent.
      */
-    public native TimeRange getVisibleRange(ErrorStatus errorStatus);
+    public native TimeRange getVisibleRange() throws UnsupportedOperationException, CannotComputeAvailableRangeException, NotAChildException;
 
     /**
      * Find and return the trimmed range of this item in the parent.
      *
-     * @param errorStatus errorStatus to report in case trimmedRange is not implemented in a sub-class.
      * @return trimmed range in parent.
      */
-    public native TimeRange getTrimmedRangeInParent(ErrorStatus errorStatus);
+    public native TimeRange getTrimmedRangeInParent() throws NotAChildException, UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException, InvalidTimeRangeException;
 
     /**
      * Find and return the untrimmed range of this item in the parent.
      *
-     * @param errorStatus errorStatus to report in fetching range
      * @return untrimmed range of this item in the parent
      */
-    public native TimeRange getRangeInParent(ErrorStatus errorStatus);
+    public native TimeRange getRangeInParent() throws NotAChildException, UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException;
 
     /**
      * Converts time t in the coordinate system of self to coordinate
@@ -202,26 +197,22 @@ public class Item extends Composable {
      *
      * @param time        RationalTime to be transformed
      * @param toItem      the Item in whose coordinate the time is to be transformed
-     * @param errorStatus errorStatus to report error during transformation
      * @return time in the coordinate system of self to coordinate system of toItem
      */
     public native RationalTime getTransformedTime(
             RationalTime time,
-            Item toItem,
-            ErrorStatus errorStatus);
+            Item toItem) throws NotAChildException, UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException;
 
     /**
      * Transforms timeRange to the range of child or this toItem.
      *
      * @param timeRange   timeRange to be transformed
      * @param toItem      the Item in whose coordinate the time is to be transformed
-     * @param errorStatus errorStatus to report error during transformation
      * @return timeRange in coordinate of toItem.
      */
     public native TimeRange getTransformedTimeRange(
             TimeRange timeRange,
-            Item toItem,
-            ErrorStatus errorStatus);
+            Item toItem) throws NotAChildException, UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException;
 
     @Override
     public String toString() {

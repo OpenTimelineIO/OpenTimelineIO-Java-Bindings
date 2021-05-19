@@ -10,21 +10,19 @@ public class Deserialization {
      *
      * @param input       JSON String
      * @param destination JSON will be deserialized into this object
-     * @param errorStatus errorStatus to report any error while deserialization
      * @return was the JSON deserialized successfully?
      */
     public native boolean deserializeJSONFromString(
-            String input, Any destination, ErrorStatus errorStatus);
+            String input, Any destination) throws Exception;
 
     /**
      * Deserialize an OTIO JSON file and get the result in an Any object.
      *
      * @param fileName    path to JSON file
      * @param destination JSON will be deserialized into this object
-     * @param errorStatus errorStatus to report any error while deserialization
      * @return was the JSON deserialized successfully?
      */
     public native boolean deserializeJSONFromFile(
-            String fileName, Any destination, ErrorStatus errorStatus);
+            String fileName, Any destination) throws Exception;
 
 }

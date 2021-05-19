@@ -6,6 +6,7 @@ package io.opentimeline;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import io.opentimeline.util.Pair;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,7 @@ public class NestingTest {
     }
 
     @Test
-    public void testDeeplyNested() {
+    public void testDeeplyNested() throws ChildAlreadyParentedException, CannotComputeAvailableRangeException, NotAChildException, ChildAlreadyParentedException, ObjectWithoutDurationException {
         // Take a single clip of media (frames 100-200) and nest it into a bunch
         // of layers
         // Nesting it should not shift the media at all.
@@ -56,10 +57,9 @@ public class NestingTest {
                 .setMediaReference(media)
                 .build();
         Track track = new Track.TrackBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(track.appendChild(clip, errorStatus));
+        assertTrue(track.appendChild(clip));
         Stack stack = new Stack.StackBuilder().build();
-        assertTrue(stack.appendChild(track, errorStatus));
+        assertTrue(stack.appendChild(track));
         timeline.setTracks(stack);
         assertEquals(track.getNativeManager().getOTIOObjectNativeHandle(),
                 clip.parent().getNativeManager().getOTIOObjectNativeHandle());
@@ -68,19 +68,19 @@ public class NestingTest {
 
         // the clip and track should auto-size to fit the media, since we
         // haven't trimmed anything
-        assertEquals(clip.getDuration(errorStatus), onehundred);
-        assertEquals(track.getDuration(errorStatus), onehundred);
-        assertEquals(stack.getDuration(errorStatus), onehundred);
+        assertEquals(clip.getDuration(), onehundred);
+        assertEquals(track.getDuration(), onehundred);
+        assertEquals(stack.getDuration(), onehundred);
 
         // the ranges should match our expectations...
-        assertEquals(clip.getTrimmedRange(errorStatus), mediaRange);
-        assertEquals(track.getTrimmedRange(errorStatus), topLevelRange);
-        assertEquals(stack.getTrimmedRange(errorStatus), topLevelRange);
+        assertEquals(clip.getTrimmedRange(), mediaRange);
+        assertEquals(track.getTrimmedRange(), topLevelRange);
+        assertEquals(stack.getTrimmedRange(), topLevelRange);
 
         // verify that the media is where we expect
-        assertEquals(stack.getTransformedTime(zero, clip, errorStatus), firstFrame);
-        assertEquals(stack.getTransformedTime(fifty, clip, errorStatus), middle);
-        assertEquals(stack.getTransformedTime(ninetynine, clip, errorStatus), last);
+        assertEquals(stack.getTransformedTime(zero, clip), firstFrame);
+        assertEquals(stack.getTransformedTime(fifty, clip), middle);
+        assertEquals(stack.getTransformedTime(ninetynine, clip), last);
 
         Nester nester = (Clip item, int index) -> {
             assertNotNull(item);
@@ -88,13 +88,16 @@ public class NestingTest {
 
             Composition parent = item.parent();
             Stack wrapper = new Stack.StackBuilder().build();
-            assertEquals(parent.getChildren().get(index), item);
-            ErrorStatus errorStatus1 = new ErrorStatus();
-            assertTrue(parent.setChild(index, wrapper, errorStatus1));
-            assertEquals(parent.getChildren().get(index), wrapper);
-            assertNotEquals(parent.getChildren().get(index), item);
-            assertTrue(wrapper.appendChild(item, errorStatus1));
-            assertEquals(item.parent(), wrapper);
+            try {
+                assertEquals(parent.getChildren().get(index), item);
+                assertTrue(parent.setChild(index, wrapper));
+                assertEquals(parent.getChildren().get(index), wrapper);
+                assertNotEquals(parent.getChildren().get(index), item);
+                assertTrue(wrapper.appendChild(item));
+                assertEquals(item.parent(), wrapper);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             return wrapper;
         };
 
@@ -102,27 +105,34 @@ public class NestingTest {
         ArrayList<Stack> wrappers = new ArrayList<>();
         int numWrappers = 10;
         for (int i = 0; i < numWrappers; i++) {
-            Stack wrapper = nester.nest(clip, 0);
-            wrappers.add(wrapper);
+            try {
+                Stack wrapper = nester.nest(clip, 0);
+                wrappers.add(wrapper);
+            } catch (RuntimeException e) {
+                if (e.getCause() instanceof ChildAlreadyParentedException)
+                    throw (ChildAlreadyParentedException)e.getCause();
+                else
+                    throw e;
+            }
         }
         // nothing should have shifted at all
-//        System.out.println(timeline.toJSONString(errorStatus));
+//        System.out.println(timeline.toJSONString());
 
         // the clip and track should auto-size to fit the media, since we
         // haven't trimmed anything
-        assertEquals(clip.getDuration(errorStatus), onehundred);
-        assertEquals(track.getDuration(errorStatus), onehundred);
-        assertEquals(stack.getDuration(errorStatus), onehundred);
+        assertEquals(clip.getDuration(), onehundred);
+        assertEquals(track.getDuration(), onehundred);
+        assertEquals(stack.getDuration(), onehundred);
 
         // the ranges should match our expectations...
-        assertEquals(clip.getTrimmedRange(errorStatus), mediaRange);
-        assertEquals(track.getTrimmedRange(errorStatus), topLevelRange);
-        assertEquals(stack.getTrimmedRange(errorStatus), topLevelRange);
+        assertEquals(clip.getTrimmedRange(), mediaRange);
+        assertEquals(track.getTrimmedRange(), topLevelRange);
+        assertEquals(stack.getTrimmedRange(), topLevelRange);
 
         // verify that the media is where we expect
-        assertEquals(stack.getTransformedTime(zero, clip, errorStatus), firstFrame);
-        assertEquals(stack.getTransformedTime(fifty, clip, errorStatus), middle);
-        assertEquals(stack.getTransformedTime(ninetynine, clip, errorStatus), last);
+        assertEquals(stack.getTransformedTime(zero, clip), firstFrame);
+        assertEquals(stack.getTransformedTime(fifty, clip), middle);
+        assertEquals(stack.getTransformedTime(ninetynine, clip), last);
 
         // now trim them all by one frame at each end
         assertEquals(ninetynine.add(one), onehundred);
@@ -131,28 +141,27 @@ public class NestingTest {
         for (Stack wrapper : wrappers) {
             wrapper.setSourceRange(trim);
         }
-//        System.out.println(timeline.toJSONString(errorStatus));
+//        System.out.println(timeline.toJSONString());
 
         // the clip should be the same
-        assertEquals(clip.getDuration(errorStatus), onehundred);
+        assertEquals(clip.getDuration(), onehundred);
 
         // the parents should have shrunk by only 2 frames
-        assertEquals(track.getDuration(errorStatus), new RationalTime(98, 24));
-        assertEquals(stack.getDuration(errorStatus), new RationalTime(98, 24));
+        assertEquals(track.getDuration(), new RationalTime(98, 24));
+        assertEquals(stack.getDuration(), new RationalTime(98, 24));
 
         // but the media should have shifted over by 1 one frame for each level
         // of nesting
         RationalTime ten = new RationalTime(numWrappers, 24);
-        assertEquals(stack.getTransformedTime(zero, clip, errorStatus), firstFrame.add(ten));
-        assertEquals(stack.getTransformedTime(fifty, clip, errorStatus), middle.add(ten));
-        assertEquals(stack.getTransformedTime(ninetynine, clip, errorStatus), last.add(ten));
+        assertEquals(stack.getTransformedTime(zero, clip), firstFrame.add(ten));
+        assertEquals(stack.getTransformedTime(fifty, clip), middle.add(ten));
+        assertEquals(stack.getTransformedTime(ninetynine, clip), last.add(ten));
 
         try {
             timeline.close();
             media.close();
             clip.close();
             track.close();
-            errorStatus.close();
             stack.close();
             for (Stack wrapper : wrappers) {
                 wrapper.close();
@@ -163,7 +172,7 @@ public class NestingTest {
     }
 
     @Test
-    public void testChildAtTimeWithChildren() {
+    public void testChildAtTimeWithChildren() throws ChildAlreadyParentedException, ObjectWithoutDurationException, CannotComputeAvailableRangeException, NotAChildException {
         Clip leader = new Clip.ClipBuilder()
                 .setName("leader")
                 .setSourceRange(new TimeRange(
@@ -201,11 +210,9 @@ public class NestingTest {
                         new RationalTime(12, 24)))
                 .build();
 
-        ErrorStatus errorStatus = new ErrorStatus();
-
-        assertTrue(body.appendChild(clip1, errorStatus));
-        assertTrue(body.appendChild(clip2, errorStatus));
-        assertTrue(body.appendChild(clip3, errorStatus));
+        assertTrue(body.appendChild(clip1));
+        assertTrue(body.appendChild(clip2));
+        assertTrue(body.appendChild(clip3));
 
         Track sq = new Track.TrackBuilder()
                 .setName("foo")
@@ -213,9 +220,9 @@ public class NestingTest {
                         new RationalTime(9, 24),
                         new RationalTime(12, 24)))
                 .build();
-        assertTrue(sq.appendChild(leader, errorStatus));
-        assertTrue(sq.appendChild(body, errorStatus));
-        assertTrue(sq.appendChild(credits, errorStatus));
+        assertTrue(sq.appendChild(leader));
+        assertTrue(sq.appendChild(body));
+        assertTrue(sq.appendChild(credits));
 
         // Looks like this:
         // [ leader ][ body ][ credits ]
@@ -278,8 +285,8 @@ public class NestingTest {
         for (int frame = 0; frame < expected.size(); frame++) {
             // first test child_at_time
             RationalTime playhead = new RationalTime(frame, 24);
-            Composable item = sq.getChildAtTime(playhead, errorStatus);
-            RationalTime mediaframe = sq.getTransformedTime(playhead, (Item) item, errorStatus);
+            Composable item = sq.getChildAtTime(playhead);
+            RationalTime mediaframe = sq.getTransformedTime(playhead, (Item) item);
             Pair<String, Integer> measuredVal = new Pair<>(item.getName(), mediaframe.toFrames(24));
 
             assertEquals(measuredVal, expected.get(frame));
@@ -289,8 +296,8 @@ public class NestingTest {
                     new RationalTime(frame, 24),
                     new RationalTime());
             // with a 0 duration, should have the same result as above
-            item = sq.eachClip(searchRange, errorStatus).collect(Collectors.toList()).get(0);
-            mediaframe = sq.getTransformedTime(playhead, (Item) item, errorStatus);
+            item = sq.eachClip(searchRange).collect(Collectors.toList()).get(0);
+            mediaframe = sq.getTransformedTime(playhead, (Item) item);
             measuredVal = new Pair<>(item.getName(), mediaframe.toFrames(24));
             assertEquals(measuredVal, expected.get(frame));
         }
@@ -303,7 +310,6 @@ public class NestingTest {
             clip1.close();
             clip2.close();
             clip3.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

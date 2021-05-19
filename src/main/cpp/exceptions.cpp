@@ -73,18 +73,7 @@ jint processOTIOErrorStatus(JNIEnv *env, OTIO_NS::ErrorStatus &errorStatus) {
         case OTIO_NS::ErrorStatus::Outcome::JSON_PARSE_ERROR: {
             const char *className = "io/opentimeline/opentimelineio/exception/JSONParseException";
             jclass exClass = env->FindClass(className);
-            size_t openParan = errorStatus.details.find_first_of('(');
-            size_t closeParan = errorStatus.details.find_first_of('(');
-            size_t comma = errorStatus.details.find_first_of(',');
-            size_t colon = errorStatus.details.find_first_of(':');
-            std::string lineNoStr = errorStatus.details.substr(openParan + 6, comma - openParan - 6);
-            std::string columnNoStr = errorStatus.details.substr(comma + 9, closeParan - comma - 9);
-            std::string parseError = errorStatus.details.substr(colon + 2, openParan - colon - 3);
-            long lineNo = std::stol(lineNoStr);
-            long columnNo = std::stol(columnNoStr);
-            jmethodID exceptionCtor = env->GetMethodID(exClass, "<init>", "(Ljava/lang/String;JJ)V");
-            jobject exObject = env->NewObject(exClass, exceptionCtor, parseError.c_str(), lineNo, columnNo);
-            return env->Throw((jthrowable) exObject);
+            return env->ThrowNew(exClass, errorStatus.full_description.c_str());
         }
         case OTIO_NS::ErrorStatus::Outcome::CANNOT_COMPUTE_AVAILABLE_RANGE: {
             const char *className = "io/opentimeline/opentimelineio/exception/CannotComputeAvailableRangeException";

@@ -4,6 +4,7 @@
 package io.opentimeline;
 
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class EffectTest {
 
     @Test
-    public void testConstructor() {
+    public void testConstructor() throws Exception {
         AnyDictionary metadata = new AnyDictionary();
         metadata.put("foo", new Any("bar"));
         Effect effect = new Effect.EffectBuilder()
@@ -21,10 +22,9 @@ public class EffectTest {
                 .setMetadata(metadata)
                 .build();
         Any effectAny = new Any(effect);
-        ErrorStatus errorStatus = new ErrorStatus();
         Serialization serialization = new Serialization();
-        String encoded = serialization.serializeJSONToString(effectAny, errorStatus);
-        Effect decoded = (Effect) SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = serialization.serializeJSONToString(effectAny);
+        Effect decoded = (Effect) SerializableObject.fromJSONString(encoded);
         assertTrue(effect.isEquivalentTo(decoded));
         assertEquals(decoded.getName(), "blur it");
         assertEquals(decoded.getEffectName(), "blur");
@@ -33,7 +33,6 @@ public class EffectTest {
             metadata.close();
             effect.close();
             effectAny.close();
-            errorStatus.close();
             decoded.close();
         } catch (Exception e) {
             e.printStackTrace();

@@ -6,6 +6,7 @@ package io.opentimeline;
 import io.opentimeline.opentimelineio.ErrorStatus;
 import io.opentimeline.opentimelineio.Gap;
 import io.opentimeline.opentimelineio.SerializableObject;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,11 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class GapTest {
 
     @Test
-    public void testSerialize() {
+    public void testSerialize() throws Exception {
         Gap gap = new Gap.GapBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        String encoded = gap.toJSONString(errorStatus);
-        Gap decoded = (Gap) SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = gap.toJSONString();
+        Gap decoded = (Gap) SerializableObject.fromJSONString(encoded);
         assertEquals(gap, decoded);
         try {
             gap.close();

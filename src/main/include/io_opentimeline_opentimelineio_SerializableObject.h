@@ -18,50 +18,50 @@ JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_in
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableObject
  * Method:    toJSONFile
- * Signature: (Ljava/lang/String;Lio/opentimeline/opentimelineio/ErrorStatus;)Z
+ * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_toJSONFile__Ljava_lang_String_2Lio_opentimeline_opentimelineio_ErrorStatus_2
-  (JNIEnv *, jobject, jstring, jobject);
+JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_toJSONFile__Ljava_lang_String_2
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableObject
  * Method:    toJSONFile
- * Signature: (Ljava/lang/String;Lio/opentimeline/opentimelineio/ErrorStatus;I)Z
+ * Signature: (Ljava/lang/String;I)Z
  */
-JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_toJSONFile__Ljava_lang_String_2Lio_opentimeline_opentimelineio_ErrorStatus_2I
-  (JNIEnv *, jobject, jstring, jobject, jint);
+JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_toJSONFile__Ljava_lang_String_2I
+  (JNIEnv *, jobject, jstring, jint);
 
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableObject
  * Method:    toJSONString
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Ljava/lang/String;
+ * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_toJSONString__Lio_opentimeline_opentimelineio_ErrorStatus_2
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT jstring JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_toJSONString__
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableObject
  * Method:    toJSONString
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;I)Ljava/lang/String;
+ * Signature: (I)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_toJSONString__Lio_opentimeline_opentimelineio_ErrorStatus_2I
-  (JNIEnv *, jobject, jobject, jint);
+JNIEXPORT jstring JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_toJSONString__I
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableObject
  * Method:    fromJSONFile
- * Signature: (Ljava/lang/String;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentimelineio/SerializableObject;
+ * Signature: (Ljava/lang/String;)Lio/opentimeline/opentimelineio/SerializableObject;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_fromJSONFile
-  (JNIEnv *, jclass, jstring, jobject);
+  (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableObject
  * Method:    fromJSONString
- * Signature: (Ljava/lang/String;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentimelineio/SerializableObject;
+ * Signature: (Ljava/lang/String;)Lio/opentimeline/opentimelineio/SerializableObject;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_fromJSONString
-  (JNIEnv *, jclass, jstring, jobject);
+  (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableObject
@@ -73,11 +73,11 @@ JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_SerializableObjec
 
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableObject
- * Method:    clone
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentimelineio/SerializableObject;
+ * Method:    deepCopy
+ * Signature: ()Lio/opentimeline/opentimelineio/SerializableObject;
  */
-JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_clone
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_SerializableObject_deepCopy
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableObject

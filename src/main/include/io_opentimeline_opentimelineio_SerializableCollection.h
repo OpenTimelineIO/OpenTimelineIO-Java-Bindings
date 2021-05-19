@@ -42,10 +42,10 @@ JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_SerializableCollectio
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableCollection
  * Method:    setChild
- * Signature: (ILio/opentimeline/opentimelineio/SerializableObject;Lio/opentimeline/opentimelineio/ErrorStatus;)Z
+ * Signature: (ILio/opentimeline/opentimelineio/SerializableObject;)Z
  */
 JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_SerializableCollection_setChild
-  (JNIEnv *, jobject, jint, jobject, jobject);
+  (JNIEnv *, jobject, jint, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableCollection
@@ -58,10 +58,10 @@ JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_SerializableCollectio
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableCollection
  * Method:    removeChild
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Z
+ * Signature: (I)Z
  */
 JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_SerializableCollection_removeChild
-  (JNIEnv *, jobject, jint, jobject);
+  (JNIEnv *, jobject, jint);
 
 #ifdef __cplusplus
 }

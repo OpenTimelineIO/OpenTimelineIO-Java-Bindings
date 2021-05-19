@@ -6,6 +6,7 @@ package io.opentimeline;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MarkerTest {
 
     @Test
-    public void testConstructor() {
+    public void testConstructor() throws Exception {
         TimeRange tr = new TimeRange(
                 new RationalTime(5, 24),
                 new RationalTime(10, 24));
@@ -32,14 +33,12 @@ public class MarkerTest {
         assertTrue(m.getMarkedRange().equals(tr));
         assertEquals(m.getColor(), Marker.Color.green);
 
-        ErrorStatus errorStatus = new ErrorStatus(); //Fix segfault
-        String encoded = m.toJSONString(errorStatus);
-        SerializableObject decoded = SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = m.toJSONString();
+        SerializableObject decoded = SerializableObject.fromJSONString(encoded);
         assertTrue(decoded.isEquivalentTo(m));
         try {
             metadata.close();
             m.close();
-            errorStatus.close();
             decoded.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,7 +75,7 @@ public class MarkerTest {
     }
 
     @Test
-    public void testUpgrade() {
+    public void testUpgrade() throws Exception {
         String src = "{\n" +
                 "            \"OTIO_SCHEMA\" : \"Marker.1\",\n" +
                 "            \"metadata\" : {},\n" +
@@ -97,15 +96,13 @@ public class MarkerTest {
                 "\n" +
                 "        }";
 
-        ErrorStatus errorStatus = new ErrorStatus();
-        Marker marker = (Marker) SerializableObject.fromJSONString(src, errorStatus);
+        Marker marker = (Marker) SerializableObject.fromJSONString(src);
 
         assertTrue(marker.getMarkedRange().equals(
                 new TimeRange(
                         new RationalTime(0, 5),
                         new RationalTime(0, 5))));
         try {
-            errorStatus.close();
             marker.close();
         } catch (Exception e) {
             e.printStackTrace();

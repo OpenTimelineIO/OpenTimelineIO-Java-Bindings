@@ -188,28 +188,7 @@ public class OTIOFactory {
         references.add(new OTIOFinalizer(effect.getNativeManager(), otioNativeReferenceQueue));
         return effect;
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-
-    // io.opentimeline.opentimelineio.ErrorStatus /////////////////////////////
-
-    public io.opentimeline.opentimelineio.ErrorStatus createOpenTimelineIOErrorStatus() {
-        cleanUp();
-        ErrorStatus errorStatus = new ErrorStatus();
-        references.add(new OTIOFinalizer(errorStatus.getNativeManager(), otioNativeReferenceQueue));
-        return errorStatus;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-
-    // io.opentimeline.opentime.ErrorStatus ///////////////////////////////////
-
-    public io.opentimeline.opentime.ErrorStatus createOpentimeIOErrorStatus() {
-        cleanUp();
-        io.opentimeline.opentime.ErrorStatus errorStatus = new io.opentimeline.opentime.ErrorStatus();
-        references.add(new OTIOFinalizer(errorStatus.getNativeManager(), otioNativeReferenceQueue));
-        return errorStatus;
-    }
+    
 
     ///////////////////////////////////////////////////////////////////////////
 

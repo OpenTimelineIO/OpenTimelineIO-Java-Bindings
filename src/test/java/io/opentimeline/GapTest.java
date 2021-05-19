@@ -3,7 +3,6 @@
 
 package io.opentimeline;
 
-import io.opentimeline.opentimelineio.ErrorStatus;
 import io.opentimeline.opentimelineio.Gap;
 import io.opentimeline.opentimelineio.SerializableObject;
 import io.opentimeline.opentimelineio.exception.*;

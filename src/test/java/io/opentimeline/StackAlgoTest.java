@@ -25,7 +25,7 @@ public class StackAlgoTest {
     Track trackgFg = null;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() throws OpenTimelineIOException {
         trackZ = (Track) SerializableObject.fromJSONString("" +
                         "{\n" +
                         "            \"OTIO_SCHEMA\": \"Track.1\",\n" +
@@ -290,7 +290,7 @@ public class StackAlgoTest {
     }
 
     @Test
-    public void testFlattenSingleTrack() throws Exception {
+    public void testFlattenSingleTrack() throws OpenTimelineIOException {
         Stack stack = new Stack.StackBuilder().build();
         assertTrue(stack.appendChild(trackABC));
         Track flatTrack = new Algorithms().flattenStack(stack);
@@ -314,7 +314,7 @@ public class StackAlgoTest {
     }
 
     @Test
-    public void testFlattenObscureTrack() throws Exception {
+    public void testFlattenObscureTrack() throws OpenTimelineIOException {
         Stack stack = new Stack.StackBuilder().build();
         assertTrue(stack.appendChild(trackABC));
         assertTrue(stack.appendChild(trackZ));
@@ -348,7 +348,7 @@ public class StackAlgoTest {
     }
 
     @Test
-    public void testFlattenGaps() throws Exception {
+    public void testFlattenGaps() throws OpenTimelineIOException {
         Stack stack = new Stack.StackBuilder().build();
         assertTrue(stack.appendChild(trackABC));
         assertTrue(stack.appendChild(trackDgE));
@@ -397,7 +397,7 @@ public class StackAlgoTest {
     }
 
     @Test
-    public void testFlattenGapsWithTrims() throws Exception {
+    public void testFlattenGapsWithTrims() throws OpenTimelineIOException {
         Stack stack = new Stack.StackBuilder().build();
         assertTrue(stack.appendChild(trackZ));
         assertTrue(stack.appendChild(trackDgE));
@@ -442,7 +442,7 @@ public class StackAlgoTest {
     }
 
     @Test
-    public void testFlattenListOfTracks() throws Exception {
+    public void testFlattenListOfTracks() throws OpenTimelineIOException {
         List<Track> tracks = new ArrayList<>();
         tracks.add(trackABC);
         tracks.add(trackDgE);
@@ -477,7 +477,7 @@ public class StackAlgoTest {
     }
 
     @Test
-    public void testFlattenExampleCode() throws Exception {
+    public void testFlattenExampleCode() throws OpenTimelineIOException {
         String projectRootDir = System.getProperty("user.dir");
         String sampleDataDir = projectRootDir + File.separator +
                 "src" + File.separator + "test" + File.separator + "sample_data";
@@ -507,7 +507,7 @@ public class StackAlgoTest {
     }
 
     @Test
-    public void testFlattenWithTransition() throws Exception {
+    public void testFlattenWithTransition() throws OpenTimelineIOException {
         Stack stack = new Stack.StackBuilder().build();
         assertTrue(trackDgE.insertChild(1,
                 new Transition.TransitionBuilder()

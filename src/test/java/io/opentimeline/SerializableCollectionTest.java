@@ -70,7 +70,7 @@ public class SerializableCollectionTest {
     }
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() throws OpenTimelineIOException {
         Any scAny = new Any(sc);
         Serialization serialization = new Serialization();
         String encoded = serialization.serializeJSONToString(scAny);

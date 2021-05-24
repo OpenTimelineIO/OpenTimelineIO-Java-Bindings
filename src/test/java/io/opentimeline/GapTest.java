@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class GapTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() throws OpenTimelineIOException {
         Gap gap = new Gap.GapBuilder().build();
         String encoded = gap.toJSONString();
         Gap decoded = (Gap) SerializableObject.fromJSONString(encoded);

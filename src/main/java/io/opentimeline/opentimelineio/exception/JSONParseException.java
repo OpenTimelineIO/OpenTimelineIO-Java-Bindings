@@ -4,7 +4,7 @@
 package io.opentimeline.opentimelineio.exception;
 
 public class JSONParseException extends OpenTimelineIOException {
-    public JSONParseException(String errorMessage) {
-        super("An OpenTimelineIO call failed with: JSON parse error on input string: " + errorMessage);
+    public JSONParseException(String message) {
+        super(message);
     }
 }

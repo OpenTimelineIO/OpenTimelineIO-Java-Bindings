@@ -7,6 +7,6 @@ import io.opentimeline.opentimelineio.SerializableObject;
 
 public class ChildAlreadyParentedException extends OpenTimelineIOException {
     public ChildAlreadyParentedException(String message) {
-        super("An OpenTimelineIO call failed with: " + message);
+        super(message);
     }
 }

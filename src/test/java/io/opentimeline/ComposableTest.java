@@ -43,7 +43,7 @@ public class ComposableTest {
     }
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() throws OpenTimelineIOException {
         AnyDictionary metadata = new AnyDictionary();
         Any bar = new Any("bar");
         metadata.put("foo", bar);

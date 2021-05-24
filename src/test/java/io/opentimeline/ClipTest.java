@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ClipTest {
 
     @Test
-    public void testConstructor() throws Exception {
+    public void testConstructor() throws OpenTimelineIOException {
         String name = "test";
         RationalTime rt = new RationalTime(5, 24);
         TimeRange tr = new TimeRange(rt, rt);

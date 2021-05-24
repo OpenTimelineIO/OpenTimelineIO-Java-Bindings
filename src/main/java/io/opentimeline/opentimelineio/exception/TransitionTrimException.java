@@ -3,10 +3,8 @@
 
 package io.opentimeline.opentimelineio.exception;
 
-import io.opentimeline.opentimelineio.SerializableObject;
-
 public class TransitionTrimException extends OpenTimelineIOException {
     public TransitionTrimException(String message) {
-        super("An OpenTimelineIO call failed with: " + message);
+        super(message);
     }
 }

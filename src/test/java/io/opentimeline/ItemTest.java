@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ItemTest {
 
     @Test
-    public void testConstructor() throws Exception {
+    public void testConstructor() throws OpenTimelineIOException {
         TimeRange tr = new TimeRange(
                 new RationalTime(0, 1),
                 new RationalTime(10, 1));
@@ -119,10 +119,8 @@ public class ItemTest {
     @Test
     public void testAvailableRange() {
         Item it = new Item.ItemBuilder().build();
-        Exception exception = assertThrows(UnsupportedOperationException.class, () -> {
-            it.getAvailableRange();
-        });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: method not implemented for this class"));
+        Exception exception = assertThrows(UnsupportedOperationException.class, it::getAvailableRange);
+        assertEquals(exception.getMessage(), "method not implemented for this class");
         try {
             it.close();
         } catch (Exception e) {
@@ -133,10 +131,8 @@ public class ItemTest {
     @Test
     public void testDurationAndSourceRange() throws CannotComputeAvailableRangeException {
         Item it = new Item.ItemBuilder().build();
-        Exception exception = assertThrows(UnsupportedOperationException.class, () -> {
-            it.getDuration();
-        });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: method not implemented for this class"));
+        Exception exception = assertThrows(UnsupportedOperationException.class, it::getDuration);
+        assertEquals(exception.getMessage(), "method not implemented for this class");
 
         assertNull(it.getSourceRange());
         TimeRange tr = new TimeRange(
@@ -158,10 +154,8 @@ public class ItemTest {
     @Test
     public void testTrimmedRange() throws CannotComputeAvailableRangeException {
         Item it = new Item.ItemBuilder().build();
-        Exception exception = assertThrows(UnsupportedOperationException.class, () -> {
-            it.getTrimmedRange();
-        });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: method not implemented for this class"));
+        Exception exception = assertThrows(UnsupportedOperationException.class, it::getTrimmedRange);
+        assertEquals(exception.getMessage(), "method not implemented for this class");
 
         TimeRange tr = new TimeRange(
                 new RationalTime(1, 1),
@@ -179,7 +173,7 @@ public class ItemTest {
     }
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() throws OpenTimelineIOException {
         TimeRange tr = new TimeRange(
                 new RationalTime(0, 1),
                 new RationalTime(10, 1));
@@ -198,7 +192,7 @@ public class ItemTest {
     }
 
     @Test
-    public void testMetadata() throws Exception {
+    public void testMetadata() throws OpenTimelineIOException {
         TimeRange tr = new TimeRange(new RationalTime(10, 1));
         AnyDictionary metadata = new AnyDictionary();
         metadata.put("foo", new Any("bar"));
@@ -223,7 +217,7 @@ public class ItemTest {
     }
 
     @Test
-    public void testAddEffect() throws Exception {
+    public void testAddEffect() throws OpenTimelineIOException {
         TimeRange tr = new TimeRange(new RationalTime(10, 1));
         AnyDictionary metadata = new AnyDictionary();
         metadata.put("amount", new Any("100"));
@@ -252,7 +246,7 @@ public class ItemTest {
     }
 
     @Test
-    public void testAddMarker() throws Exception {
+    public void testAddMarker() throws OpenTimelineIOException {
         TimeRange tr = new TimeRange(new RationalTime(10, 1));
         AnyDictionary metadata = new AnyDictionary();
         metadata.put("some stuff to mark", new Any("100"));

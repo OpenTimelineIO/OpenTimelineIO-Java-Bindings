@@ -231,7 +231,7 @@ public class CompositionTest {
         Exception exception = assertThrows(ChildAlreadyParentedException.class, () -> {
             co2.appendChild(it);
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: child already has a parent"));
+        assertTrue(exception.getMessage().equals("child already has a parent"));
 
         assertTrue(co.removeChild(0));
         assertTrue(co2.appendChild(it));

@@ -42,7 +42,7 @@ public class MediaReferenceTest {
     }
 
     @Test
-    public void testSerialization() throws Exception {
+    public void testSerialization() throws OpenTimelineIOException {
         MissingReference mr = new MissingReference.MissingReferenceBuilder().build();
         Any mrAny = new Any(mr);
         Serialization serialization = new Serialization();
@@ -74,7 +74,7 @@ public class MediaReferenceTest {
     }
 
     @Test
-    public void testFilepath() throws Exception {
+    public void testFilepath() throws OpenTimelineIOException {
         ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
                 .setTargetURL("/var/tmp/foo.mov")
                 .build();

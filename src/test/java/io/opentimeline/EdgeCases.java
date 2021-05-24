@@ -30,7 +30,7 @@ public class EdgeCases {
     }
 
     @Test
-    public void testIteratingOverDupes() throws Exception {
+    public void testIteratingOverDupes() throws OpenTimelineIOException {
         Timeline timeline = new Timeline.TimelineBuilder().build();
         Track track = new Track.TrackBuilder().build();
         Clip clip = new Clip.ClipBuilder()

@@ -7,6 +7,6 @@ import io.opentimeline.opentimelineio.SerializableObject;
 
 public class NotAChildException extends OpenTimelineIOException {
     public NotAChildException(String message) {
-        super("An OpenTimelineIO call failed with: " + message);
+        super(message);
     }
 }

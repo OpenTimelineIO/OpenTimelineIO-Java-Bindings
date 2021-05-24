@@ -7,7 +7,7 @@ import io.opentimeline.opentimelineio.SerializableObject;
 
 public class ObjectWithoutDurationException extends OpenTimelineIOException {
     public ObjectWithoutDurationException(String message, SerializableObject objectDetails) {
-        super("An OpenTimelineIO call failed with: " + message);
+        super(message);
         this.objectDetails = objectDetails;
     }
 

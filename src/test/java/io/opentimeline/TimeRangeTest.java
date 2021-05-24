@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.opentimeline.opentime.IsDropFrameRate;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
+import io.opentimeline.opentime.exception.OpentimeException;
 import org.junit.jupiter.api.Test;
 
 public class TimeRangeTest {
@@ -431,7 +432,7 @@ public class TimeRangeTest {
     }
 
     @Test
-    public void testToTimecodeMixedRates() {
+    public void testToTimecodeMixedRates() throws OpentimeException {
         String timecode = "00:06:56:17";
         RationalTime t = RationalTime.fromTimecode(timecode, 24);
 

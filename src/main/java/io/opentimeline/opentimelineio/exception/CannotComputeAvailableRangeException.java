@@ -5,6 +5,6 @@ package io.opentimeline.opentimelineio.exception;
 
 public class CannotComputeAvailableRangeException extends OpenTimelineIOException {
     public CannotComputeAvailableRangeException(String message) {
-        super("An OpenTimelineIO call failed with: " + message);
+        super(message);
     }
 }

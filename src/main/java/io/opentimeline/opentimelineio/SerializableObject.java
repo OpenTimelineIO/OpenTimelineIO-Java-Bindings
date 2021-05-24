@@ -29,17 +29,17 @@ public class SerializableObject extends OTIOObject {
 
     private native void initialize();
 
-    public native boolean toJSONFile(String fileName) throws Exception;
+    public native boolean toJSONFile(String fileName) throws OpenTimelineIOException;
 
-    public native boolean toJSONFile(String fileName, int indent) throws Exception;
+    public native boolean toJSONFile(String fileName, int indent) throws OpenTimelineIOException;
 
-    public native String toJSONString() throws Exception;
+    public native String toJSONString() throws OpenTimelineIOException;
 
-    public native String toJSONString(int indent) throws Exception;
+    public native String toJSONString(int indent) throws OpenTimelineIOException;
 
-    public static native SerializableObject fromJSONFile(String fileName) throws Exception;
+    public static native SerializableObject fromJSONFile(String fileName) throws OpenTimelineIOException;
 
-    public static native SerializableObject fromJSONString(String input) throws Exception;
+    public static native SerializableObject fromJSONString(String input) throws OpenTimelineIOException;
 
     /**
      * Returns true if the contents of self and other match.
@@ -54,7 +54,7 @@ public class SerializableObject extends OTIOObject {
      *
      * @return a deepcopy of the object
      */
-    public native SerializableObject deepCopy() throws Exception;
+    public native SerializableObject deepCopy() throws OpenTimelineIOException;
 
     public native AnyDictionary dynamicFields();
 

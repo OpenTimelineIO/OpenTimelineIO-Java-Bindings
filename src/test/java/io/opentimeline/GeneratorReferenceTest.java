@@ -42,7 +42,7 @@ public class GeneratorReferenceTest {
     }
 
     @Test
-    public void testConstructor() throws Exception {
+    public void testConstructor() throws OpenTimelineIOException {
         assertEquals(generatorReference.getGeneratorKind(), "SMPTEBars");
         assertEquals(generatorReference.getName(), "SMPTEBars");
         assertEquals(generatorReference.getParameters().get("test_param").safelyCastDouble(), 5.0);
@@ -57,7 +57,7 @@ public class GeneratorReferenceTest {
     }
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() throws OpenTimelineIOException {
         Any refAny = new Any(generatorReference);
         Serialization serialization = new Serialization();
         String encoded = serialization.serializeJSONToString(refAny);
@@ -84,7 +84,7 @@ public class GeneratorReferenceTest {
     }
 
     @Test
-    public void testReadFile() throws Exception {
+    public void testReadFile() throws OpenTimelineIOException {
         String projectRootDir = System.getProperty("user.dir");
         String sampleDataDir = projectRootDir + File.separator +
                 "src" + File.separator + "test" + File.separator + "sample_data";

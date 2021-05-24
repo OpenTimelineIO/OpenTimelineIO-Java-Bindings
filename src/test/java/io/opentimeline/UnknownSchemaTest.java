@@ -55,7 +55,7 @@ public class UnknownSchemaTest {
     SerializableObject orig;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() throws OpenTimelineIOException {
         orig = SerializableObject.fromJSONString(hasUnknownSchema);
     }
 
@@ -73,7 +73,7 @@ public class UnknownSchemaTest {
     }
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() throws OpenTimelineIOException {
         String serialized = orig.toJSONString();
         SerializableObject testOTIO = SerializableObject.fromJSONString(serialized);
         assertTrue(testOTIO.isEquivalentTo(orig));

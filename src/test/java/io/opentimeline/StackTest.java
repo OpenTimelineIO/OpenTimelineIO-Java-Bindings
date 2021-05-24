@@ -25,7 +25,7 @@ public class StackTest {
     }
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() throws OpenTimelineIOException {
         Stack stack = new Stack.StackBuilder()
                 .setName("test")
                 .build();

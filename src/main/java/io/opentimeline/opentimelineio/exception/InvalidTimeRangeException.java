@@ -5,6 +5,6 @@ package io.opentimeline.opentimelineio.exception;
 
 public class InvalidTimeRangeException extends OpenTimelineIOException {
     public InvalidTimeRangeException(String message) {
-        super("An OpenTimelineIO call failed with: " + message);
+        super(message);
     }
 }

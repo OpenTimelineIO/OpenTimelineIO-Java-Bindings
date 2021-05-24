@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TrackTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() throws OpenTimelineIOException {
         Track track = new Track.TrackBuilder()
                 .setName("foo")
                 .build();
@@ -49,7 +49,7 @@ public class TrackTest {
         Exception exception = assertThrows(ChildAlreadyParentedException.class, () -> {
             assertFalse(sq.appendChild(it));
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: child already has a parent"));
+        assertTrue(exception.getMessage().equals("child already has a parent"));
 //        sq.clearChildren();
 
 //        List<Composable> children = new ArrayList<>();
@@ -85,7 +85,7 @@ public class TrackTest {
     }
 
     @Test
-    public void testTransactional() throws Exception {
+    public void testTransactional() throws OpenTimelineIOException {
         Item it = new Item.ItemBuilder().build();
         Track trackA = new Track.TrackBuilder().build();
         Track trackB = new Track.TrackBuilder().build();
@@ -109,7 +109,7 @@ public class TrackTest {
         Exception exception = assertThrows(ChildAlreadyParentedException.class, () -> {
             trackA.setChildren(children);
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: child already has a parent"));
+        assertTrue(exception.getMessage().equals("child already has a parent"));
         assertEquals(trackA.getChildren().size(), 3);
         try {
             it.close();
@@ -121,7 +121,7 @@ public class TrackTest {
     }
 
     @Test
-    public void testRange() throws Exception {
+    public void testRange() throws OpenTimelineIOException {
         RationalTime length = new RationalTime(5, 1);
         TimeRange tr = new TimeRange(new RationalTime(), length);
         Item it = new Item.ItemBuilder()
@@ -313,7 +313,7 @@ public class TrackTest {
         Exception exception = assertThrows(InvalidTimeRangeException.class, () -> {
             track.trimmedRangeOfChildAtIndex(0);
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: computed time range would be invalid"));
+        assertTrue(exception.getMessage().equals("computed time range would be invalid"));
 
         TimeRange notNothing = track.trimmedRangeOfChildAtIndex(1);
         assertEquals(notNothing, track.getSourceRange());
@@ -325,7 +325,7 @@ public class TrackTest {
         exception = assertThrows(InvalidTimeRangeException.class, () -> {
             track.trimmedRangeOfChildAtIndex(1);
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: computed time range would be invalid"));
+        assertTrue(exception.getMessage().equals("computed time range would be invalid"));
 
         notNothing = track.trimmedRangeOfChildAtIndex(0);
         assertEquals(notNothing, track.getSourceRange());
@@ -339,7 +339,7 @@ public class TrackTest {
     }
 
     @Test
-    public void testRangeNested() throws Exception {
+    public void testRangeNested() throws OpenTimelineIOException {
         Clip clip1 = new Clip.ClipBuilder()
                 .setName("clip1")
                 .setSourceRange(
@@ -397,12 +397,12 @@ public class TrackTest {
         Exception exception = assertThrows(NotAChildException.class, () -> {
             outerTrack.getRangeOfChild(track.getChildren().get(1));
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: item is not a descendent of specified object"));
+        assertTrue(exception.getMessage().equals("item is not a descendent of specified object"));
 
         exception = assertThrows(NotAChildException.class, () -> {
             longTrack.getRangeOfChild(track.getChildren().get(1));
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: item is not a descendent of specified object"));
+        assertTrue(exception.getMessage().equals("item is not a descendent of specified object"));
 
         // the nested and long tracks should be the same length
         assertEquals(outerTrack.getDuration(), longTrack.getDuration());
@@ -559,7 +559,7 @@ public class TrackTest {
     }
 
     @Test
-    public void testNeighborsOfSimple() throws Exception {
+    public void testNeighborsOfSimple() throws OpenTimelineIOException {
         Track seq = new Track.TrackBuilder().build();
         Transition trans = new Transition.TransitionBuilder()
                 .setInOffset(new RationalTime(10, 24))
@@ -608,7 +608,7 @@ public class TrackTest {
     }
 
     @Test
-    public void testNeighborsOfFromData() throws Exception {
+    public void testNeighborsOfFromData() throws OpenTimelineIOException {
         String projectRootDir = System.getProperty("user.dir");
         String sampleDataDir = projectRootDir + File.separator +
                 "src" + File.separator + "test" + File.separator + "sample_data";
@@ -669,7 +669,7 @@ public class TrackTest {
     }
 
     @Test
-    public void testRangeOfAllChildren() throws Exception {
+    public void testRangeOfAllChildren() throws OpenTimelineIOException {
         String projectRootDir = System.getProperty("user.dir");
         String sampleDataDir = projectRootDir + File.separator +
                 "src" + File.separator + "test" + File.separator + "sample_data";

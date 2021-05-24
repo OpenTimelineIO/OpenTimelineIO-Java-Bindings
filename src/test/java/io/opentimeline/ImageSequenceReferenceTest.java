@@ -59,7 +59,7 @@ public class ImageSequenceReferenceTest {
     }
 
     @Test
-    public void testSerializeRoundtrip() throws Exception {
+    public void testSerializeRoundtrip() throws OpenTimelineIOException {
         AnyDictionary metadata = new AnyDictionary();
         AnyDictionary subMetadata = new AnyDictionary();
         subMetadata.put("foo", new Any("bar"));
@@ -186,11 +186,9 @@ public class ImageSequenceReferenceTest {
         Exception exception = assertThrows(JSONParseException.class, () -> {
             SerializableObject decoded = SerializableObject.fromJSONString(encoded);
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: JSON parse error on input string: " +
-                "JSON parse error: While reading object named '' (of type 'opentimelineio::v1_0::ImageSequenceReference'): " +
+        assertTrue(exception.getMessage().equals("JSON parse error: While reading object named '' (of type 'opentimelineio::v1_0::ImageSequenceReference'): " +
                 "Unknown missing_frame_policy: BOGUS (near line 30)") ||
-                exception.getMessage().equals("An OpenTimelineIO call failed with: JSON parse error on input string: " +
-                        "JSON parse error: While reading object named '' (of type 'class opentimelineio::v1_0::ImageSequenceReference'): " +
+                exception.getMessage().equals("JSON parse error: While reading object named '' (of type 'class opentimelineio::v1_0::ImageSequenceReference'): " +
                         "Unknown missing_frame_policy: BOGUS (near line 30)"));
     }
 
@@ -548,7 +546,7 @@ public class ImageSequenceReferenceTest {
         Exception exception = assertThrows(InvalidTimeRangeException.class, () -> {
             ref.getFrameForTime(new RationalTime(73, 30));
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: computed time range would be invalid"));
+        assertTrue(exception.getMessage().equals("computed time range would be invalid"));
         try {
             ref.close();
         } catch (Exception e) {
@@ -601,7 +599,7 @@ public class ImageSequenceReferenceTest {
         Exception exception = assertThrows(InvalidTimeRangeException.class, () -> {
             ref.getFrameRangeForTimeRange(timeRange);
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: computed time range would be invalid"));
+        assertTrue(exception.getMessage().equals("computed time range would be invalid"));
         try {
             ref.close();
         } catch (Exception e) {

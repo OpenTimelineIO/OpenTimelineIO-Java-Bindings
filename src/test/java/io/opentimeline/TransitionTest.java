@@ -52,7 +52,7 @@ public class TransitionTest {
     }
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() throws OpenTimelineIOException {
         AnyDictionary metadata = new AnyDictionary();
         Any any = new Any("bar");
         metadata.put("foo", any);

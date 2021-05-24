@@ -3,8 +3,8 @@
 
 package io.opentimeline.opentimelineio.exception;
 
-public class MalformedSchemaException extends OpenTimelineIOException {
-    public MalformedSchemaException(String message) {
+public class TypeMismatchException extends OpenTimelineIOException {
+    public TypeMismatchException(String message) {
         super(message);
     }
 }

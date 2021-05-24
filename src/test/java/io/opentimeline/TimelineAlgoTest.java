@@ -20,7 +20,7 @@ public class TimelineAlgoTest {
     Timeline timeline = null;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() throws OpenTimelineIOException {
         String tlString = "{\n" +
                 "                \"OTIO_SCHEMA\": \"Timeline.1\",\n" +
                 "                \"metadata\": {},\n" +
@@ -114,7 +114,7 @@ public class TimelineAlgoTest {
     }
 
     @Test
-    public void testTrimToExistingRange() throws Exception{
+    public void testTrimToExistingRange() throws OpenTimelineIOException{
         Stack stack = timeline.getTracks();
         List<Composable> tracks = stack.getChildren();
         Track originalTrack = (Track) tracks.get(0);
@@ -142,7 +142,7 @@ public class TimelineAlgoTest {
     }
 
     @Test
-    public void testTrimToLongerRange() throws Exception {
+    public void testTrimToLongerRange() throws OpenTimelineIOException {
         // trim to a larger range
         Timeline trimmed = new Algorithms().timelineTrimmedToRange(timeline,
                 new TimeRange(
@@ -160,7 +160,7 @@ public class TimelineAlgoTest {
     }
 
     @Test
-    public void testTrimFront() throws Exception {
+    public void testTrimFront() throws OpenTimelineIOException {
         Stack stack = timeline.getTracks();
         List<Composable> tracks = stack.getChildren();
         Track originalTrack = (Track) tracks.get(0);
@@ -208,7 +208,7 @@ public class TimelineAlgoTest {
     }
 
     @Test
-    public void testTrimWithTransitions() throws Exception {
+    public void testTrimWithTransitions() throws OpenTimelineIOException {
         Stack stack = timeline.getTracks();
         List<Composable> tracks = stack.getChildren();
         Track originalTrack = (Track) tracks.get(0);
@@ -231,7 +231,7 @@ public class TimelineAlgoTest {
                             new RationalTime(5, 24),
                             new RationalTime(50, 24)));
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: cannot trim transition: Cannot trim in the middle of a transition"));
+        assertTrue(exception.getMessage().equals("cannot trim transition: Cannot trim in the middle of a transition"));
 
         exception = assertThrows(TransitionTrimException.class, () -> {
             Timeline trimmed = new Algorithms().timelineTrimmedToRange(timeline,
@@ -239,7 +239,7 @@ public class TimelineAlgoTest {
                             new RationalTime(45, 24),
                             new RationalTime(50, 24)));
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: cannot trim transition: Cannot trim in the middle of a transition"));
+        assertTrue(exception.getMessage().equals("cannot trim transition: Cannot trim in the middle of a transition"));
 
         Timeline trimmed = new Algorithms().timelineTrimmedToRange(timeline,
                 new TimeRange(

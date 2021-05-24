@@ -5,6 +5,7 @@ package io.opentimeline;
 
 import io.opentimeline.opentime.IsDropFrameRate;
 import io.opentimeline.opentime.RationalTime;
+import io.opentimeline.opentime.exception.*;
 import io.opentimeline.util.Pair;
 import io.opentimeline.util.Triplet;
 import org.junit.jupiter.api.Test;
@@ -105,14 +106,14 @@ public class RationalTimeTest {
     }
 
     @Test
-    public void testTimecodeConvert() {
+    public void testTimecodeConvert() throws OpentimeException {
         String timecode = "00:06:56:17";
         RationalTime t = RationalTime.fromTimecode(timecode, 24);
         assertEquals(timecode, t.toTimecode());
     }
 
     @Test
-    public void testTimecode24() {
+    public void testTimecode24() throws OpentimeException {
         String timecode = "00:00:01:00";
         RationalTime t = new RationalTime(24, 24);
         assertTrue(t.equals(RationalTime.fromTimecode(timecode, 24)));
@@ -147,7 +148,7 @@ public class RationalTimeTest {
     }
 
     @Test
-    public void testTimecodeZero() {
+    public void testTimecodeZero() throws OpentimeException {
         RationalTime t = new RationalTime();
         String timecode = "00:00:00:00";
         assertEquals(timecode, t.toTimecode(24, IsDropFrameRate.InferFromRate));
@@ -155,7 +156,7 @@ public class RationalTimeTest {
     }
 
     @Test
-    public void testLongRunningTimecode() {
+    public void testLongRunningTimecode() throws OpentimeException {
         long finalFrameNumber = 24 * 60 * 60 * 24 - 1;
         RationalTime finalTime = RationalTime.fromFrames(finalFrameNumber, 24);
         assertEquals(finalTime.toTimecode(), "23:59:59:23");
@@ -178,7 +179,7 @@ public class RationalTimeTest {
     }
 
     @Test
-    public void testTimecode23967fps() {
+    public void testTimecode23967fps() throws OpentimeException {
         /* This should behave exactly like 24fps */
         String timecode = "00:00:01:00";
         RationalTime t = new RationalTime(24, 23.976);
@@ -203,15 +204,15 @@ public class RationalTimeTest {
 
     @Test
     public void testConvertingNegativeValuesToTimecode() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(NegativeValueException.class, () -> {
             RationalTime t = new RationalTime(-1, 25);
             String tc = t.toTimecode();
         });
-        assertTrue(exception.getMessage().equals("An OpenTime call failed with value cannot be negative here"));
+        assertEquals(exception.getMessage(), "value cannot be negative here");
     }
 
     @Test
-    public void testDropframeTimecode2997fps() {
+    public void testDropframeTimecode2997fps() throws OpentimeException {
         /* Test drop frame in action. Focused on minute roll overs
 
         We nominal_fps 30 for frame calculation
@@ -315,7 +316,7 @@ public class RationalTimeTest {
     }
 
     @Test
-    public void testTimecodeNTSC2997fps() {
+    public void testTimecodeNTSC2997fps() throws OpentimeException {
         double frames = 1084319;
         double rateFloat = 30000.0 / 1001.0;
         RationalTime t = new RationalTime(frames, rateFloat);
@@ -330,15 +331,15 @@ public class RationalTimeTest {
         String tcAuto = t.toTimecode(rateFloat, IsDropFrameRate.InferFromRate);
         assertEquals(tcAuto, "10:03:00;05");
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(InvalidRateForDropFrameTimecodeException.class, () -> {
             RationalTime invalidDFRate = new RationalTime(30, 24000.0 / 1001.0);
             String tcInvalid = invalidDFRate.toTimecode(24000.0 / 1001.0, IsDropFrameRate.ForceYes);
         });
-        assertTrue(exception.getMessage().equals("An OpenTime call failed with rate is not valid for drop frame timecode"));
+        assertEquals(exception.getMessage(), "rate is not valid for drop frame timecode");
     }
 
     @Test
-    public void testTimecode2997() {
+    public void testTimecode2997() throws OpentimeException {
         ArrayList<Triplet<Double, String, String>> refValues = new ArrayList<>();
         refValues.add(new Triplet<>(10789d, "00:05:59:19", "00:05:59;29"));
         refValues.add(new Triplet<>(10790d, "00:05:59:20", "00:06:00;02"));
@@ -376,29 +377,29 @@ public class RationalTimeTest {
 
     @Test
     public void testFaultyFormattedTimecode() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(NonDropframeRateException.class, () -> {
             RationalTime t = RationalTime.fromTimecode("01:00:13;23", 24);
         });
-        assertTrue(exception.getMessage().equals("An OpenTime call failed with rate is not a dropframe rate"));
+        assertEquals(exception.getMessage(), "Timecode '01:00:13;23' indicates drop frame rate due to the ';' frame divider. Passed in rate 24 is of non-drop-frame-rate.");
     }
 
     @Test
     public void testInvalidRateToTimecodeFunctions() {
         RationalTime t = new RationalTime(100, 29.98);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(InvalidTimecodeRateException.class, () -> {
             String tc = t.toTimecode(29.98, IsDropFrameRate.InferFromRate);
         });
-        String expectedMessage = "An OpenTime call failed with invalid timecode rate";
-        assertTrue(exception.getMessage().equals(expectedMessage));
-        exception = assertThrows(IllegalArgumentException.class, () -> {
+        String expectedMessage = "invalid timecode rate";
+        assertEquals(expectedMessage, exception.getMessage());
+        exception = assertThrows(InvalidTimecodeRateException.class, () -> {
             String tc = t.toTimecode();
         });
-        assertTrue(exception.getMessage().equals(expectedMessage));
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
-    public void testTimeString24() {
+    public void testTimeString24() throws OpentimeException {
         String timeString = "00:00:00.041667";
         RationalTime t = new RationalTime(1, 24);
         RationalTime timeObj = RationalTime.fromTimeString(timeString, 24);
@@ -437,7 +438,7 @@ public class RationalTimeTest {
     }
 
     @Test
-    public void testTimeString25() {
+    public void testTimeString25() throws OpentimeException {
         String timeString = "00:00:01";
         RationalTime t = new RationalTime(25, 25);
         RationalTime timeObj = RationalTime.fromTimeString(timeString, 25);
@@ -483,7 +484,7 @@ public class RationalTimeTest {
     }
 
     @Test
-    public void testTimeStringZero() {
+    public void testTimeStringZero() throws OpentimeException {
         RationalTime t = new RationalTime();
         String timeString = "00:00:00.0";
 
@@ -493,7 +494,7 @@ public class RationalTimeTest {
     }
 
     @Test
-    public void testToTimeStringMicrosecondsStartWithZero() {
+    public void testToTimeStringMicrosecondsStartWithZero() throws OpentimeException {
         /*
         this number has a leading 0 in the fractional part when converted to
         time string (ie 27.08333)
@@ -505,7 +506,7 @@ public class RationalTimeTest {
     }
 
     @Test
-    public void testLongRunningTimeString24() {
+    public void testLongRunningTimeString24() throws OpentimeException {
         int finalFrameNumber = 24 * 60 * 60 * 24 - 1;
         RationalTime finalTime = RationalTime.fromFrames(finalFrameNumber, 24);
         assertEquals(finalTime.toTimeString(), "23:59:59.958333");
@@ -669,7 +670,7 @@ public class RationalTimeTest {
     }
 
     @Test
-    public void testPassingNDFTimecodeAtDFRate() {
+    public void testPassingNDFTimecodeAtDFRate() throws OpentimeException {
         String DF_TC = "01:00:02;05";
         String NDF_TC = "00:59:58:17";
         int frames = 107957;

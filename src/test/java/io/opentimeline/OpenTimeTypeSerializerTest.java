@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class OpenTimeTypeSerializerTest {
 
     @Test
-    public void testSerializeTime() throws Exception {
+    public void testSerializeTime() throws OpenTimelineIOException {
         RationalTime rt = new RationalTime(15, 24);
         Any rtAny = new Any(rt);
         Serialization serialization = new Serialization();

@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class EffectTest {
 
     @Test
-    public void testConstructor() throws Exception {
+    public void testConstructor() throws OpenTimelineIOException {
         AnyDictionary metadata = new AnyDictionary();
         metadata.put("foo", new Any("bar"));
         Effect effect = new Effect.EffectBuilder()

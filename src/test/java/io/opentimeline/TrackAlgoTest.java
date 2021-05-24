@@ -20,7 +20,7 @@ public class TrackAlgoTest {
     Track sampleTrack = null;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() throws OpenTimelineIOException {
         String sampleTrackStr = "{\n" +
                 "            \"OTIO_SCHEMA\": \"Track.1\",\n" +
                 "            \"children\": [\n" +
@@ -99,7 +99,7 @@ public class TrackAlgoTest {
     }
 
     @Test
-    public void testTrimToExistingRange() throws Exception {
+    public void testTrimToExistingRange() throws OpenTimelineIOException {
         assertEquals(sampleTrack.getTrimmedRange(),
                 new TimeRange(
                         new RationalTime(0, 24),
@@ -121,7 +121,7 @@ public class TrackAlgoTest {
     }
 
     @Test
-    public void testTrimToLongerRange() throws Exception {
+    public void testTrimToLongerRange() throws OpenTimelineIOException {
         // trim to the exact range it already has
         Track trimmed = new Algorithms().trackTrimmedToRange(
                 sampleTrack,
@@ -153,7 +153,7 @@ public class TrackAlgoTest {
     }
 
     @Test
-    public void testTrimEnd() throws Exception {
+    public void testTrimEnd() throws OpenTimelineIOException {
         // trim off the end (clip C and part of B)
         Track trimmed = new Algorithms().trackTrimmedToRange(
                 sampleTrack,
@@ -185,7 +185,7 @@ public class TrackAlgoTest {
     }
 
     @Test
-    public void testTrimWithTransitions() throws Exception {
+    public void testTrimWithTransitions() throws OpenTimelineIOException {
         assertEquals(sampleTrack.getDuration(),
                 new RationalTime(150, 24));
         assertEquals(sampleTrack.getChildren().size(), 3);
@@ -208,7 +208,7 @@ public class TrackAlgoTest {
                             new RationalTime(5, 24),
                             new RationalTime(50, 24)));
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: cannot trim transition: " +
+        assertTrue(exception.getMessage().equals("cannot trim transition: " +
                 "Cannot trim in the middle of a transition"));
 
         exception = assertThrows(TransitionTrimException.class, () -> {
@@ -218,7 +218,7 @@ public class TrackAlgoTest {
                             new RationalTime(45, 24),
                             new RationalTime(50, 24)));
         });
-        assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: cannot trim transition: " +
+        assertTrue(exception.getMessage().equals("cannot trim transition: " +
                 "Cannot trim in the middle of a transition"));
 
         Track trimmed = new Algorithms().trackTrimmedToRange(

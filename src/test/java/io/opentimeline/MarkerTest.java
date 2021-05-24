@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MarkerTest {
 
     @Test
-    public void testConstructor() throws Exception {
+    public void testConstructor() throws OpenTimelineIOException {
         TimeRange tr = new TimeRange(
                 new RationalTime(5, 24),
                 new RationalTime(10, 24));
@@ -75,7 +75,7 @@ public class MarkerTest {
     }
 
     @Test
-    public void testUpgrade() throws Exception {
+    public void testUpgrade() throws OpenTimelineIOException {
         String src = "{\n" +
                 "            \"OTIO_SCHEMA\" : \"Marker.1\",\n" +
                 "            \"metadata\" : {},\n" +

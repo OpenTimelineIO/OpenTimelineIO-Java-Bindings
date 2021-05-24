@@ -4,6 +4,7 @@
 package io.opentimeline.opentime;
 
 import io.opentimeline.LibraryLoader;
+import io.opentimeline.opentime.exception.*;
 
 /**
  * Represents an instantaneous point in time, value * (1/rate) seconds
@@ -202,7 +203,7 @@ public class RationalTime implements Comparable<RationalTime> {
      * @param rate     the frame-rate to calculate timecode in terms of
      * @return RationalTime equivalent to timecode
      */
-    public static native RationalTime fromTimecode(String timecode, double rate) throws IllegalArgumentException;
+    public static native RationalTime fromTimecode(String timecode, double rate) throws InvalidTimecodeRateException, NonDropframeRateException, InvalidTimecodeStringException, TimecodeRateMismatchException;
 
     /**
      * Convert a time with microseconds string into a RationalTime
@@ -211,7 +212,7 @@ public class RationalTime implements Comparable<RationalTime> {
      * @param rate       The frame-rate to calculate timecode in terms of
      * @return RationalTime equivalent to timestring
      */
-    public static native RationalTime fromTimeString(String timeString, double rate) throws IllegalArgumentException;
+    public static native RationalTime fromTimeString(String timeString, double rate) throws InvalidTimecodeRateException, InvalidTimestringException;
 
     /**
      * Convert RationalTime to integer frames at same rate
@@ -248,7 +249,7 @@ public class RationalTime implements Comparable<RationalTime> {
      * @param dropFrame should the algorithm drop frames while conversion? [InferFromRate, ForceYes, ForceNo]
      * @return equivalent timecode
      */
-    public String toTimecode(double rate, IsDropFrameRate dropFrame) throws IllegalArgumentException {
+    public String toTimecode(double rate, IsDropFrameRate dropFrame) throws NegativeValueException, InvalidTimecodeRateException, InvalidRateForDropFrameTimecodeException {
         return toTimecodeNative(this, rate, dropFrame.getIndex());
     }
 
@@ -257,11 +258,11 @@ public class RationalTime implements Comparable<RationalTime> {
      *
      * @return equivalent timecode
      */
-    public String toTimecode() throws IllegalArgumentException {
+    public String toTimecode() throws NegativeValueException, InvalidTimecodeRateException, InvalidRateForDropFrameTimecodeException {
         return toTimecodeNative(this, getRate(), IsDropFrameRate.InferFromRate.getIndex());
     }
 
-    private static native String toTimecodeNative(RationalTime rationalTime, double rate, int dropFrameIndex) throws IllegalArgumentException;
+    private static native String toTimecodeNative(RationalTime rationalTime, double rate, int dropFrameIndex) throws NegativeValueException, InvalidTimecodeRateException, InvalidRateForDropFrameTimecodeException;
 
     /**
      * Convert to time with microseconds as formatted in FFMPEG

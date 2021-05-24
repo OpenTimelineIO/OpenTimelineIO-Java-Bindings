@@ -3,6 +3,8 @@
 
 package io.opentimeline.opentimelineio;
 
+import io.opentimeline.opentimelineio.exception.OpenTimelineIOException;
+
 public class Deserialization {
 
     /**
@@ -13,7 +15,7 @@ public class Deserialization {
      * @return was the JSON deserialized successfully?
      */
     public native boolean deserializeJSONFromString(
-            String input, Any destination) throws Exception;
+            String input, Any destination) throws OpenTimelineIOException;
 
     /**
      * Deserialize an OTIO JSON file and get the result in an Any object.
@@ -23,6 +25,6 @@ public class Deserialization {
      * @return was the JSON deserialized successfully?
      */
     public native boolean deserializeJSONFromFile(
-            String fileName, Any destination) throws Exception;
+            String fileName, Any destination) throws OpenTimelineIOException;
 
 }

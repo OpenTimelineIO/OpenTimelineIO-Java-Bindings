@@ -56,7 +56,7 @@ public class TimelineTest {
     }
 
     @Test
-    public void testMetadata() throws Exception {
+    public void testMetadata() throws OpenTimelineIOException {
         RationalTime rt = new RationalTime(12, 24);
         AnyDictionary metadata = new AnyDictionary();
         metadata.put("foo", new Any("bar"));
@@ -127,7 +127,7 @@ public class TimelineTest {
     }
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() throws OpenTimelineIOException {
         Clip clip = new Clip.ClipBuilder()
                 .setName("test_clip")
                 .setMediaReference(new MissingReference.MissingReferenceBuilder().build())
@@ -152,7 +152,7 @@ public class TimelineTest {
     }
 
     @Test
-    public void testSerializeOfSubclasses() throws Exception {
+    public void testSerializeOfSubclasses() throws OpenTimelineIOException {
         Clip clip1 = new Clip.ClipBuilder()
                 .setName("Test Clip")
                 .setMediaReference(new ExternalReference.ExternalReferenceBuilder()

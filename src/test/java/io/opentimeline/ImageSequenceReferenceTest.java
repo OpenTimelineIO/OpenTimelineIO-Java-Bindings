@@ -188,7 +188,10 @@ public class ImageSequenceReferenceTest {
         });
         assertTrue(exception.getMessage().equals("An OpenTimelineIO call failed with: JSON parse error on input string: " +
                 "JSON parse error: While reading object named '' (of type 'opentimelineio::v1_0::ImageSequenceReference'): " +
-                "Unknown missing_frame_policy: BOGUS (near line 30)"));
+                "Unknown missing_frame_policy: BOGUS (near line 30)") ||
+                exception.getMessage().equals("An OpenTimelineIO call failed with: JSON parse error on input string: " +
+                        "JSON parse error: While reading object named '' (of type 'class opentimelineio::v1_0::ImageSequenceReference'): " +
+                        "Unknown missing_frame_policy: BOGUS (near line 30)"));
     }
 
     @Test
@@ -495,7 +498,7 @@ public class ImageSequenceReferenceTest {
     }
 
     @Test
-    public void testFrameForTime() throws InvalidTimeRangeException{
+    public void testFrameForTime() throws InvalidTimeRangeException {
         ImageSequenceReference ref = new ImageSequenceReference.ImageSequenceReferenceBuilder()
                 .setTargetURLBase("file:///show/seq/shot/rndr/")
                 .setNamePrefix("show_shot.")

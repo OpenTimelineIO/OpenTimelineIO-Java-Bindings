@@ -43,7 +43,7 @@ Quick-Start
 You can add OpenTimelineIO as a gradle dependency to your `build.gradle` with:
 
 ```gradle
-implementation 'io.opentimeline:opentimelineio:0.14.0-beta-1'
+implementation 'io.opentimeline:opentimelineio:0.14.0-beta-2'
 ```
 
 You can add OpenTimelineIO as a maven dependency to your pom.xml with:
@@ -52,7 +52,7 @@ You can add OpenTimelineIO as a maven dependency to your pom.xml with:
 <dependency>
   <groupId>io.opentimeline</groupId>
   <artifactId>opentimelineio</artifactId>
-  <version>0.14.0-beta-1</version>
+  <version>0.14.0-beta-2</version>
 </dependency>
 ```
 

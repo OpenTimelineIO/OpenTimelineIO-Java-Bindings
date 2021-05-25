@@ -3,8 +3,8 @@
 
 package io.opentimeline.opentimelineio.exception;
 
-public class ChildAlreadyParentedException extends OpenTimelineIOException {
-    public ChildAlreadyParentedException(String message) {
+public class DeserializationException extends OpenTimelineIOException {
+    public DeserializationException(String message) {
         super(message);
     }
 }

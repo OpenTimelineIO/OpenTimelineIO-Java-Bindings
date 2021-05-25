@@ -57,7 +57,7 @@ jint processOTIOErrorStatus(JNIEnv *env, OTIO_NS::ErrorStatus &errorStatus) {
         }
         case OTIO_NS::ErrorStatus::Outcome::INTERNAL_ERROR:
         case OTIO_NS::ErrorStatus::Outcome::KEY_NOT_FOUND: {
-            return throwJavaException(env, "java/lang/RuntimeException",
+            return throwJavaException(env, "io/opentimeline/opentimelineio/exception/DeserializationException",
                                       errorStatus.full_description);
         }
         case OTIO_NS::ErrorStatus::Outcome::ILLEGAL_INDEX: {

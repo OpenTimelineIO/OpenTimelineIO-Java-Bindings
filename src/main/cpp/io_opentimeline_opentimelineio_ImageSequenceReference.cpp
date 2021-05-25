@@ -332,15 +332,13 @@ Java_io_opentimeline_opentimelineio_ImageSequenceReference_getNumberOfImagesInSe
 /*
  * Class:     io_opentimeline_opentimelineio_ImageSequenceReference
  * Method:    getFrameForTime
- * Signature: (Lio/opentimeline/opentime/RationalTime;Lio/opentimeline/opentimelineio/ErrorStatus;)I
+ * Signature: (Lio/opentimeline/opentime/RationalTime;)I
  */
-JNIEXPORT jint JNICALL
-Java_io_opentimeline_opentimelineio_ImageSequenceReference_getFrameForTime(
+JNIEXPORT jint JNICALL Java_io_opentimeline_opentimelineio_ImageSequenceReference_getFrameForTime(
         JNIEnv *env,
         jobject thisObj,
-        jobject rationalTimeObj,
-        jobject errorStatusObj) {
-    if (rationalTimeObj == nullptr || errorStatusObj == nullptr) {
+        jobject rationalTimeObj) {
+    if (rationalTimeObj == nullptr) {
         throwNullPointerException(env, "");
         return -1;
     }
@@ -349,51 +347,43 @@ Java_io_opentimeline_opentimelineio_ImageSequenceReference_getFrameForTime(
     auto imageSequenceReference = thisHandle->value;
     opentime::RationalTime rt =
             rationalTimeFromJObject(env, rationalTimeObj);
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    return imageSequenceReference->frame_for_time(rt, errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    int result = imageSequenceReference->frame_for_time(rt, &errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
+    return result;
 }
 
 /*
  * Class:     io_opentimeline_opentimelineio_ImageSequenceReference
  * Method:    getTargetURLForImageNumber
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Ljava/lang/String;
+ * Signature: (I)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL
-Java_io_opentimeline_opentimelineio_ImageSequenceReference_getTargetURLForImageNumber(
-        JNIEnv *env, jobject thisObj, jint imageNumber, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jstring JNICALL Java_io_opentimeline_opentimelineio_ImageSequenceReference_getTargetURLForImageNumber(
+        JNIEnv *env, jobject thisObj, jint imageNumber) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<ImageSequenceReference>>(env, thisObj);
     auto imageSequenceReference = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    return env->NewStringUTF(
-            imageSequenceReference->target_url_for_image_number(imageNumber, errorStatusHandle)
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    jstring result = env->NewStringUTF(
+            imageSequenceReference->target_url_for_image_number(imageNumber, &errorStatus)
                     .c_str());
+    processOTIOErrorStatus(env, errorStatus);
+    return result;
 }
 
 /*
  * Class:     io_opentimeline_opentimelineio_ImageSequenceReference
  * Method:    presentationTimeForImageNumber
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/RationalTime;
+ * Signature: (I)Lio/opentimeline/opentime/RationalTime;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_ImageSequenceReference_presentationTimeForImageNumber(
-        JNIEnv *env, jobject thisObj, jint imageNumber, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_ImageSequenceReference_presentationTimeForImageNumber(
+        JNIEnv *env, jobject thisObj, jint imageNumber) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<ImageSequenceReference>>(env, thisObj);
     auto imageSequenceReference = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
+    auto errorStatus = OTIO_NS::ErrorStatus();
     RationalTime rt = imageSequenceReference->presentation_time_for_image_number(
-            imageNumber, errorStatusHandle);
+            imageNumber, &errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     return rationalTimeToJObject(env, rt);
 }

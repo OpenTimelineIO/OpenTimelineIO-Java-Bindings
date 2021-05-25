@@ -46,85 +46,65 @@ Java_io_opentimeline_opentimelineio_Stack_initialize(
 /*
  * Class:     io_opentimeline_opentimelineio_Stack
  * Method:    rangeOfChildAtIndex
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (I)Lio/opentimeline/opentime/TimeRange;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Stack_rangeOfChildAtIndex(
-        JNIEnv *env, jobject thisObj, jint index, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Stack_rangeOfChildAtIndex(
+        JNIEnv *env, jobject thisObj, jint index) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Stack>>(env, thisObj);
     auto stack = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = stack->range_of_child_at_index(index, errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = stack->range_of_child_at_index(index, &errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     return timeRangeToJObject(env, result);
 }
 
 /*
  * Class:     io_opentimeline_opentimelineio_Stack
  * Method:    trimmedRangeOfChildAtIndex
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (I)Lio/opentimeline/opentime/TimeRange;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Stack_trimmedRangeOfChildAtIndex(
-        JNIEnv *env, jobject thisObj, jint index, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Stack_trimmedRangeOfChildAtIndex(
+        JNIEnv *env, jobject thisObj, jint index) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Stack>>(env, thisObj);
     auto stack = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
+    auto errorStatus = OTIO_NS::ErrorStatus();
     auto result =
-            stack->trimmed_range_of_child_at_index(index, errorStatusHandle);
+            stack->trimmed_range_of_child_at_index(index, &errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     return timeRangeToJObject(env, result);
 }
 
 /*
  * Class:     io_opentimeline_opentimelineio_Stack
  * Method:    getAvailableRange
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Stack_getAvailableRange(
-        JNIEnv *env, jobject thisObj, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Stack_getAvailableRange(
+        JNIEnv *env, jobject thisObj) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Stack>>(env, thisObj);
     auto stack = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = stack->available_range(errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = stack->available_range(&errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     return timeRangeToJObject(env, result);
 }
 
 /*
  * Class:     io_opentimeline_opentimelineio_Stack
  * Method:    getRangeOfAllChildren
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Ljava/util/HashMap;
+ * Signature: ()Ljava/util/HashMap;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Stack_getRangeOfAllChildren(
-        JNIEnv *env, jobject thisObj, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Stack_getRangeOfAllChildren(
+        JNIEnv *env, jobject thisObj) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Stack>>(env, thisObj);
     auto stack = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = stack->range_of_all_children(errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = stack->range_of_all_children(&errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
 
     jclass hashMapClass = env->FindClass("java/util/HashMap");
     jmethodID hashMapInit = env->GetMethodID(hashMapClass, "<init>", "(I)V");

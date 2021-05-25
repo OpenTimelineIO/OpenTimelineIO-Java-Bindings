@@ -5,6 +5,7 @@ package io.opentimeline.opentimelineio;
 
 import io.opentimeline.OTIONative;
 import io.opentimeline.OTIOObject;
+import io.opentimeline.opentimelineio.exception.*;
 
 /**
  * Base object for things that can be [de]serialized to/from .otio files.
@@ -28,17 +29,17 @@ public class SerializableObject extends OTIOObject {
 
     private native void initialize();
 
-    public native boolean toJSONFile(String fileName, ErrorStatus errorStatus);
+    public native boolean toJSONFile(String fileName) throws OpenTimelineIOException;
 
-    public native boolean toJSONFile(String fileName, ErrorStatus errorStatus, int indent);
+    public native boolean toJSONFile(String fileName, int indent) throws OpenTimelineIOException;
 
-    public native String toJSONString(ErrorStatus errorStatus);
+    public native String toJSONString() throws OpenTimelineIOException;
 
-    public native String toJSONString(ErrorStatus errorStatus, int indent);
+    public native String toJSONString(int indent) throws OpenTimelineIOException;
 
-    public static native SerializableObject fromJSONFile(String fileName, ErrorStatus errorStatus);
+    public static native SerializableObject fromJSONFile(String fileName) throws OpenTimelineIOException;
 
-    public static native SerializableObject fromJSONString(String input, ErrorStatus errorStatus);
+    public static native SerializableObject fromJSONString(String input) throws OpenTimelineIOException;
 
     /**
      * Returns true if the contents of self and other match.
@@ -51,10 +52,9 @@ public class SerializableObject extends OTIOObject {
     /**
      * Create a deepcopy of the SerializableObject
      *
-     * @param errorStatus errorStatus to report error while cloning
      * @return a deepcopy of the object
      */
-    public native SerializableObject clone(ErrorStatus errorStatus);
+    public native SerializableObject deepCopy() throws OpenTimelineIOException;
 
     public native AnyDictionary dynamicFields();
 

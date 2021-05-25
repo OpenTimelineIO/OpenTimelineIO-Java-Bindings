@@ -120,36 +120,29 @@ Java_io_opentimeline_opentimelineio_Timeline_setGlobalStartTime(
 /*
  * Class:     io_opentimeline_opentimelineio_Timeline
  * Method:    getDuration
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/RationalTime;
+ * Signature: ()Lio/opentimeline/opentime/RationalTime;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Timeline_getDuration(
-        JNIEnv *env, jobject thisObj, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Timeline_getDuration(
+        JNIEnv *env, jobject thisObj) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Timeline>>(env, thisObj);
     auto timeline = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = timeline->duration(errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = timeline->duration(&errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     return rationalTimeToJObject(env, result);
 }
 
 /*
  * Class:     io_opentimeline_opentimelineio_Timeline
  * Method:    getRangeOfChild
- * Signature: (Lio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (Lio/opentimeline/opentimelineio/Composable;)Lio/opentimeline/opentime/TimeRange;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Timeline_getRangeOfChild(
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Timeline_getRangeOfChild(
         JNIEnv *env,
         jobject thisObj,
-        jobject composableChild,
-        jobject errorStatusObj) {
-    if (composableChild == nullptr || errorStatusObj == nullptr) {
+        jobject composableChild) {
+    if (composableChild == nullptr) {
         throwNullPointerException(env, "");
         return nullptr;
     }
@@ -159,9 +152,9 @@ Java_io_opentimeline_opentimelineio_Timeline_getRangeOfChild(
     auto childHandle =
             getHandle<SerializableObject::Retainer<Composable>>(env, composableChild);
     auto child = childHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = timeline->range_of_child(child, errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = timeline->range_of_child(child, &errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     return timeRangeToJObject(env, result);
 }
 

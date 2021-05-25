@@ -10,26 +10,26 @@ extern "C" {
 /*
  * Class:     io_opentimeline_opentimelineio_Algorithms
  * Method:    flattenStack
- * Signature: (Lio/opentimeline/opentimelineio/Stack;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentimelineio/Track;
+ * Signature: (Lio/opentimeline/opentimelineio/Stack;)Lio/opentimeline/opentimelineio/Track;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Algorithms_flattenStack
-  (JNIEnv *, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Algorithms
  * Method:    flattenStackNative
- * Signature: ([Lio/opentimeline/opentimelineio/Track;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentimelineio/Track;
+ * Signature: ([Lio/opentimeline/opentimelineio/Track;)Lio/opentimeline/opentimelineio/Track;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Algorithms_flattenStackNative
-  (JNIEnv *, jobject, jobjectArray, jobject);
+  (JNIEnv *, jobject, jobjectArray);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Algorithms
  * Method:    trackTrimmedToRange
- * Signature: (Lio/opentimeline/opentimelineio/Track;Lio/opentimeline/opentime/TimeRange;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentimelineio/Track;
+ * Signature: (Lio/opentimeline/opentimelineio/Track;Lio/opentimeline/opentime/TimeRange;)Lio/opentimeline/opentimelineio/Track;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Algorithms_trackTrimmedToRange
-  (JNIEnv *, jobject, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject, jobject);
 
 #ifdef __cplusplus
 }

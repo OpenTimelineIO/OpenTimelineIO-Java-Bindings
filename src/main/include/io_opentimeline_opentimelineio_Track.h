@@ -34,50 +34,50 @@ JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_Track_setKind
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    rangeOfChildAtIndex
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (I)Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_rangeOfChildAtIndex
-  (JNIEnv *, jobject, jint, jobject);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    trimmedRangeOfChildAtIndex
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (I)Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_trimmedRangeOfChildAtIndex
-  (JNIEnv *, jobject, jint, jobject);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    getAvailableRange
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_getAvailableRange
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    getHandlesOfChild
- * Signature: (Lio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/util/Pair;
+ * Signature: (Lio/opentimeline/opentimelineio/Composable;)Lio/opentimeline/util/Pair;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_getHandlesOfChild
-  (JNIEnv *, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    getNeighborsOfNative
- * Signature: (Lio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;I)Lio/opentimeline/util/Pair;
+ * Signature: (Lio/opentimeline/opentimelineio/Composable;I)Lio/opentimeline/util/Pair;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_getNeighborsOfNative
-  (JNIEnv *, jobject, jobject, jobject, jint);
+  (JNIEnv *, jobject, jobject, jint);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    getRangeOfAllChildren
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Ljava/util/HashMap;
+ * Signature: ()Ljava/util/HashMap;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_getRangeOfAllChildren
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

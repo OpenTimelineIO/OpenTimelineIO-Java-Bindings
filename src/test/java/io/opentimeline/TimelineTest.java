@@ -6,6 +6,7 @@ package io.opentimeline;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class TimelineTest {
     }
 
     @Test
-    public void testMetadata() {
+    public void testMetadata() throws OpenTimelineIOException {
         RationalTime rt = new RationalTime(12, 24);
         AnyDictionary metadata = new AnyDictionary();
         metadata.put("foo", new Any("bar"));
@@ -66,28 +67,26 @@ public class TimelineTest {
                 .build();
         assertEquals(tl.getMetadata().get("foo").safelyCastString(), "bar");
 
-        ErrorStatus errorStatus = new ErrorStatus();
-        String encoded = tl.toJSONString(errorStatus);
-        Timeline decoded = (Timeline) SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = tl.toJSONString();
+        Timeline decoded = (Timeline) SerializableObject.fromJSONString(encoded);
         assertEquals(decoded, tl);
         assertEquals(tl.getMetadata(), decoded.getMetadata());
         try {
             tl.close();
             decoded.close();
             metadata.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testRange() {
+    public void testRange() throws ChildAlreadyParentedException, CannotComputeAvailableRangeException, NotAChildException, ObjectWithoutDurationException{
         Track track = new Track.TrackBuilder().build();
         Stack stack = new Stack.StackBuilder().build();
         RationalTime rt = new RationalTime(5, 24);
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(stack.appendChild(track, errorStatus));
+
+        assertTrue(stack.appendChild(track));
         Timeline timeline = new Timeline.TimelineBuilder().build();
         timeline.setTracks(stack);
 
@@ -112,43 +111,40 @@ public class TimelineTest {
                 .setMediaReference(mr)
                 .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(rt).build())
                 .build();
-        assertTrue(track.appendChild(cl, errorStatus));
-        assertTrue(track.appendChild(cl2, errorStatus));
-        assertTrue(track.appendChild(cl3, errorStatus));
+        assertTrue(track.appendChild(cl));
+        assertTrue(track.appendChild(cl2));
+        assertTrue(track.appendChild(cl3));
 
-        assertTrue(timeline.getDuration(errorStatus).equals(rt.add(rt).add(rt)));
-        assertEquals(timeline.getRangeOfChild(cl, errorStatus),
+        assertTrue(timeline.getDuration().equals(rt.add(rt).add(rt)));
+        assertEquals(timeline.getRangeOfChild(cl),
                 ((Track) timeline.getTracks().getChildren().get(0))
-                        .getRangeOfChildAtIndex(0, errorStatus));
+                        .getRangeOfChildAtIndex(0));
         try {
             timeline.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testSerialize() {
+    public void testSerialize() throws OpenTimelineIOException {
         Clip clip = new Clip.ClipBuilder()
                 .setName("test_clip")
                 .setMediaReference(new MissingReference.MissingReferenceBuilder().build())
                 .build();
         Track track = new Track.TrackBuilder().build();
         Stack stack = new Stack.StackBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(stack.appendChild(track, errorStatus));
+        assertTrue(stack.appendChild(track));
         Timeline timeline = new Timeline.TimelineBuilder().build();
         timeline.setTracks(stack);
-        assertTrue(track.appendChild(clip, errorStatus));
-        String encoded = timeline.toJSONString(errorStatus);
-        Timeline decoded = (Timeline) SerializableObject.fromJSONString(encoded, errorStatus);
+        assertTrue(track.appendChild(clip));
+        String encoded = timeline.toJSONString();
+        Timeline decoded = (Timeline) SerializableObject.fromJSONString(encoded);
         assertEquals(decoded, timeline);
-        String encoded2 = decoded.toJSONString(errorStatus);
+        String encoded2 = decoded.toJSONString();
         assertEquals(encoded, encoded2);
         try {
             timeline.close();
-            errorStatus.close();
             decoded.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -156,7 +152,7 @@ public class TimelineTest {
     }
 
     @Test
-    public void testSerializeOfSubclasses() {
+    public void testSerializeOfSubclasses() throws OpenTimelineIOException {
         Clip clip1 = new Clip.ClipBuilder()
                 .setName("Test Clip")
                 .setMediaReference(new ExternalReference.ExternalReferenceBuilder()
@@ -165,16 +161,15 @@ public class TimelineTest {
                 .build();
         Track track = new Track.TrackBuilder().build();
         Stack stack = new Stack.StackBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(stack.appendChild(track, errorStatus));
+        assertTrue(stack.appendChild(track));
         Timeline tl1 = new Timeline.TimelineBuilder()
                 .setName("Testing Serialization")
                 .build();
         tl1.setTracks(stack);
-        assertTrue(track.appendChild(clip1, errorStatus));
-        String serialized = tl1.toJSONString(errorStatus);
+        assertTrue(track.appendChild(clip1));
+        String serialized = tl1.toJSONString();
         assertNotNull(serialized);
-        Timeline tl2 = (Timeline) SerializableObject.fromJSONString(serialized, errorStatus);
+        Timeline tl2 = (Timeline) SerializableObject.fromJSONString(serialized);
         assertEquals(tl2, tl1);
         assertEquals(tl1.getName(), tl2.getName());
         assertEquals(tl1.getTracks().getChildren().size(), 1);
@@ -195,7 +190,6 @@ public class TimelineTest {
             tl2.close();
             clip1.close();
             clip2.close();
-            errorStatus.close();
             track.close();
             stack.close();
             track1.close();
@@ -206,7 +200,7 @@ public class TimelineTest {
     }
 
     @Test
-    public void testTracks() {
+    public void testTracks() throws ChildAlreadyParentedException {
         Track V1 = new Track.TrackBuilder()
                 .setName("V1")
                 .setKind(Track.Kind.video)
@@ -224,11 +218,10 @@ public class TimelineTest {
                 .setKind(Track.Kind.audio)
                 .build();
         Stack stack = new Stack.StackBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(stack.appendChild(V1, errorStatus));
-        assertTrue(stack.appendChild(V2, errorStatus));
-        assertTrue(stack.appendChild(A1, errorStatus));
-        assertTrue(stack.appendChild(A2, errorStatus));
+        assertTrue(stack.appendChild(V1));
+        assertTrue(stack.appendChild(V2));
+        assertTrue(stack.appendChild(A1));
+        assertTrue(stack.appendChild(A2));
         Timeline tl = new Timeline.TimelineBuilder().build();
         tl.setTracks(stack);
         ArrayList<String> videoTrackNames = new ArrayList<>();

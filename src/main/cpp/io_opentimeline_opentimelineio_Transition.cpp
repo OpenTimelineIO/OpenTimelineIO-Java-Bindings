@@ -163,42 +163,32 @@ Java_io_opentimeline_opentimelineio_Transition_setOutOffset(
 /*
  * Class:     io_opentimeline_opentimelineio_Transition
  * Method:    getDuration
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/RationalTime;
+ * Signature: ()Lio/opentimeline/opentime/RationalTime;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Transition_getDuration(
-        JNIEnv *env, jobject thisObj, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Transition_getDuration(
+        JNIEnv *env, jobject thisObj) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Transition>>(env, thisObj);
     auto transition = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = transition->duration(errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = transition->duration(&errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     return rationalTimeToJObject(env, result);
 }
 
 /*
  * Class:     io_opentimeline_opentimelineio_Transition
  * Method:    getRangeInParent
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Transition_getRangeInParent(
-        JNIEnv *env, jobject thisObj, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Transition_getRangeInParent(
+        JNIEnv *env, jobject thisObj) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Transition>>(env, thisObj);
     auto transition = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = transition->range_in_parent(errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = transition->range_in_parent(&errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     if (result == nullopt) return nullptr;
     return timeRangeToJObject(env, result.value());
 }
@@ -206,21 +196,16 @@ Java_io_opentimeline_opentimelineio_Transition_getRangeInParent(
 /*
  * Class:     io_opentimeline_opentimelineio_Transition
  * Method:    getTrimmedRangeInParent
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
-JNIEXPORT jobject JNICALL
-Java_io_opentimeline_opentimelineio_Transition_getTrimmedRangeInParent(
-        JNIEnv *env, jobject thisObj, jobject errorStatusObj) {
-    if (errorStatusObj == nullptr) {
-        throwNullPointerException(env, "");
-        return nullptr;
-    }
+JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Transition_getTrimmedRangeInParent(
+        JNIEnv *env, jobject thisObj) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Transition>>(env, thisObj);
     auto transition = thisHandle->value;
-    auto errorStatusHandle =
-            getHandle<OTIO_NS::ErrorStatus>(env, errorStatusObj);
-    auto result = transition->trimmed_range_in_parent(errorStatusHandle);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = transition->trimmed_range_in_parent(&errorStatus);
+    processOTIOErrorStatus(env, errorStatus);
     if (result == nullopt) return nullptr;
     return timeRangeToJObject(env, result.value());
 }

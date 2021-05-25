@@ -5,6 +5,7 @@ package io.opentimeline.opentimelineio;
 
 import io.opentimeline.OTIONative;
 import io.opentimeline.opentime.TimeRange;
+import io.opentimeline.opentimelineio.exception.CannotComputeAvailableRangeException;
 
 import java.util.stream.Stream;
 
@@ -96,7 +97,7 @@ public class Clip extends Item {
 
     public native MediaReference getMediaReference();
 
-    public native TimeRange getAvailableRange(ErrorStatus errorStatus);
+    public native TimeRange getAvailableRange() throws CannotComputeAvailableRangeException;
 
     public Stream<Clip> eachClip() {
         return Stream.of(this);

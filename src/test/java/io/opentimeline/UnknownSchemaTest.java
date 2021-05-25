@@ -4,6 +4,7 @@
 package io.opentimeline;
 
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,9 +55,8 @@ public class UnknownSchemaTest {
     SerializableObject orig;
 
     @BeforeEach
-    public void setUp() {
-        ErrorStatus errorStatus = new ErrorStatus();
-        orig = SerializableObject.fromJSONString(hasUnknownSchema, errorStatus);
+    public void setUp() throws OpenTimelineIOException {
+        orig = SerializableObject.fromJSONString(hasUnknownSchema);
     }
 
     @Test
@@ -73,13 +73,11 @@ public class UnknownSchemaTest {
     }
 
     @Test
-    public void testSerialize() {
-        ErrorStatus errorStatus = new ErrorStatus();
-        String serialized = orig.toJSONString(errorStatus);
-        SerializableObject testOTIO = SerializableObject.fromJSONString(serialized, errorStatus);
+    public void testSerialize() throws OpenTimelineIOException {
+        String serialized = orig.toJSONString();
+        SerializableObject testOTIO = SerializableObject.fromJSONString(serialized);
         assertTrue(testOTIO.isEquivalentTo(orig));
         try {
-            errorStatus.close();
             testOTIO.close();
         } catch (Exception e) {
             e.printStackTrace();

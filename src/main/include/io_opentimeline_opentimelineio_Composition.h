@@ -42,42 +42,42 @@ JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_Composition_clearChil
 /*
  * Class:     io_opentimeline_opentimelineio_Composition
  * Method:    setChildrenNative
- * Signature: ([Lio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;)V
+ * Signature: ([Lio/opentimeline/opentimelineio/Composable;)V
  */
 JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_Composition_setChildrenNative
-  (JNIEnv *, jobject, jobjectArray, jobject);
+  (JNIEnv *, jobject, jobjectArray);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Composition
  * Method:    insertChild
- * Signature: (ILio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;)Z
+ * Signature: (ILio/opentimeline/opentimelineio/Composable;)Z
  */
 JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_Composition_insertChild
-  (JNIEnv *, jobject, jint, jobject, jobject);
-
-/*
- * Class:     io_opentimeline_opentimelineio_Composition
- * Method:    setChild
- * Signature: (ILio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;)Z
- */
-JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_Composition_setChild
-  (JNIEnv *, jobject, jint, jobject, jobject);
-
-/*
- * Class:     io_opentimeline_opentimelineio_Composition
- * Method:    removeChild
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Z
- */
-JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_Composition_removeChild
   (JNIEnv *, jobject, jint, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Composition
+ * Method:    setChild
+ * Signature: (ILio/opentimeline/opentimelineio/Composable;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_Composition_setChild
+  (JNIEnv *, jobject, jint, jobject);
+
+/*
+ * Class:     io_opentimeline_opentimelineio_Composition
+ * Method:    removeChild
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_Composition_removeChild
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     io_opentimeline_opentimelineio_Composition
  * Method:    appendChild
- * Signature: (Lio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;)Z
+ * Signature: (Lio/opentimeline/opentimelineio/Composable;)Z
  */
 JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_Composition_appendChild
-  (JNIEnv *, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Composition
@@ -90,42 +90,42 @@ JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_Composition_isPar
 /*
  * Class:     io_opentimeline_opentimelineio_Composition
  * Method:    getHandlesOfChild
- * Signature: (Lio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/util/Pair;
+ * Signature: (Lio/opentimeline/opentimelineio/Composable;)Lio/opentimeline/util/Pair;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Composition_getHandlesOfChild
-  (JNIEnv *, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Composition
  * Method:    getRangeOfChildAtIndex
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (I)Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Composition_getRangeOfChildAtIndex
-  (JNIEnv *, jobject, jint, jobject);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Composition
  * Method:    getTrimmedRangeOfChildAtIndex
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (I)Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Composition_getTrimmedRangeOfChildAtIndex
-  (JNIEnv *, jobject, jint, jobject);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Composition
  * Method:    getRangeOfChild
- * Signature: (Lio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (Lio/opentimeline/opentimelineio/Composable;)Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Composition_getRangeOfChild
-  (JNIEnv *, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Composition
  * Method:    getTrimmedRangeOfChild
- * Signature: (Lio/opentimeline/opentimelineio/Composable;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (Lio/opentimeline/opentimelineio/Composable;)Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Composition_getTrimmedRangeOfChild
-  (JNIEnv *, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Composition
@@ -146,10 +146,10 @@ JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_Composition_hasCh
 /*
  * Class:     io_opentimeline_opentimelineio_Composition
  * Method:    getRangeOfAllChildren
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Ljava/util/HashMap;
+ * Signature: ()Ljava/util/HashMap;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Composition_getRangeOfAllChildren
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

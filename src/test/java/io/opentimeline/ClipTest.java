@@ -6,6 +6,7 @@ package io.opentimeline;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ClipTest {
 
     @Test
-    public void testConstructor() {
+    public void testConstructor() throws OpenTimelineIOException {
         String name = "test";
         RationalTime rt = new RationalTime(5, 24);
         TimeRange tr = new TimeRange(rt, rt);
@@ -33,18 +34,16 @@ public class ClipTest {
         assertTrue(clip.getMediaReference().isEquivalentTo(mr));
 
         Any clipAny = new Any(clip);
-        ErrorStatus errorStatus = new ErrorStatus();
         Serialization serialization = new Serialization();
         Deserialization deserialization = new Deserialization();
-        String encoded = serialization.serializeJSONToString(clipAny, errorStatus);
+        String encoded = serialization.serializeJSONToString(clipAny);
         Any destination = new Any(new SerializableObject());
-        assertTrue(deserialization.deserializeJSONFromString(encoded, destination, errorStatus));
+        assertTrue(deserialization.deserializeJSONFromString(encoded, destination));
         assertTrue(clip.isEquivalentTo(destination.safelyCastSerializableObject()));
 
         try {
             clip.close();
             mr.close();
-            errorStatus.close();
             destination.close();
             clipAny.close();
         } catch (Exception e) {
@@ -73,7 +72,7 @@ public class ClipTest {
     }
 
     @Test
-    public void testRanges() {
+    public void testRanges() throws CannotComputeAvailableRangeException {
         TimeRange tr = new TimeRange(
                 new RationalTime(86400, 24),
                 new RationalTime(200, 24));
@@ -86,14 +85,12 @@ public class ClipTest {
                                 tr, new AnyDictionary()))
                 .build();
 
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(clip.getDuration(errorStatus).equals(clip.getTrimmedRange(errorStatus).getDuration()));
-        assertTrue(clip.getDuration(errorStatus).equals(tr.getDuration()));
-        assertTrue(clip.getTrimmedRange(errorStatus).equals(tr));
-        assertTrue(clip.getAvailableRange(errorStatus).equals(tr));
+        assertTrue(clip.getDuration().equals(clip.getTrimmedRange().getDuration()));
+        assertTrue(clip.getDuration().equals(tr.getDuration()));
+        assertTrue(clip.getTrimmedRange().equals(tr));
+        assertTrue(clip.getAvailableRange().equals(tr));
         try {
             clip.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

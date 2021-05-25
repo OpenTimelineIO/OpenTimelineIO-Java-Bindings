@@ -5,6 +5,7 @@ package io.opentimeline;
 
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
+import io.opentimeline.opentimelineio.exception.*;
 import io.opentimeline.opentimelineio.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +42,7 @@ public class GeneratorReferenceTest {
     }
 
     @Test
-    public void testConstructor() {
+    public void testConstructor() throws OpenTimelineIOException {
         assertEquals(generatorReference.getGeneratorKind(), "SMPTEBars");
         assertEquals(generatorReference.getName(), "SMPTEBars");
         assertEquals(generatorReference.getParameters().get("test_param").safelyCastDouble(), 5.0);
@@ -56,16 +57,14 @@ public class GeneratorReferenceTest {
     }
 
     @Test
-    public void testSerialize() {
+    public void testSerialize() throws OpenTimelineIOException {
         Any refAny = new Any(generatorReference);
-        ErrorStatus errorStatus = new ErrorStatus();
         Serialization serialization = new Serialization();
-        String encoded = serialization.serializeJSONToString(refAny, errorStatus);
-        SerializableObject decoded = SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = serialization.serializeJSONToString(refAny);
+        SerializableObject decoded = SerializableObject.fromJSONString(encoded);
         assertTrue(decoded.isEquivalentTo(generatorReference));
         try {
             refAny.close();
-            errorStatus.close();
             decoded.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,19 +84,18 @@ public class GeneratorReferenceTest {
     }
 
     @Test
-    public void testReadFile() {
+    public void testReadFile() throws OpenTimelineIOException {
         String projectRootDir = System.getProperty("user.dir");
         String sampleDataDir = projectRootDir + File.separator +
                 "src" + File.separator + "test" + File.separator + "sample_data";
         String genRefTest = sampleDataDir + File.separator + "generator_reference_test.otio";
         File file = new File(genRefTest);
         assertTrue(file.exists());
-        ErrorStatus errorStatus = new ErrorStatus();
 //            Any destination = new Any(new SerializableObject()); // this gives JSON_PARSE_ERROR
 //            Deserialization deserialization = new Deserialization();
 //            assertTrue(deserialization.deserializeJSONFromFile(genRefTest, destination, errorStatus));
 //            SerializableObject serializableObject = destination.safelyCastSerializableObject();
-        Timeline timeline = (Timeline) SerializableObject.fromJSONFile(genRefTest, errorStatus);
+        Timeline timeline = (Timeline) SerializableObject.fromJSONFile(genRefTest);
         Stack stack = timeline.getTracks();
         List<Composable> tracks = stack.getChildren();
         Track track = (Track) tracks.get(0);
@@ -105,7 +103,6 @@ public class GeneratorReferenceTest {
         Clip clip = (Clip) track0Children.get(0);
         assertEquals(((GeneratorReference) clip.getMediaReference()).getGeneratorKind(), "SMPTEBars");
         try {
-            errorStatus.close();
             timeline.close();
             stack.close();
         } catch (Exception e) {

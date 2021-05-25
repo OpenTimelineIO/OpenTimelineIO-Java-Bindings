@@ -66,66 +66,66 @@ JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Item_getMarke
 /*
  * Class:     io_opentimeline_opentimelineio_Item
  * Method:    getDuration
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/RationalTime;
+ * Signature: ()Lio/opentimeline/opentime/RationalTime;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Item_getDuration
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Item
  * Method:    getAvailableRange
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Item_getAvailableRange
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Item
  * Method:    getTrimmedRange
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Item_getTrimmedRange
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Item
  * Method:    getVisibleRange
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Item_getVisibleRange
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Item
  * Method:    getTrimmedRangeInParent
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Item_getTrimmedRangeInParent
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Item
  * Method:    getRangeInParent
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Item_getRangeInParent
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Item
  * Method:    getTransformedTime
- * Signature: (Lio/opentimeline/opentime/RationalTime;Lio/opentimeline/opentimelineio/Item;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/RationalTime;
+ * Signature: (Lio/opentimeline/opentime/RationalTime;Lio/opentimeline/opentimelineio/Item;)Lio/opentimeline/opentime/RationalTime;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Item_getTransformedTime
-  (JNIEnv *, jobject, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Item
  * Method:    getTransformedTimeRange
- * Signature: (Lio/opentimeline/opentime/TimeRange;Lio/opentimeline/opentimelineio/Item;Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (Lio/opentimeline/opentime/TimeRange;Lio/opentimeline/opentimelineio/Item;)Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Item_getTransformedTimeRange
-  (JNIEnv *, jobject, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject, jobject);
 
 #ifdef __cplusplus
 }

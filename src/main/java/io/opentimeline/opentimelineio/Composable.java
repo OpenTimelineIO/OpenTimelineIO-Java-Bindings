@@ -5,6 +5,7 @@ package io.opentimeline.opentimelineio;
 
 import io.opentimeline.OTIONative;
 import io.opentimeline.opentime.RationalTime;
+import io.opentimeline.opentimelineio.exception.*;
 
 /**
  * An object that can be composed by tracks.
@@ -79,10 +80,9 @@ public class Composable extends SerializableObjectWithMetadata {
     public native Composition parent();
 
     /**
-     * @param errorStatus errorStatus to report in case this is not implemented in a sub-class.
      * @return the duration of the Composable object.
      */
-    public native RationalTime getDuration(ErrorStatus errorStatus);
+    public native RationalTime getDuration() throws UnsupportedOperationException, CannotComputeAvailableRangeException;
 
     @Override
     public String toString() {

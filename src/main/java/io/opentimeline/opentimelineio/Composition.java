@@ -7,6 +7,7 @@ import io.opentimeline.OTIONative;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.util.Pair;
+import io.opentimeline.opentimelineio.exception.*;
 
 import java.util.*;
 import java.util.function.Function;
@@ -137,60 +138,55 @@ public class Composition extends Item {
     /**
      * Set children for this Composition.
      *
-     * @param children    a list of Composables
-     * @param errorStatus errorStatus to report an error if any child cannot be added.
+     * @param children a list of Composables
      */
-    public void setChildren(List<Composable> children, ErrorStatus errorStatus) {
+    public void setChildren(List<Composable> children) throws ChildAlreadyParentedException {
         Composable[] childrenArray = new Composable[children.size()];
         childrenArray = children.toArray(childrenArray);
-        setChildrenNative(childrenArray, errorStatus);
+        setChildrenNative(childrenArray);
     }
 
-    private native void setChildrenNative(Composable[] children, ErrorStatus errorStatus);
+    private native void setChildrenNative(Composable[] children) throws ChildAlreadyParentedException;
 
     /**
      * Insert a child Composable at an index.
      *
-     * @param index       index at which child is to be inserted.
-     * @param child       child Composable to be inserted.
-     * @param errorStatus errorStatus to report an error if child cannot be inserted.
+     * @param index index at which child is to be inserted.
+     * @param child child Composable to be inserted.
      * @return was the child inserted successfully?
      */
-    public native boolean insertChild(int index, Composable child, ErrorStatus errorStatus);
+    public native boolean insertChild(int index, Composable child) throws ChildAlreadyParentedException;
 
     /**
      * Set the child at a particular index. The needs to exist for the child to be set.
      *
-     * @param index       index to set the child
-     * @param child       child Composable to be set
-     * @param errorStatus errorStatus to report an error if child cannot be set.
+     * @param index index to set the child
+     * @param child child Composable to be set
      * @return was the child set successfully?
      */
-    public native boolean setChild(int index, Composable child, ErrorStatus errorStatus);
+    public native boolean setChild(int index, Composable child) throws IndexOutOfBoundsException, ChildAlreadyParentedException;
 
     /**
      * Remove the child at any index.
      *
-     * @param index       index from which the child needs to be removed.
-     * @param errorStatus errorStatus to report an error if child cannot be removed.
+     * @param index index from which the child needs to be removed.
      * @return was the child removed successfully?
      */
-    public native boolean removeChild(int index, ErrorStatus errorStatus);
+    public native boolean removeChild(int index) throws IndexOutOfBoundsException;
 
     /**
      * Append the child to the end of the Composition.
      *
-     * @param child       child to be appended
-     * @param errorStatus errorStatus to report an error if child cannot be appended.
+     * @param child child to be appended
      * @return was the child appended successfully?
      */
-    public native boolean appendChild(Composable child, ErrorStatus errorStatus);
+    public native boolean appendChild(Composable child) throws ChildAlreadyParentedException;
 
     /**
      * @param composable Composable to check ancestry of
      * @return true if this is a parent or ancestor of the composable.
      */
-    public native boolean isParentOf(Composable composable);
+    public native boolean isParentOf(Composable composable) throws NotAChildException;
 
     /**
      * If media beyond the ends of this child are visible due to adjacent
@@ -199,25 +195,23 @@ public class Composition extends Item {
      * are present on either side, then null is returned instead of a
      * RationalTime.
      *
-     * @param child       child Composable to get handles
-     * @param errorStatus errorStatus to report error while fetching handles
+     * @param child child Composable to get handles
      * @return head and tail offsets as a Pair of RationalTime objects
      */
     public native Pair<RationalTime, RationalTime> getHandlesOfChild(
-            Composable child, ErrorStatus errorStatus);
+            Composable child) throws NotAChildException;
 
     /**
      * Return the range of a child item in the time range of this composition.
      * For example, with a track:
      * [ClipA][ClipB][ClipC]
-     * this.getRangeOfChildAtIndex(2, errorStatus) will return:
+     * this.getRangeOfChildAtIndex(2) will return:
      * TimeRange(ClipA.duration + ClipB.duration, ClipC.duration)
      *
-     * @param index       index of child whose range is to be fetched
-     * @param errorStatus errorStatus to report error if range cannot be fetched
+     * @param index index of child whose range is to be fetched
      * @return range of child at index
      */
-    public native TimeRange getRangeOfChildAtIndex(int index, ErrorStatus errorStatus);
+    public native TimeRange getRangeOfChildAtIndex(int index) throws UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException;
 
     /**
      * Return the trimmed range of the child item at index in the time
@@ -230,11 +224,10 @@ public class Composition extends Item {
      * getRangeOfChildAtIndex() but trimmed based on this Composition's
      * sourceRange.
      *
-     * @param index       index of child whose trimmed range is to be fetched
-     * @param errorStatus errorStatus to report error if trimmed range cannot be fetched
+     * @param index index of child whose trimmed range is to be fetched
      * @return trimmed range of child at index
      */
-    public native TimeRange getTrimmedRangeOfChildAtIndex(int index, ErrorStatus errorStatus);
+    public native TimeRange getTrimmedRangeOfChildAtIndex(int index) throws UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException, InvalidTimeRangeException;
 
     /**
      * The range of the child not trimmed based on this composition's sourceRange.
@@ -248,11 +241,10 @@ public class Composition extends Item {
      * To get the range of the child with the sourceRange applied, use the
      * getTrimmedRangeOfChild() method.
      *
-     * @param child       child Composable whose range is to be fetched
-     * @param errorStatus errorStatus to report error if range cannot be fetched
+     * @param child child Composable whose range is to be fetched
      * @return range of the child not trimmed based on this composition's sourceRange
      */
-    public native TimeRange getRangeOfChild(Composable child, ErrorStatus errorStatus);
+    public native TimeRange getRangeOfChild(Composable child) throws NotAChildException, UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException;
 
     /**
      * Get range of the child, after the sourceRange is applied.
@@ -271,11 +263,10 @@ public class Composition extends Item {
      * seq.getRangeOfChild(ClipA) = 0, duration 6
      * seq.getTrimmedRangeOfChild(ClipB) = 4, duration 2
      *
-     * @param child       child Composable whose trimmed range is to be fetched
-     * @param errorStatus errorStatus to report error if range cannot be fetched
+     * @param child child Composable whose trimmed range is to be fetched
      * @return range of the child trimmed based on this composition's sourceRange
      */
-    public native TimeRange getTrimmedRangeOfChild(Composable child, ErrorStatus errorStatus);
+    public native TimeRange getTrimmedRangeOfChild(Composable child) throws NotAChildException, UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException, InvalidTimeRangeException;
 
     /**
      * Trim childRange to this.sourceRange
@@ -294,10 +285,9 @@ public class Composition extends Item {
     /**
      * Return a HashMap mapping children to their range in this object.
      *
-     * @param errorStatus errorStatus to report any error while fetching ranges
      * @return a HashMap mapping children to their range in this object
      */
-    public native HashMap<Composable, TimeRange> getRangeOfAllChildren(ErrorStatus errorStatus);
+    public native HashMap<Composable, TimeRange> getRangeOfAllChildren() throws UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException;
 
     /**
      * Return the child that overlaps with time searchTime.
@@ -306,11 +296,10 @@ public class Composition extends Item {
      *
      * @param searchTime    the time at which the child is to be fetched
      * @param shallowSearch should the algorithm recurse into compositions or not?
-     * @param errorStatus   errorStatus to report any error while fetching the child
      * @return the child that overlaps with time searchTime
      */
-    public Composable getChildAtTime(RationalTime searchTime, boolean shallowSearch, ErrorStatus errorStatus) {
-        HashMap<Composable, TimeRange> rangeOfAllChildren = this.getRangeOfAllChildren(errorStatus);
+    public Composable getChildAtTime(RationalTime searchTime, boolean shallowSearch) throws UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException, NotAChildException {
+        HashMap<Composable, TimeRange> rangeOfAllChildren = this.getRangeOfAllChildren();
         List<Composable> children = this.getChildren();
         // find the first item whose endTimeExclusive is after the target
         int firstInsideRange = bisectLeft(
@@ -339,9 +328,9 @@ public class Composition extends Item {
 
         // before you recurse, you have to transform the time into the
         // space of the child
-        RationalTime childSearchTime = this.getTransformedTime(searchTime, (Composition) result, errorStatus);
-        if (errorStatus.getOutcome() != ErrorStatus.Outcome.OK) throw new RuntimeException();
-        return ((Composition) result).getChildAtTime(childSearchTime, shallowSearch, errorStatus);
+        RationalTime childSearchTime = this.getTransformedTime(searchTime, (Composition) result);
+//        if (errorStatus.getOutcome() != ErrorStatus.Outcome.OK) throw new RuntimeException();
+        return ((Composition) result).getChildAtTime(childSearchTime, shallowSearch);
     }
 
     /**
@@ -349,12 +338,11 @@ public class Composition extends Item {
      * searchTime is in the space of self.
      * This function will recurse into compositions.
      *
-     * @param searchTime  the time at which the child is to be fetched
-     * @param errorStatus errorStatus to report any error while fetching the child
+     * @param searchTime the time at which the child is to be fetched
      * @return the child that overlaps with time searchTime
      */
-    public Composable getChildAtTime(RationalTime searchTime, ErrorStatus errorStatus) {
-        return this.getChildAtTime(searchTime, false, errorStatus);
+    public Composable getChildAtTime(RationalTime searchTime) throws UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException, NotAChildException {
+        return this.getChildAtTime(searchTime, false);
     }
 
     /**
@@ -364,15 +352,14 @@ public class Composition extends Item {
      * @param searchRange   if not null, only children whose range overlaps with the search range will be in the stream.
      * @param descendedFrom only children who are a descendent of the descendedFrom type will be in the stream
      * @param shallowSearch should the algorithm recurse into compositions or not?
-     * @param errorStatus   errorStatus to report any error while iterating
      * @param <T>           type of children to fetch
      * @return a Stream consisting of all the children of specified type in the composition in the order in which it is found
      */
     public <T extends Composable> Stream<T> eachChild(
-            TimeRange searchRange, Class<T> descendedFrom, boolean shallowSearch, ErrorStatus errorStatus) {
+            TimeRange searchRange, Class<T> descendedFrom, boolean shallowSearch) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         List<Composable> children;
         if (searchRange != null) {
-            HashMap<Composable, TimeRange> rangeOfAllChildren = this.getRangeOfAllChildren(errorStatus);
+            HashMap<Composable, TimeRange> rangeOfAllChildren = this.getRangeOfAllChildren();
             children = this.getChildren();
             // find the first item whose endTimeInclusive is after the
             // startTime of the searchRange
@@ -393,22 +380,39 @@ public class Composition extends Item {
             children = this.getChildren();
         }
 
-        return children.stream()
-                .flatMap(element -> {
-                            Stream<T> currentElementStream = Stream.empty();
-                            if (descendedFrom.isAssignableFrom(element.getClass()))
-                                currentElementStream = Stream.concat(Stream.of(descendedFrom.cast(element)), currentElementStream);
-                            Stream<T> nestedStream = Stream.empty();
-                            if (!shallowSearch && element instanceof Composition) {
-                                nestedStream = ((Composition) element).eachChild(
-                                        searchRange == null ? null : this.getTransformedTimeRange(searchRange, ((Composition) element), errorStatus),
-                                        descendedFrom,
-                                        shallowSearch,
-                                        errorStatus);
+        Stream<T> resultStream;
+        // TODO: Use functional exception handling for exceptions in lambdas
+        try {
+            resultStream = children.stream()
+                    .flatMap(element -> {
+                                Stream<T> currentElementStream = Stream.empty();
+                                if (descendedFrom.isAssignableFrom(element.getClass()))
+                                    currentElementStream = Stream.concat(Stream.of(descendedFrom.cast(element)), currentElementStream);
+                                Stream<T> nestedStream = Stream.empty();
+                                if (!shallowSearch && element instanceof Composition) {
+                                    try {
+                                        nestedStream = ((Composition) element).eachChild(
+                                                searchRange == null ? null : this.getTransformedTimeRange(searchRange, ((Composition) element)),
+                                                descendedFrom,
+                                                shallowSearch);
+                                    } catch (Exception e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                                return Stream.concat(currentElementStream, nestedStream);
                             }
-                            return Stream.concat(currentElementStream, nestedStream);
-                        }
-                );
+                    );
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof NotAChildException)
+                throw (NotAChildException) e.getCause();
+            else if (e.getCause() instanceof ObjectWithoutDurationException)
+                throw (ObjectWithoutDurationException) e.getCause();
+            else if (e.getCause() instanceof CannotComputeAvailableRangeException)
+                throw (CannotComputeAvailableRangeException) e.getCause();
+            else throw e;
+        }
+
+        return resultStream;
     }
 
     /**
@@ -417,11 +421,10 @@ public class Composition extends Item {
      *
      * @param searchRange   if not null, only children whose range overlaps with the search range will be in the stream.
      * @param shallowSearch should the algorithm recurse into compositions or not?
-     * @param errorStatus   errorStatus to report any error while iterating
      * @return a Stream consisting of all the children in the composition (in the searchRange) in the order in which it is found
      */
-    public Stream<Composable> eachChild(TimeRange searchRange, boolean shallowSearch, ErrorStatus errorStatus) {
-        return eachChild(searchRange, Composable.class, shallowSearch, errorStatus);
+    public Stream<Composable> eachChild(TimeRange searchRange, boolean shallowSearch) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return eachChild(searchRange, Composable.class, shallowSearch);
     }
 
     /**
@@ -429,12 +432,11 @@ public class Composition extends Item {
      * the order in which it is found. This stream will recurse into compositions.
      *
      * @param descendedFrom only children who are a descendent of the descendedFrom type will be in the stream
-     * @param errorStatus   errorStatus to report any error while iterating
      * @param <T>           type of children to fetch
      * @return a Stream consisting of all the children of specified type in the composition in the order in which it is found
      */
-    public <T extends Composable> Stream<T> eachChild(Class<T> descendedFrom, ErrorStatus errorStatus) {
-        return eachChild(null, descendedFrom, false, errorStatus);
+    public <T extends Composable> Stream<T> eachChild(Class<T> descendedFrom) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return eachChild(null, descendedFrom, false);
     }
 
     /**

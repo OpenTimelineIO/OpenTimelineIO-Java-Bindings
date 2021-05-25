@@ -5,6 +5,7 @@ package io.opentimeline;
 
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
+import io.opentimeline.opentimelineio.exception.*;
 import io.opentimeline.opentimelineio.*;
 import io.opentimeline.util.Pair;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,7 @@ public class ImageSequenceReferenceTest {
     }
 
     @Test
-    public void testSerializeRoundtrip() {
+    public void testSerializeRoundtrip() throws OpenTimelineIOException {
         AnyDictionary metadata = new AnyDictionary();
         AnyDictionary subMetadata = new AnyDictionary();
         subMetadata.put("foo", new Any("bar"));
@@ -77,11 +78,10 @@ public class ImageSequenceReferenceTest {
                 .setMetadata(metadata)
                 .build();
 
-        ErrorStatus errorStatus = new ErrorStatus();
-        String encoded = ref.toJSONString(errorStatus);
-        ImageSequenceReference decoded = (ImageSequenceReference) SerializableObject.fromJSONString(encoded, errorStatus);
+        String encoded = ref.toJSONString();
+        ImageSequenceReference decoded = (ImageSequenceReference) SerializableObject.fromJSONString(encoded);
         assertEquals(ref, decoded);
-        String encoded2 = decoded.toJSONString(errorStatus);
+        String encoded2 = decoded.toJSONString();
         assertEquals(encoded, encoded2);
 
         // check values
@@ -183,10 +183,13 @@ public class ImageSequenceReferenceTest {
                 "            \"frame_zero_padding\": 5,\n" +
                 "            \"missing_frame_policy\": \"BOGUS\"\n" +
                 "        }";
-        ErrorStatus errorStatus = new ErrorStatus();
-        SerializableObject decoded = SerializableObject.fromJSONString(encoded, errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.JSON_PARSE_ERROR);
-        assertNull(decoded);
+        Exception exception = assertThrows(JSONParseException.class, () -> {
+            SerializableObject decoded = SerializableObject.fromJSONString(encoded);
+        });
+        assertTrue(exception.getMessage().equals("JSON parse error: While reading object named '' (of type 'opentimelineio::v1_0::ImageSequenceReference'): " +
+                "Unknown missing_frame_policy: BOGUS (near line 30)") ||
+                exception.getMessage().equals("JSON parse error: While reading object named '' (of type 'class opentimelineio::v1_0::ImageSequenceReference'): " +
+                        "Unknown missing_frame_policy: BOGUS (near line 30)"));
     }
 
     @Test
@@ -249,14 +252,12 @@ public class ImageSequenceReferenceTest {
                 .setStartFrame(1)
                 .build();
         ArrayList<String> generatedURLs = new ArrayList<>();
-        ErrorStatus errorStatus = new ErrorStatus();
         IntStream.range(0, ref.getNumberOfImagesInSequence()).forEach(n -> {
-            generatedURLs.add(ref.getTargetURLForImageNumber(n, errorStatus));
+            generatedURLs.add(ref.getTargetURLForImageNumber(n));
         });
         assertEquals(allImagesURLs, generatedURLs);
         try {
             ref.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -281,9 +282,8 @@ public class ImageSequenceReferenceTest {
                 .setStartFrame(1)
                 .build();
         ArrayList<String> generatedURLs = new ArrayList<>();
-        ErrorStatus errorStatus = new ErrorStatus();
         IntStream.range(0, ref.getNumberOfImagesInSequence()).forEach(n -> {
-            generatedURLs.add(ref.getTargetURLForImageNumber(n, errorStatus));
+            generatedURLs.add(ref.getTargetURLForImageNumber(n));
         });
         assertEquals(allImagesURLs, generatedURLs);
 
@@ -294,7 +294,7 @@ public class ImageSequenceReferenceTest {
         }
         ArrayList<String> generatedURLsThrees = new ArrayList<>();
         IntStream.range(0, ref.getNumberOfImagesInSequence()).forEach(n -> {
-            generatedURLsThrees.add(ref.getTargetURLForImageNumber(n, errorStatus));
+            generatedURLsThrees.add(ref.getTargetURLForImageNumber(n));
         });
         assertEquals(allImagesURLsThrees, generatedURLsThrees);
 
@@ -306,13 +306,12 @@ public class ImageSequenceReferenceTest {
         }
         ArrayList<String> generatedURLsZeroFirst = new ArrayList<>();
         IntStream.range(0, ref.getNumberOfImagesInSequence()).forEach(n -> {
-            generatedURLsZeroFirst.add(ref.getTargetURLForImageNumber(n, errorStatus));
+            generatedURLsZeroFirst.add(ref.getTargetURLForImageNumber(n));
         });
         assertEquals(allImagesURLsZeroFirst, generatedURLsZeroFirst);
 
         try {
             ref.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -332,12 +331,10 @@ public class ImageSequenceReferenceTest {
                 .setFrameStep(1)
                 .setStartFrame(1)
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertEquals(ref.getTargetURLForImageNumber(0, errorStatus),
+        assertEquals(ref.getTargetURLForImageNumber(0),
                 "file:///show/seq/shot/rndr/show_shot.0001.exr");
         try {
             ref.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -403,19 +400,17 @@ public class ImageSequenceReferenceTest {
                 .setFrameStep(2)
                 .setStartFrame(1)
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
         ArrayList<RationalTime> referenceValues = new ArrayList<>();
         IntStream.range(0, 24).forEach(n -> {
             referenceValues.add(new RationalTime(n * 2, 24));
         });
         ArrayList<RationalTime> generatedValues = new ArrayList<>();
         IntStream.range(0, ref.getNumberOfImagesInSequence()).forEach(n -> {
-            generatedValues.add(ref.presentationTimeForImageNumber(n, errorStatus));
+            generatedValues.add(ref.presentationTimeForImageNumber(n));
         });
         assertEquals(generatedValues, referenceValues);
         try {
             ref.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -436,19 +431,17 @@ public class ImageSequenceReferenceTest {
                 .setStartFrame(1)
                 .build();
         RationalTime firstFrameTime = new RationalTime(12, 24);
-        ErrorStatus errorStatus = new ErrorStatus();
         ArrayList<RationalTime> referenceValues = new ArrayList<>();
         IntStream.range(0, 24).forEach(n -> {
             referenceValues.add(firstFrameTime.add(new RationalTime(n * 2, 24)));
         });
         ArrayList<RationalTime> generatedValues = new ArrayList<>();
         IntStream.range(0, ref.getNumberOfImagesInSequence()).forEach(n -> {
-            generatedValues.add(ref.presentationTimeForImageNumber(n, errorStatus));
+            generatedValues.add(ref.presentationTimeForImageNumber(n));
         });
         assertEquals(generatedValues, referenceValues);
         try {
             ref.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -503,7 +496,7 @@ public class ImageSequenceReferenceTest {
     }
 
     @Test
-    public void testFrameForTime() {
+    public void testFrameForTime() throws InvalidTimeRangeException {
         ImageSequenceReference ref = new ImageSequenceReference.ImageSequenceReferenceBuilder()
                 .setTargetURLBase("file:///show/seq/shot/rndr/")
                 .setNamePrefix("show_shot.")
@@ -516,23 +509,21 @@ public class ImageSequenceReferenceTest {
                 .setFrameStep(1)
                 .setStartFrame(1)
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
         // start should be frame 1
-        assertEquals(ref.getFrameForTime(ref.getAvailableRange().getStartTime(), errorStatus),
+        assertEquals(ref.getFrameForTime(ref.getAvailableRange().getStartTime()),
                 1);
         // test a sample in the middle
-        assertEquals(ref.getFrameForTime(new RationalTime(15, 24), errorStatus),
+        assertEquals(ref.getFrameForTime(new RationalTime(15, 24)),
                 4);
         // The end time (inclusive) should map to the last frame number
-        assertEquals(ref.getFrameForTime(ref.getAvailableRange().endTimeInclusive(), errorStatus),
+        assertEquals(ref.getFrameForTime(ref.getAvailableRange().endTimeInclusive()),
                 48);
         // make sure frame step and RationalTime rate have no effect
         ref.setFrameStep(2);
-        assertEquals(ref.getFrameForTime(new RationalTime(118, 48), errorStatus),
+        assertEquals(ref.getFrameForTime(new RationalTime(118, 48)),
                 48);
         try {
             ref.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -552,19 +543,19 @@ public class ImageSequenceReferenceTest {
                 .setFrameStep(1)
                 .setStartFrame(1)
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        ref.getFrameForTime(new RationalTime(73, 30), errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.INVALID_TIME_RANGE);
+        Exception exception = assertThrows(InvalidTimeRangeException.class, () -> {
+            ref.getFrameForTime(new RationalTime(73, 30));
+        });
+        assertTrue(exception.getMessage().equals("computed time range would be invalid"));
         try {
             ref.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testFrameRangeForTimeRange() {
+    public void testFrameRangeForTimeRange() throws InvalidTimeRangeException {
         ImageSequenceReference ref = new ImageSequenceReference.ImageSequenceReferenceBuilder()
                 .setTargetURLBase("file:///show/seq/shot/rndr/")
                 .setNamePrefix("show_shot.")
@@ -580,11 +571,9 @@ public class ImageSequenceReferenceTest {
         TimeRange timeRange = new TimeRange(
                 new RationalTime(24, 24),
                 new RationalTime(17, 24));
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertEquals(ref.getFrameRangeForTimeRange(timeRange, errorStatus), new Pair<>(13, 29));
+        assertEquals(ref.getFrameRangeForTimeRange(timeRange), new Pair<>(13, 29));
         try {
             ref.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -607,12 +596,12 @@ public class ImageSequenceReferenceTest {
         TimeRange timeRange = new TimeRange(
                 new RationalTime(24, 24),
                 new RationalTime(60, 24));
-        ErrorStatus errorStatus = new ErrorStatus();
-        ref.getFrameRangeForTimeRange(timeRange, errorStatus);
-        assertEquals(errorStatus.getOutcome(), ErrorStatus.Outcome.INVALID_TIME_RANGE);
+        Exception exception = assertThrows(InvalidTimeRangeException.class, () -> {
+            ref.getFrameRangeForTimeRange(timeRange);
+        });
+        assertTrue(exception.getMessage().equals("computed time range would be invalid"));
         try {
             ref.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -632,39 +621,37 @@ public class ImageSequenceReferenceTest {
                 .setFrameStep(2)
                 .setStartFrame(-1)
                 .build();
-        ErrorStatus errorStatus = new ErrorStatus();
 
         assertEquals(ref.getNumberOfImagesInSequence(), 24);
-        assertEquals(ref.presentationTimeForImageNumber(0, errorStatus),
+        assertEquals(ref.presentationTimeForImageNumber(0),
                 new RationalTime(12, 24));
-        assertEquals(ref.presentationTimeForImageNumber(1, errorStatus),
+        assertEquals(ref.presentationTimeForImageNumber(1),
                 new RationalTime(14, 24));
-        assertEquals(ref.presentationTimeForImageNumber(2, errorStatus),
+        assertEquals(ref.presentationTimeForImageNumber(2),
                 new RationalTime(16, 24));
-        assertEquals(ref.presentationTimeForImageNumber(23, errorStatus),
+        assertEquals(ref.presentationTimeForImageNumber(23),
                 new RationalTime(58, 24));
 
-        assertEquals(ref.getTargetURLForImageNumber(0, errorStatus),
+        assertEquals(ref.getTargetURLForImageNumber(0),
                 "file:///show/seq/shot/rndr/show_shot.-0001.exr");
-        assertEquals(ref.getTargetURLForImageNumber(1, errorStatus),
+        assertEquals(ref.getTargetURLForImageNumber(1),
                 "file:///show/seq/shot/rndr/show_shot.0001.exr");
-        assertEquals(ref.getTargetURLForImageNumber(2, errorStatus),
+        assertEquals(ref.getTargetURLForImageNumber(2),
                 "file:///show/seq/shot/rndr/show_shot.0003.exr");
-        assertEquals(ref.getTargetURLForImageNumber(17, errorStatus),
+        assertEquals(ref.getTargetURLForImageNumber(17),
                 "file:///show/seq/shot/rndr/show_shot.0033.exr");
-        assertEquals(ref.getTargetURLForImageNumber(23, errorStatus),
+        assertEquals(ref.getTargetURLForImageNumber(23),
                 "file:///show/seq/shot/rndr/show_shot.0045.exr");
 
         // check values by ones
         ref.setFrameStep(1);
         IntStream.range(1, ref.getNumberOfImagesInSequence()).forEach(n -> {
-            assertEquals(ref.getTargetURLForImageNumber(n, errorStatus),
+            assertEquals(ref.getTargetURLForImageNumber(n),
                     "file:///show/seq/shot/rndr/show_shot." + String.format("%04d", n - 1) + ".exr");
         });
 
         try {
             ref.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

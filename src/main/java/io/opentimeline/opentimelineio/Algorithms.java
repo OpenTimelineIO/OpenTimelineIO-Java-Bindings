@@ -4,6 +4,7 @@
 package io.opentimeline.opentimelineio;
 
 import io.opentimeline.opentime.TimeRange;
+import io.opentimeline.opentimelineio.exception.OpenTimelineIOException;
 
 import java.util.List;
 
@@ -14,26 +15,24 @@ public class Algorithms {
      * Note that the 1st Track is the bottom one, and the last is the top.
      *
      * @param inStack     stack to flatten
-     * @param errorStatus errorStatus to report error during flattening
      * @return flattened track
      */
-    public native Track flattenStack(Stack inStack, ErrorStatus errorStatus);
+    public native Track flattenStack(Stack inStack) throws OpenTimelineIOException;
 
     /**
      * Flatten a Stack, into a single Track.
      * Note that the 1st Track is the bottom one, and the last is the top.
      *
      * @param tracks      list of tracks to flatten
-     * @param errorStatus errorStatus to report error during flattening
      * @return flattened track
      */
-    public Track flattenStack(List<Track> tracks, ErrorStatus errorStatus) {
+    public Track flattenStack(List<Track> tracks) throws OpenTimelineIOException{
         Track[] trackArray = new Track[tracks.size()];
         trackArray = tracks.toArray(trackArray);
-        return flattenStackNative(trackArray, errorStatus);
+        return flattenStackNative(trackArray);
     }
 
-    private native Track flattenStackNative(Track[] tracks, ErrorStatus errorStatus);
+    private native Track flattenStackNative(Track[] tracks) throws OpenTimelineIOException;
 
     /**
      * Returns a new track that is a copy of the inTrack, but with items
@@ -45,10 +44,9 @@ public class Algorithms {
      *
      * @param inTrack     track to be trimmed
      * @param trimRange   this is the range, which the track will be trimmed to
-     * @param errorStatus errorStatus to report error during trimming
      * @return trimmed track
      */
-    public native Track trackTrimmedToRange(Track inTrack, TimeRange trimRange, ErrorStatus errorStatus);
+    public native Track trackTrimmedToRange(Track inTrack, TimeRange trimRange) throws OpenTimelineIOException;
 
     /**
      * Returns a new timeline that is a copy of the inTimeline, but with items
@@ -60,18 +58,16 @@ public class Algorithms {
      *
      * @param inTimeline  timeline to be trimmed
      * @param trimRange   this is the range, which the timeline will be trimmed to
-     * @param errorStatus errorStatus to report error during trimming
      * @return trimmed timeline
      */
-    public Timeline timelineTrimmedToRange(Timeline inTimeline, TimeRange trimRange, ErrorStatus errorStatus) {
-        Timeline newTimeline = (Timeline) inTimeline.clone(errorStatus);
+    public Timeline timelineTrimmedToRange(Timeline inTimeline, TimeRange trimRange) throws OpenTimelineIOException {
+        Timeline newTimeline = (Timeline) inTimeline.deepCopy();
         Stack stack = inTimeline.getTracks();
         Stack newStack = newTimeline.getTracks();
         List<Composable> tracks = stack.getChildren();
         for (int i = 0; i < tracks.size(); i++) {
-            Track trimmedTrack = this.trackTrimmedToRange((Track) tracks.get(i), trimRange, errorStatus);
-            if (errorStatus.getOutcome() != ErrorStatus.Outcome.OK) return null;
-            newStack.setChild(i, trimmedTrack, errorStatus);
+            Track trimmedTrack = this.trackTrimmedToRange((Track) tracks.get(i), trimRange);
+            newStack.setChild(i, trimmedTrack);
         }
         return newTimeline;
     }

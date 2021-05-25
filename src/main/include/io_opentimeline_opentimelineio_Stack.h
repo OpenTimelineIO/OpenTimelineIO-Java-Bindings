@@ -18,34 +18,34 @@ JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_Stack_initialize
 /*
  * Class:     io_opentimeline_opentimelineio_Stack
  * Method:    rangeOfChildAtIndex
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (I)Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Stack_rangeOfChildAtIndex
-  (JNIEnv *, jobject, jint, jobject);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Stack
  * Method:    trimmedRangeOfChildAtIndex
- * Signature: (ILio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: (I)Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Stack_trimmedRangeOfChildAtIndex
-  (JNIEnv *, jobject, jint, jobject);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Stack
  * Method:    getAvailableRange
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Lio/opentimeline/opentime/TimeRange;
+ * Signature: ()Lio/opentimeline/opentime/TimeRange;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Stack_getAvailableRange
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Stack
  * Method:    getRangeOfAllChildren
- * Signature: (Lio/opentimeline/opentimelineio/ErrorStatus;)Ljava/util/HashMap;
+ * Signature: ()Ljava/util/HashMap;
  */
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Stack_getRangeOfAllChildren
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

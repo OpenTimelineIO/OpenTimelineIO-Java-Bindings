@@ -6,6 +6,7 @@ package io.opentimeline;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
+import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +25,7 @@ public class StackAlgoTest {
     Track trackgFg = null;
 
     @BeforeEach
-    public void setup() {
-        ErrorStatus errorStatus = new ErrorStatus();
+    public void setup() throws OpenTimelineIOException {
         trackZ = (Track) SerializableObject.fromJSONString("" +
                         "{\n" +
                         "            \"OTIO_SCHEMA\": \"Track.1\",\n" +
@@ -58,8 +58,7 @@ public class StackAlgoTest {
                         "            \"metadata\": {},\n" +
                         "            \"name\": \"Sequence1\",\n" +
                         "            \"source_range\": null\n" +
-                        "        }",
-                errorStatus);
+                        "        }");
 
         trackABC = (Track) SerializableObject.fromJSONString("" +
                         "{\n" +
@@ -135,8 +134,7 @@ public class StackAlgoTest {
                         "            \"metadata\": {},\n" +
                         "            \"name\": \"Sequence1\",\n" +
                         "            \"source_range\": null\n" +
-                        "        }",
-                errorStatus);
+                        "        }");
 
         trackDgE = (Track) SerializableObject.fromJSONString("" +
                         "{\n" +
@@ -212,8 +210,7 @@ public class StackAlgoTest {
                         "            \"metadata\": {},\n" +
                         "            \"name\": \"Sequence1\",\n" +
                         "            \"source_range\": null\n" +
-                        "        }",
-                errorStatus);
+                        "        }");
 
         trackgFg = (Track) SerializableObject.fromJSONString("" +
                         "{\n" +
@@ -289,22 +286,14 @@ public class StackAlgoTest {
                         "            \"metadata\": {},\n" +
                         "            \"name\": \"Sequence1\",\n" +
                         "            \"source_range\": null\n" +
-                        "        }",
-                errorStatus);
-
-        try {
-            errorStatus.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                        "        }");
     }
 
     @Test
-    public void testFlattenSingleTrack() {
+    public void testFlattenSingleTrack() throws OpenTimelineIOException {
         Stack stack = new Stack.StackBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(stack.appendChild(trackABC, errorStatus));
-        Track flatTrack = new Algorithms().flattenStack(stack, errorStatus);
+        assertTrue(stack.appendChild(trackABC));
+        Track flatTrack = new Algorithms().flattenStack(stack);
         // the result should be equivalent
         List<Composable> flatTrackChildren = flatTrack.getChildren();
         List<Composable> trackABCChildren = trackABC.getChildren();
@@ -318,7 +307,6 @@ public class StackAlgoTest {
                 trackABCChildren.get(2).getNativeManager().getOTIOObjectNativeHandle());
         try {
             stack.close();
-            errorStatus.close();
             flatTrack.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -326,12 +314,11 @@ public class StackAlgoTest {
     }
 
     @Test
-    public void testFlattenObscureTrack() {
+    public void testFlattenObscureTrack() throws OpenTimelineIOException {
         Stack stack = new Stack.StackBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(stack.appendChild(trackABC, errorStatus));
-        assertTrue(stack.appendChild(trackZ, errorStatus));
-        Track flatTrack = new Algorithms().flattenStack(stack, errorStatus);
+        assertTrue(stack.appendChild(trackABC));
+        assertTrue(stack.appendChild(trackZ));
+        Track flatTrack = new Algorithms().flattenStack(stack);
         List<Composable> flatTrackChildren = flatTrack.getChildren();
         List<Composable> trackZChildren = trackZ.getChildren();
         assertEquals(flatTrackChildren, trackZChildren);
@@ -346,15 +333,14 @@ public class StackAlgoTest {
             e.printStackTrace();
         }
         stack = new Stack.StackBuilder().build();
-        assertTrue(stack.appendChild(trackZ, errorStatus));
-        assertTrue(stack.appendChild(trackABC, errorStatus));
-        flatTrack = new Algorithms().flattenStack(stack, errorStatus);
+        assertTrue(stack.appendChild(trackZ));
+        assertTrue(stack.appendChild(trackABC));
+        flatTrack = new Algorithms().flattenStack(stack);
         flatTrackChildren = flatTrack.getChildren();
         List<Composable> trackABCChildren = trackABC.getChildren();
         assertEquals(flatTrackChildren, trackABCChildren);
         try {
             flatTrack.close();
-            errorStatus.close();
             stack.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -362,12 +348,11 @@ public class StackAlgoTest {
     }
 
     @Test
-    public void testFlattenGaps() {
+    public void testFlattenGaps() throws OpenTimelineIOException {
         Stack stack = new Stack.StackBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(stack.appendChild(trackABC, errorStatus));
-        assertTrue(stack.appendChild(trackDgE, errorStatus));
-        Track flatTrack = new Algorithms().flattenStack(stack, errorStatus);
+        assertTrue(stack.appendChild(trackABC));
+        assertTrue(stack.appendChild(trackDgE));
+        Track flatTrack = new Algorithms().flattenStack(stack);
         List<Composable> flatTrackChildren = flatTrack.getChildren();
         List<Composable> trackABCChildren = trackABC.getChildren();
         List<Composable> trackDgEChildren = trackDgE.getChildren();
@@ -390,9 +375,9 @@ public class StackAlgoTest {
             e.printStackTrace();
         }
         stack = new Stack.StackBuilder().build();
-        assertTrue(stack.appendChild(trackABC, errorStatus));
-        assertTrue(stack.appendChild(trackgFg, errorStatus));
-        flatTrack = new Algorithms().flattenStack(stack, errorStatus);
+        assertTrue(stack.appendChild(trackABC));
+        assertTrue(stack.appendChild(trackgFg));
+        flatTrack = new Algorithms().flattenStack(stack);
         flatTrackChildren = flatTrack.getChildren();
         assertEquals(flatTrackChildren.get(0), trackABCChildren.get(0));
         assertEquals(flatTrackChildren.get(1), trackgFgChildren.get(1));
@@ -406,19 +391,17 @@ public class StackAlgoTest {
         try {
             stack.close();
             flatTrack.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testFlattenGapsWithTrims() {
+    public void testFlattenGapsWithTrims() throws OpenTimelineIOException {
         Stack stack = new Stack.StackBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
-        assertTrue(stack.appendChild(trackZ, errorStatus));
-        assertTrue(stack.appendChild(trackDgE, errorStatus));
-        Track flatTrack = new Algorithms().flattenStack(stack, errorStatus);
+        assertTrue(stack.appendChild(trackZ));
+        assertTrue(stack.appendChild(trackDgE));
+        Track flatTrack = new Algorithms().flattenStack(stack);
         List<Composable> flatTrackChildren = flatTrack.getChildren();
         assertEquals(flatTrackChildren.get(0), trackDgE.getChildren().get(0));
         assertEquals(flatTrackChildren.get(1).getName(), "Z");
@@ -435,9 +418,9 @@ public class StackAlgoTest {
             e.printStackTrace();
         }
         stack = new Stack.StackBuilder().build();
-        assertTrue(stack.appendChild(trackZ, errorStatus));
-        assertTrue(stack.appendChild(trackgFg, errorStatus));
-        flatTrack = new Algorithms().flattenStack(stack, errorStatus);
+        assertTrue(stack.appendChild(trackZ));
+        assertTrue(stack.appendChild(trackgFg));
+        flatTrack = new Algorithms().flattenStack(stack);
         flatTrackChildren = flatTrack.getChildren();
         assertEquals(flatTrackChildren.get(0).getName(), "Z");
         assertEquals(((Clip) flatTrackChildren.get(0)).getSourceRange(),
@@ -453,19 +436,17 @@ public class StackAlgoTest {
         try {
             stack.close();
             flatTrack.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testFlattenListOfTracks() {
+    public void testFlattenListOfTracks() throws OpenTimelineIOException {
         List<Track> tracks = new ArrayList<>();
         tracks.add(trackABC);
         tracks.add(trackDgE);
-        ErrorStatus errorStatus = new ErrorStatus();
-        Track flatTrack = new Algorithms().flattenStack(tracks, errorStatus);
+        Track flatTrack = new Algorithms().flattenStack(tracks);
         List<Composable> flatTrackChildren = flatTrack.getChildren();
         List<Composable> trackABCChildren = trackABC.getChildren();
         List<Composable> trackgFgChildren = trackgFg.getChildren();
@@ -483,13 +464,12 @@ public class StackAlgoTest {
         tracks = new ArrayList<>();
         tracks.add(trackABC);
         tracks.add(trackgFg);
-        flatTrack = new Algorithms().flattenStack(tracks, errorStatus);
+        flatTrack = new Algorithms().flattenStack(tracks);
         flatTrackChildren = flatTrack.getChildren();
         assertEquals(flatTrackChildren.get(0), trackABCChildren.get(0));
         assertEquals(flatTrackChildren.get(1), trackgFgChildren.get(1));
         assertEquals(flatTrackChildren.get(2), trackABCChildren.get(2));
         try {
-            errorStatus.close();
             flatTrack.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -497,7 +477,7 @@ public class StackAlgoTest {
     }
 
     @Test
-    public void testFlattenExampleCode() {
+    public void testFlattenExampleCode() throws OpenTimelineIOException {
         String projectRootDir = System.getProperty("user.dir");
         String sampleDataDir = projectRootDir + File.separator +
                 "src" + File.separator + "test" + File.separator + "sample_data";
@@ -507,12 +487,11 @@ public class StackAlgoTest {
         assertTrue(file.exists());
         file = new File(preflattenedTest);
         assertTrue(file.exists());
-        ErrorStatus errorStatus = new ErrorStatus();
 
-        Timeline timeline = (Timeline) SerializableObject.fromJSONFile(multitrackTest, errorStatus);
-        Timeline preflattened = (Timeline) SerializableObject.fromJSONFile(preflattenedTest, errorStatus);
+        Timeline timeline = (Timeline) SerializableObject.fromJSONFile(multitrackTest);
+        Timeline preflattened = (Timeline) SerializableObject.fromJSONFile(preflattenedTest);
         Track preflattenedTrack = preflattened.getVideoTracks().get(0);
-        Track flattenedTrack = new Algorithms().flattenStack(timeline.getVideoTracks(), errorStatus);
+        Track flattenedTrack = new Algorithms().flattenStack(timeline.getVideoTracks());
         // the names will be different, so clear them both
         preflattenedTrack.setName("");
         flattenedTrack.setName("");
@@ -522,33 +501,29 @@ public class StackAlgoTest {
             preflattened.close();
             preflattenedTrack.close();
             flattenedTrack.close();
-            errorStatus.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testFlattenWithTransition() {
+    public void testFlattenWithTransition() throws OpenTimelineIOException {
         Stack stack = new Stack.StackBuilder().build();
-        ErrorStatus errorStatus = new ErrorStatus();
         assertTrue(trackDgE.insertChild(1,
                 new Transition.TransitionBuilder()
                         .setName("test_transition")
                         .setInOffset(new RationalTime(10, 24))
                         .setOutOffset(new RationalTime(15, 24))
-                        .build(),
-                errorStatus));
-        assertTrue(stack.appendChild(trackABC, errorStatus));
-        assertTrue(stack.appendChild(trackDgE, errorStatus));
-        Track flatTrack = new Algorithms().flattenStack(stack, errorStatus);
+                        .build()));
+        assertTrue(stack.appendChild(trackABC));
+        assertTrue(stack.appendChild(trackDgE));
+        Track flatTrack = new Algorithms().flattenStack(stack);
         assertEquals(trackABC.getChildren().size(), 3);
         assertEquals(((Track) stack.getChildren().get(1)).getChildren().size(), 4);
         assertEquals(flatTrack.getChildren().size(), 4);
         assertEquals(flatTrack.getChildren().get(1).getName(), "test_transition");
         try {
             stack.close();
-            errorStatus.close();
             flatTrack.close();
         } catch (Exception e) {
             e.printStackTrace();

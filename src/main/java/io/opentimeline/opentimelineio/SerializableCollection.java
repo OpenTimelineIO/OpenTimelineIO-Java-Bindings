@@ -5,6 +5,7 @@ package io.opentimeline.opentimelineio;
 
 import io.opentimeline.OTIONative;
 import io.opentimeline.opentime.TimeRange;
+import io.opentimeline.opentimelineio.exception.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -91,36 +92,50 @@ public class SerializableCollection extends SerializableObjectWithMetadata {
 
     public native void clearChildren();
 
-    public native boolean setChild(int index, SerializableObject child, ErrorStatus errorStatus);
+    public native boolean setChild(int index, SerializableObject child) throws IndexOutOfBoundsException;
 
     public native void insertChild(int index, SerializableObject child);
 
-    public native boolean removeChild(int index, ErrorStatus errorStatus);
+    public native boolean removeChild(int index) throws IndexOutOfBoundsException;
 
     public <T extends Composable> Stream<T> eachChild(
-            TimeRange searchRange, Class<T> descendedFrom, ErrorStatus errorStatus) {
+            TimeRange searchRange, Class<T> descendedFrom) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         List<SerializableObject> children = this.getChildren();
-        return children.stream()
-                .flatMap(element -> {
-                            Stream<T> currentElementStream = Stream.empty();
-                            if (descendedFrom.isAssignableFrom(element.getClass()))
-                                currentElementStream = Stream.concat(Stream.of(descendedFrom.cast(element)), currentElementStream);
-                            Stream<T> nestedStream = Stream.empty();
-                            if (element instanceof Composition) {
-                                nestedStream = ((Composition) element).eachChild(
-                                        searchRange,
-                                        descendedFrom,
-                                        false,
-                                        errorStatus);
+        Stream<T> resultStream;
+        try {
+            resultStream = children.stream()
+                    .flatMap(element -> {
+                                Stream<T> currentElementStream = Stream.empty();
+                                if (descendedFrom.isAssignableFrom(element.getClass()))
+                                    currentElementStream = Stream.concat(Stream.of(descendedFrom.cast(element)), currentElementStream);
+                                Stream<T> nestedStream = Stream.empty();
+                                if (element instanceof Composition) {
+                                    try {
+                                        nestedStream = ((Composition) element).eachChild(
+                                                searchRange,
+                                                descendedFrom,
+                                                false);
+                                    } catch (Exception e){
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                                return Stream.concat(currentElementStream, nestedStream);
                             }
-                            return Stream.concat(currentElementStream, nestedStream);
-                        }
-                );
+                    );
+        } catch (RuntimeException e){
+            if (e.getCause() instanceof NotAChildException)
+                throw (NotAChildException) e.getCause();
+            else if (e.getCause() instanceof ObjectWithoutDurationException)
+                throw (ObjectWithoutDurationException) e.getCause();
+            else if (e.getCause() instanceof CannotComputeAvailableRangeException)
+                throw (CannotComputeAvailableRangeException) e.getCause();
+            else throw e;
+        }
+        return resultStream;
     }
 
-    public Stream<Clip> eachClip(
-            TimeRange searchRange, ErrorStatus errorStatus) {
-        return this.eachChild(searchRange, Clip.class, errorStatus);
+    public Stream<Clip> eachClip(TimeRange searchRange) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return this.eachChild(searchRange, Clip.class);
     }
 
     @Override

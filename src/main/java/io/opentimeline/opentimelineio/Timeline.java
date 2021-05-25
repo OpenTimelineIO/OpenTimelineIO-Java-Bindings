@@ -6,6 +6,7 @@ package io.opentimeline.opentimelineio;
 import io.opentimeline.OTIONative;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
+import io.opentimeline.opentimelineio.exception.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -97,19 +98,17 @@ public class Timeline extends SerializableObjectWithMetadata {
     /**
      * Get duration of this timeline.
      *
-     * @param errorStatus errorStatus to report error while fetching duration
      * @return duration of the timeline.
      */
-    public native RationalTime getDuration(ErrorStatus errorStatus);
+    public native RationalTime getDuration() throws UnsupportedOperationException, CannotComputeAvailableRangeException;
 
     /**
      * Range of the child object contained in this timeline.
      *
      * @param child       child Composable whose range is to be found.
-     * @param errorStatus errorStatus to report error while fetching range
      * @return range of the child object contained in this timeline.
      */
-    public native TimeRange getRangeOfChild(Composable child, ErrorStatus errorStatus);
+    public native TimeRange getRangeOfChild(Composable child) throws NotAChildException, UnsupportedOperationException, IndexOutOfBoundsException, ObjectWithoutDurationException, CannotComputeAvailableRangeException;
 
     /**
      * This convenience method returns a list of the top-level audio tracks in
@@ -141,13 +140,12 @@ public class Timeline extends SerializableObjectWithMetadata {
      *
      * @param searchRange   TimeRange to search in
      * @param descendedFrom only children who are a descendent of the descendedFrom type will be in the stream
-     * @param errorStatus   errorStatus to report any error while iterating
      * @param <T>           type of children to fetch
      * @return a Stream consisting of all the children of specified type in the composition in the order in which it is found
      */
     public <T extends Composable> Stream<T> eachChild(
-            TimeRange searchRange, Class<T> descendedFrom, ErrorStatus errorStatus) {
-        return this.getTracks().eachChild(searchRange, descendedFrom, false, errorStatus);
+            TimeRange searchRange, Class<T> descendedFrom) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return this.getTracks().eachChild(searchRange, descendedFrom, false);
     }
 
     /**
@@ -155,23 +153,21 @@ public class Timeline extends SerializableObjectWithMetadata {
      * This recursively searches all compositions.
      *
      * @param searchRange TimeRange to search in
-     * @param errorStatus errorStatus to report any error while iterating
      * @return a Stream consisting of all the children in the composition (in the searchRange) in the order in which it is found
      */
     public Stream<Composable> eachChild(
-            TimeRange searchRange, ErrorStatus errorStatus) {
-        return this.eachChild(searchRange, Composable.class, errorStatus);
+            TimeRange searchRange) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return this.eachChild(searchRange, Composable.class);
     }
 
     /**
      * Return a flat Stream of each child.
      * This recursively searches all compositions.
      *
-     * @param errorStatus errorStatus to report any error while iterating
      * @return a Stream consisting of all the children in the composition in the order in which it is found
      */
-    public Stream<Composable> eachChild(ErrorStatus errorStatus) {
-        return this.eachChild((TimeRange) null, errorStatus);
+    public Stream<Composable> eachChild() throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return this.eachChild((TimeRange) null);
     }
 
     /**
@@ -179,34 +175,31 @@ public class Timeline extends SerializableObjectWithMetadata {
      * This recursively searches all compositions.
      *
      * @param descendedFrom only children who are a descendent of the descendedFrom type will be in the stream
-     * @param errorStatus   errorStatus to report any error while iterating
      * @param <T>           type of children to fetch
      * @return a Stream consisting of all the children of specified type in the composition in the order in which it is found
      */
-    public <T extends Composable> Stream<T> eachChild(Class<T> descendedFrom, ErrorStatus errorStatus) {
-        return this.eachChild(null, descendedFrom, errorStatus);
+    public <T extends Composable> Stream<T> eachChild(Class<T> descendedFrom) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return this.eachChild(null, descendedFrom);
     }
 
     /**
      * Return a flat Stream of each clip, limited to the search_range.
      *
      * @param searchRange TimeRange to search in
-     * @param errorStatus errorStatus to report error while iterating
      * @return a Stream of all clips in the timeline (in the searchRange) in the order they are found
      */
     public Stream<Clip> eachClip(
-            TimeRange searchRange, ErrorStatus errorStatus) {
-        return this.getTracks().eachClip(searchRange, errorStatus);
+            TimeRange searchRange) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return this.getTracks().eachClip(searchRange);
     }
 
     /**
      * Return a flat Stream of each clip.
      *
-     * @param errorStatus errorStatus to report error while iterating
      * @return a Stream of all clips in the timeline in the order they are found
      */
-    public Stream<Clip> eachClip(ErrorStatus errorStatus) {
-        return this.eachClip(null, errorStatus);
+    public Stream<Clip> eachClip() throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
+        return this.eachClip(null);
     }
 
     @Override

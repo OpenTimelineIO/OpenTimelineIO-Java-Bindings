@@ -4,6 +4,7 @@
 package io.opentimeline.opentime;
 
 import io.opentimeline.LibraryLoader;
+import io.opentimeline.opentime.exception.*;
 
 /**
  * Represents an instantaneous point in time, value * (1/rate) seconds
@@ -198,22 +199,20 @@ public class RationalTime implements Comparable<RationalTime> {
     /**
      * Convert timecode to RationalTime.
      *
-     * @param timecode    a colon-delimited timecode
-     * @param rate        the frame-rate to calculate timecode in terms of
-     * @param errorStatus errorStatus to report error in conversion
+     * @param timecode a colon-delimited timecode
+     * @param rate     the frame-rate to calculate timecode in terms of
      * @return RationalTime equivalent to timecode
      */
-    public static native RationalTime fromTimecode(String timecode, double rate, ErrorStatus errorStatus);
+    public static native RationalTime fromTimecode(String timecode, double rate) throws InvalidTimecodeRateException, NonDropframeRateException, InvalidTimecodeStringException, TimecodeRateMismatchException;
 
     /**
      * Convert a time with microseconds string into a RationalTime
      *
-     * @param timeString  a HH:MM:ss.ms time
-     * @param rate        The frame-rate to calculate timecode in terms of
-     * @param errorStatus errorStatus to report error in conversion
+     * @param timeString a HH:MM:ss.ms time
+     * @param rate       The frame-rate to calculate timecode in terms of
      * @return RationalTime equivalent to timestring
      */
-    public static native RationalTime fromTimeString(String timeString, double rate, ErrorStatus errorStatus);
+    public static native RationalTime fromTimeString(String timeString, double rate) throws InvalidTimecodeRateException, InvalidTimestringException;
 
     /**
      * Convert RationalTime to integer frames at same rate
@@ -246,26 +245,24 @@ public class RationalTime implements Comparable<RationalTime> {
     /**
      * Convert RationalTime to timecode
      *
-     * @param rate        the frame-rate to calculate timecode in terms of
-     * @param dropFrame   should the algorithm drop frames while conversion? [InferFromRate, ForceYes, ForceNo]
-     * @param errorStatus errorStatus to report error in conversion
+     * @param rate      the frame-rate to calculate timecode in terms of
+     * @param dropFrame should the algorithm drop frames while conversion? [InferFromRate, ForceYes, ForceNo]
      * @return equivalent timecode
      */
-    public String toTimecode(double rate, IsDropFrameRate dropFrame, ErrorStatus errorStatus) {
-        return toTimecodeNative(this, rate, dropFrame.getIndex(), errorStatus);
+    public String toTimecode(double rate, IsDropFrameRate dropFrame) throws NegativeValueException, InvalidTimecodeRateException, InvalidRateForDropFrameTimecodeException {
+        return toTimecodeNative(this, rate, dropFrame.getIndex());
     }
 
     /**
      * Convert RationalTime to timecode and automatically infer if the frame rate is a Drop FrameRate.
      *
-     * @param errorStatus errorStatus to report error in conversion
      * @return equivalent timecode
      */
-    public String toTimecode(ErrorStatus errorStatus) {
-        return toTimecodeNative(this, getRate(), IsDropFrameRate.InferFromRate.getIndex(), errorStatus);
+    public String toTimecode() throws NegativeValueException, InvalidTimecodeRateException, InvalidRateForDropFrameTimecodeException {
+        return toTimecodeNative(this, getRate(), IsDropFrameRate.InferFromRate.getIndex());
     }
 
-    private static native String toTimecodeNative(RationalTime rationalTime, double rate, int dropFrameIndex, ErrorStatus errorStatus);
+    private static native String toTimecodeNative(RationalTime rationalTime, double rate, int dropFrameIndex) throws NegativeValueException, InvalidTimecodeRateException, InvalidRateForDropFrameTimecodeException;
 
     /**
      * Convert to time with microseconds as formatted in FFMPEG

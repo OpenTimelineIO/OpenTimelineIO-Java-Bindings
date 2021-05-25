@@ -2,26 +2,28 @@
 // Copyright Contributors to the OpenTimelineIO Project.
 
 #include <jni.h>
+#include <opentime/errorStatus.h>
+#include <opentimelineio/errorStatus.h>
 
 #ifndef _EXCEPTIONS_H_INCLUDED_
 #define _EXCEPTIONS_H_INCLUDED_
 
 inline jint throwNullPointerException(JNIEnv *env, const char *message) {
-  const char *className = "java/lang/NullPointerException";
-  jclass exClass = env->FindClass(className);
-  return env->ThrowNew(exClass, message);
+    const char *className = "java/lang/NullPointerException";
+    jclass exClass = env->FindClass(className);
+    return env->ThrowNew(exClass, message);
 }
 
 inline jint throwNoSuchElementException(JNIEnv *env, const char *message) {
-  const char *className = "java/util/NoSuchElementException";
-  jclass exClass = env->FindClass(className);
-  return env->ThrowNew(exClass, message);
+    const char *className = "java/util/NoSuchElementException";
+    jclass exClass = env->FindClass(className);
+    return env->ThrowNew(exClass, message);
 }
 
 inline jint throwIndexOutOfBoundsException(JNIEnv *env, const char *message) {
-  const char *className = "java/util/IndexOutOfBoundsException";
-  jclass exClass = env->FindClass(className);
-  return env->ThrowNew(exClass, message);
+    const char *className = "java/util/IndexOutOfBoundsException";
+    jclass exClass = env->FindClass(className);
+    return env->ThrowNew(exClass, message);
 }
 
 inline jint throwRuntimeException(JNIEnv *env, const char *message) {
@@ -29,5 +31,9 @@ inline jint throwRuntimeException(JNIEnv *env, const char *message) {
     jclass exClass = env->FindClass(className);
     return env->ThrowNew(exClass, message);
 }
+
+jint processOpenTimeErrorStatus(JNIEnv *env, opentime::ErrorStatus &errorStatus);
+
+jint processOTIOErrorStatus(JNIEnv *env, OTIO_NS::ErrorStatus &errorStatus);
 
 #endif

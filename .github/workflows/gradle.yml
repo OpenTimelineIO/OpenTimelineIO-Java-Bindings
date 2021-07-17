@@ -91,9 +91,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build with Gradle
-        shell: bash
-        run: ./gradlew build -x test
       - name: Create directory
         shell: bash
         run: |

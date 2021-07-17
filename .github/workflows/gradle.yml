@@ -41,6 +41,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
+        sudo apt-get install gcc-multilib g++-multilib
         rm build/natives/CMakeCache.txt
         ./gradlew build --rerun-tasks
     - name: Upload artifact

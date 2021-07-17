@@ -112,7 +112,7 @@ jobs:
           path: ./build/natives/downloads/
       - name: Repackage JAR with all binaries
         shell: bash
-        run: ./gradlew build -x test
+        run: ./gradlew build -x compileJNI -x test
       - name: Create pom file for maven
         run: ./gradlew createPom
       - name: Upload pom file

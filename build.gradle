@@ -81,6 +81,14 @@ task compileJNI {
                     commandLine 'sh', '-c', 'mkdir -p build/natives && ' +
                             'cd build/natives && ' +
                             buildCommand
+                } else if (OperatingSystem.current().isLinux()) {
+                    if (System.getProperty("os.arch").endsWith("86")) {
+                        commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../linux-32bit-toolchain.cmake && cmake --build . --config Release && ' +
+                                'mv lib/Release/Linux lib/Release/Linux-x86'
+                    } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
+                        commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. && cmake --build . --config Release && ' +
+                                'mv lib/Release/Linux lib/Release/Linux-amd64'
+                    }
                 } else {
                     commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. && cmake --build . --config Release'
                 }

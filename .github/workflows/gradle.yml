@@ -33,15 +33,21 @@ jobs:
       run: ./gradlew build
     - name: Set up 32-bit JDK 1.8
       uses: actions/setup-java@v1
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'windows-latest'
       with:
         java-version: 1.8
         architecture: x86
-    - name: 32-bit Build with Gradle
+    - name: 32-bit Linux Build with Gradle
       if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
         sudo apt-get install gcc-multilib g++-multilib
+        rm build/natives/CMakeCache.txt
+        ./gradlew build --rerun-tasks
+    - name: 32-bit Windows Build with Gradle
+      if: matrix.os == 'windows-latest'
+      shell: bash
+      run: |
         rm build/natives/CMakeCache.txt
         ./gradlew build --rerun-tasks
     - name: Upload artifact
@@ -50,7 +56,7 @@ jobs:
       with:
         name: Package-${{ matrix.os }}
         path: build/natives/lib/Release
-    - name: Upload artifact
+    - name: Upload Windows artifact
       if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v2
       with:

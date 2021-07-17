@@ -40,7 +40,9 @@ jobs:
     - name: 32-bit Build with Gradle
       if: matrix.os == 'ubuntu-latest'
       shell: bash
-      run: ./gradlew build --rerun-tasks
+      run: |
+        rm build/natives/CMakeCache.txt
+        ./gradlew build --rerun-tasks
     - name: Upload artifact
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
       uses: actions/upload-artifact@v2

@@ -48,6 +48,10 @@ set(OTIO_SHARED_LIBS ON)
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
+if(APPLE)
+    set(CMAKE_OSX_ARCHITECTURES arm64;x86_64)
+endif()
+
 include_directories(src/main/include)
 add_subdirectory(deps/OpenTimelineIO build/natives)
 add_subdirectory(src/main/cpp)

@@ -93,13 +93,21 @@ task compileJNI {
                     commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. && cmake --build . --config Release'
                 }
             } else if (OperatingSystem.current().isWindows()) {
-                if (System.getProperty("os.arch").endsWith("86")) {
-                    commandLine "cmd", "/c", 'if not exist "build\\natives" mkdir build\\natives && cd build\\natives && cmake -A Win32 ..\\.. && cmake --build . --config Release && ' +
-                            'ren bin\\Release\\Windows Windows-x86'
-                } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
-                    commandLine "cmd", "/c", 'if not exist "build\\natives" mkdir build\\natives && cd build\\natives && cmake -A x64 ..\\.. && cmake --build . --config Release && ' +
-                            'ren bin\\Release\\Windows Windows-amd64'
+                def nativeDir = new File('build\\natives')
+                if (!nativeDir.exists()) {
+                    nativeDir.mkdirs()
                 }
+                def generator = ""
+                def architecture = ""
+                if (System.getProperty("os.arch").endsWith("86")) {
+                    generator = "Win32"
+                    architecture = "x86"
+                } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
+                    generator = "x64"
+                    architecture = "amd64"
+                }
+                commandLine "cmd", "/c", 'cd build\\natives && cmake -A ' + generator + ' ..\\.. && cmake --build . --config Release && ' +
+                        'ren bin\\Release\\Windows Windows-' + architecture
             }
         }
     }

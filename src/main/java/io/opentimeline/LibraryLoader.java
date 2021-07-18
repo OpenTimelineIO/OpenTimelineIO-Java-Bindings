@@ -31,7 +31,7 @@ public class LibraryLoader {
                 return "Linux-x86";
             else if (System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64"))
                 return "Linux-amd64";
-            return "Linux"; 
+            return "Linux";
         }
         return "";
     }

@@ -31,6 +31,15 @@ jobs:
     - name: Build with Gradle
       shell: bash
       run: ./gradlew build
+    - name: aarch64 Linux Build with Gradle
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash
+      run: |
+        sudo apt install qemu-user qemu-user-static gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu binutils-aarch64-linux-gnu-dbg build-essential g++-aarch64-linux-gnu
+        wget https://download.bell-sw.com/java/8u292+10/bellsoft-jdk8u292+10-linux-aarch64.tar.gz
+        tar -xvzf jdk-8u291-linux-aarch64.tar.gz
+        rm build/natives/CMakeCache.txt
+        ./gradlew build -Paarch64Build --rerun-tasks
     - name: Set up 32-bit JDK 1.8
       uses: actions/setup-java@v1
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'windows-latest'

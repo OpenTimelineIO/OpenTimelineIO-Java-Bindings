@@ -29,6 +29,8 @@ public class LibraryLoader {
                 return "Android";
             else if (System.getProperty("os.arch").equals("aarch64"))
                 return "Linux-aarch64";
+            else if (System.getProperty("os.arch").equals("arm") || System.getProperty("os.arch").equals("aarch32"))
+                return "Linux-aarch32";
             else if (System.getProperty("os.arch").endsWith("86"))
                 return "Linux-x86";
             else if (System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64"))

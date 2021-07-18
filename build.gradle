@@ -64,6 +64,17 @@ compileJava {
         }
         options.forkOptions.executable = file('./aarch64javac.sh').absolutePath
         test.executable = file('./aarch64java.sh').absolutePath
+    } else if (project.hasProperty("aarch32Build")) {
+        def aarch32javacPath = file('./zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf/bin/javac').absolutePath
+        def aarch32javaPath = file('./zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf/bin/java').absolutePath
+        new File('./aarch32javac.sh').withWriter('utf-8') {
+            writer -> writer.writeLine 'qemu-arm -L /usr/arm-linux-gnueabihf/ ' + aarch32javacPath + ' "$@"'
+        }
+        new File('./aarch32java.sh').withWriter('utf-8') {
+            writer -> writer.writeLine 'qemu-arm -L /usr/arm-linux-gnueabihf/ ' + aarch32javaPath + ' "$@"'
+        }
+        options.forkOptions.executable = file('./aarch32javac.sh').absolutePath
+        test.executable = file('./aarch32java.sh').absolutePath
     }
     System.setProperty("user.dir", project.projectDir.toString())
     options.compilerArgs += ["-h", file("src/main/include")]
@@ -107,6 +118,10 @@ task compileJNI {
                     } else if (System.getProperty("os.arch") == "aarch64" || project.hasProperty("aarch64Build")) {
                         architecture = "aarch64"
                         cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-aarch64-toolchain.cmake &&"
+                    } else if (System.getProperty("os.arch") == "aarch32" || System.getProperty("os.arch") == "arm" ||
+                            project.hasProperty("aarch32Build")) {
+                        architecture = "aarch32"
+                        cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-aarch32-toolchain.cmake &&"
                     } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
                         architecture = "amd64"
                         cmakeToolchain = "&&"

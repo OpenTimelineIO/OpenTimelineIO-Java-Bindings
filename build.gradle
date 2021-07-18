@@ -66,6 +66,7 @@ task compileJNI {
             if (OperatingSystem.current().isLinux() ||
                     OperatingSystem.current().isMacOsX() ||
                     OperatingSystem.current().isUnix()) {
+                // ANDROID BUILD
                 if (project.hasProperty("androidBuild") && project.hasProperty("sdk_path")) {
                     def sdk_path = project.getProperties().getAt('sdk_path').toString()
                     def architectures = ["arm64-v8a", "x86_64", "armeabi-v7a", "x86"] as String[]
@@ -81,18 +82,25 @@ task compileJNI {
                     commandLine 'sh', '-c', 'mkdir -p build/natives && ' +
                             'cd build/natives && ' +
                             buildCommand
-                } else if (OperatingSystem.current().isLinux()) {
-                    if (System.getProperty("os.arch").endsWith("86")) {
-                        commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../linux-32bit-toolchain.cmake && cmake --build . --config Release && ' +
-                                'mv lib/Release/Linux lib/Release/Linux-x86'
-                    } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
-                        commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. && cmake --build . --config Release && ' +
-                                'mv lib/Release/Linux lib/Release/Linux-amd64'
+                } else if (OperatingSystem.current().isLinux()) { // LINUX BUILD
+                    def nativeDir = new File('build/natives')
+                    if (!nativeDir.exists()) {
+                        nativeDir.mkdirs()
                     }
-                } else {
+                    def architecture = ""
+                    def cmakeToolchain = ""
+                    if (System.getProperty("os.arch").endsWith("86")) {
+                        architecture = "x86"
+                        cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-32bit-toolchain.cmake &&"
+                    } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
+                        architecture = "amd64"
+                    }
+                    commandLine 'sh', '-c', 'cd build/natives && cmake ../.. ' + cmakeToolchain + ' cmake --build . --config Release && ' +
+                            'mv lib/Release/Linux lib/Release/Linux-' + architecture
+                } else { // MACOS BUILD
                     commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. && cmake --build . --config Release'
                 }
-            } else if (OperatingSystem.current().isWindows()) {
+            } else if (OperatingSystem.current().isWindows()) { // WINDOWS BUILD
                 def nativeDir = new File('build\\natives')
                 if (!nativeDir.exists()) {
                     nativeDir.mkdirs()

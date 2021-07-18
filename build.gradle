@@ -53,6 +53,18 @@ sourceSets {
 }
 
 compileJava {
+    if (project.hasProperty("aarch64Build")) {
+        def aarch64javacPath = file('./jdk8u292/bin/javac').absolutePath
+        def aarch64javaPath = file('./jdk8u292/bin/java').absolutePath
+        new File('./aarch64javac.sh').withWriter('utf-8') {
+            writer -> writer.writeLine 'qemu-aarch64 -L /usr/aarch64-linux-gnu/ ' + aarch64javacPath + ' "$@"'
+        }
+        new File('./aarch64java.sh').withWriter('utf-8') {
+            writer -> writer.writeLine 'qemu-aarch64 -L /usr/aarch64-linux-gnu/ ' + aarch64javaPath + ' "$@"'
+        }
+        options.forkOptions.executable = file('./aarch64javac.sh').absolutePath
+        test.executable = file('./aarch64java.sh').absolutePath
+    }
     System.setProperty("user.dir", project.projectDir.toString())
     options.compilerArgs += ["-h", file("src/main/include")]
     options.encoding = "UTF-8"
@@ -92,6 +104,9 @@ task compileJNI {
                     if (System.getProperty("os.arch").endsWith("86")) {
                         architecture = "x86"
                         cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-32bit-toolchain.cmake &&"
+                    } else if (System.getProperty("os.arch") == "aarch64" || project.hasProperty("aarch64Build")) {
+                        architecture = "aarch64"
+                        cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-aarch64-toolchain.cmake &&"
                     } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
                         architecture = "amd64"
                         cmakeToolchain = "&&"

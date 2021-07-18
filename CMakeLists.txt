@@ -12,7 +12,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/${CMAKE_SYS
 
 # jvm
 if(NOT DEFINED ANDROID_ABI)
-    find_package(Java REQUIRED)
 else()
     set(JAVA_INCLUDE_PATH2 NotNeeded)
 endif()

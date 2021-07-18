@@ -27,6 +27,8 @@ public class LibraryLoader {
         } else if (osName.contains("nux")) {
             if (System.getProperty("java.vm.name").toLowerCase().contains("dalvik"))
                 return "Android";
+            else if (System.getProperty("os.arch").equals("aarch64"))
+                return "Linux-aarch64";
             else if (System.getProperty("os.arch").endsWith("86"))
                 return "Linux-x86";
             else if (System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64"))

@@ -94,6 +94,7 @@ task compileJNI {
                         cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-32bit-toolchain.cmake &&"
                     } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
                         architecture = "amd64"
+                        cmakeToolchain = "&&"
                     }
                     commandLine 'sh', '-c', 'cd build/natives && cmake ../.. ' + cmakeToolchain + ' cmake --build . --config Release && ' +
                             'mv lib/Release/Linux lib/Release/Linux-' + architecture

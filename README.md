@@ -142,7 +142,7 @@ Architecture Support Matrix
 
 | Operating System | x86_64/amd64       | x86                                            | aarch64/arm64            | aarch32                  |
 |------------------|--------------------|------------------------------------------------|--------------------------|--------------------------|
-| **Linux**        | :heavy_check_mark: | :heavy_check_mark:                             | :heavy_multiplication_x: | :heavy_multiplication_x: |
+| **Linux**        | :heavy_check_mark: | :heavy_check_mark:                             | :heavy_check_mark:       | :heavy_multiplication_x: |
 | **Windows**      | :heavy_check_mark: | :heavy_check_mark:                             | :heavy_multiplication_x: | :heavy_multiplication_x: |
 | **macOS**        | :heavy_check_mark: | :heavy_multiplication_x: (DEPRECATED BY APPLE) | EXPERIMENTAL             | N/A                      |
 

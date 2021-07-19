@@ -31,13 +31,63 @@ jobs:
     - name: Build with Gradle
       shell: bash
       run: ./gradlew build
+    - name: aarch64 Linux Build with Gradle
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash
+      run: |
+        sudo apt update
+        sudo apt install qemu-user qemu-user-static gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu binutils-aarch64-linux-gnu-dbg build-essential g++-aarch64-linux-gnu
+        wget https://download.bell-sw.com/java/8u292+10/bellsoft-jdk8u292+10-linux-aarch64.tar.gz
+        tar -xvzf bellsoft-jdk8u292+10-linux-aarch64.tar.gz
+        rm build/natives/CMakeCache.txt
+        ./gradlew build -Paarch64Build --rerun-tasks
+    - name: aarch32 Linux Build with Gradle
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash
+      run: |
+        sudo apt install gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf binutils-arm-linux-gnueabihf-dbg g++-arm-linux-gnueabihf
+        wget https://cdn.azul.com/zulu-embedded/bin/zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf.tar.gz
+        tar -xvzf zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf.tar.gz
+        rm build/natives/CMakeCache.txt
+        ./gradlew build -Paarch32Build --rerun-tasks
+    - name: Set up 32-bit JDK 1.8
+      uses: actions/setup-java@v1
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'windows-latest'
+      with:
+        java-version: 1.8
+        architecture: x86
+    - name: 32-bit Linux Build with Gradle
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash
+      run: |
+        sudo apt-get install gcc-multilib g++-multilib
+        rm build/natives/CMakeCache.txt
+        ./gradlew build --rerun-tasks
+    - name: 32-bit Windows Build with Gradle
+      if: matrix.os == 'windows-latest'
+      shell: bash
+      run: |
+        rm -rf build/natives/CMakeCache.txt
+        ./gradlew build --rerun-tasks
+    - name: arm64 Windows Build with Gradle
+      if: matrix.os == 'windows-latest'
+      shell: bash
+      run: |
+        rm -rf build/natives/CMakeCache.txt
+        ./gradlew build -x test -Paarch64Build --rerun-tasks
+    - name: arm32 Windows Build with Gradle
+      if: matrix.os == 'windows-latest'
+      shell: bash
+      run: |
+        rm -rf build/natives/CMakeCache.txt
+        ./gradlew build -x test -Paarch32Build --rerun-tasks
     - name: Upload artifact
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
       uses: actions/upload-artifact@v2
       with:
         name: Package-${{ matrix.os }}
         path: build/natives/lib/Release
-    - name: Upload artifact
+    - name: Upload Windows artifact
       if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v2
       with:
@@ -78,9 +128,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build with Gradle
-        shell: bash
-        run: ./gradlew build -x test
       - name: Create directory
         shell: bash
         run: |
@@ -102,7 +149,7 @@ jobs:
           path: ./build/natives/downloads/
       - name: Repackage JAR with all binaries
         shell: bash
-        run: ./gradlew build -x test
+        run: ./gradlew build -x compileJNI -x test
       - name: Create pom file for maven
         run: ./gradlew createPom
       - name: Upload pom file

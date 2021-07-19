@@ -137,6 +137,17 @@ dependencies {
 ```
 
 
+Architecture Support Matrix
+---------------------------
+
+| Operating System | x86_64/amd64       | x86                                            | aarch64/arm64            | aarch32                  |
+|------------------|--------------------|------------------------------------------------|--------------------------|--------------------------|
+| **Linux**        | :heavy_check_mark: | :heavy_check_mark:                             | :heavy_check_mark:       | :heavy_check_mark:       |
+| **Windows**      | :heavy_check_mark: | :heavy_check_mark:                             | EXPERIMENTAL             | EXPERIMENTAL             |
+| **macOS**        | :heavy_check_mark: | :heavy_multiplication_x: (DEPRECATED BY APPLE) | EXPERIMENTAL             | N/A                      |
+
+Apple Silicon and Windows ARM support is experimental. The pre-built JAR includes support, but it is **untested** since we can't run CI tests on Apple Silicon or Windows ARM.
+
 Examples
 --------
 

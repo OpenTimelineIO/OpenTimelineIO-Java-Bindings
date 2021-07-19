@@ -16,11 +16,29 @@ public class LibraryLoader {
 
     private static String getOSName() {
         String osName = System.getProperty("os.name").toLowerCase();
-        if (osName.contains("win")) return "Windows";
-        else if (osName.contains("mac")) return "Darwin";
-        else if (osName.contains("nux")) {
-            if(System.getProperty("java.vm.name").toLowerCase().contains("dalvik"))
+        if (osName.contains("win")) {
+            if (System.getProperty("os.arch").endsWith("86"))
+                return "Windows-x86";
+            else if (System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64"))
+                return "Windows-amd64";
+            else if (System.getProperty("os.arch").equals("arm") || System.getProperty("os.arch").equals("aarch32"))
+                return "Windows-aarch32";
+            else if (System.getProperty("os.arch").equals("arm64") || System.getProperty("os.arch").equals("aarch64"))
+                return "Windows-aarch54";
+            return "Windows";
+        } else if (osName.contains("mac")) {
+            return "Darwin";
+        } else if (osName.contains("nux")) {
+            if (System.getProperty("java.vm.name").toLowerCase().contains("dalvik"))
                 return "Android";
+            else if (System.getProperty("os.arch").equals("aarch64"))
+                return "Linux-aarch64";
+            else if (System.getProperty("os.arch").equals("arm") || System.getProperty("os.arch").equals("aarch32"))
+                return "Linux-aarch32";
+            else if (System.getProperty("os.arch").endsWith("86"))
+                return "Linux-x86";
+            else if (System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64"))
+                return "Linux-amd64";
             return "Linux";
         }
         return "";

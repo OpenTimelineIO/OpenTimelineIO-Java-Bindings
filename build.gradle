@@ -53,6 +53,29 @@ sourceSets {
 }
 
 compileJava {
+    if (OperatingSystem.current().isLinux() && project.hasProperty("aarch64Build")) {
+        def aarch64javacPath = file('./jdk8u292/bin/javac').absolutePath
+        def aarch64javaPath = file('./jdk8u292/bin/java').absolutePath
+        new File('./aarch64javac.sh').withWriter('utf-8') {
+            writer -> writer.writeLine 'qemu-aarch64 -L /usr/aarch64-linux-gnu/ ' + aarch64javacPath + ' "$@"'
+        }
+        new File('./aarch64java.sh').withWriter('utf-8') {
+            writer -> writer.writeLine 'qemu-aarch64 -L /usr/aarch64-linux-gnu/ ' + aarch64javaPath + ' "$@"'
+        }
+        options.forkOptions.executable = file('./aarch64javac.sh').absolutePath
+        test.executable = file('./aarch64java.sh').absolutePath
+    } else if (OperatingSystem.current().isLinux() && project.hasProperty("aarch32Build")) {
+        def aarch32javacPath = file('./zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf/bin/javac').absolutePath
+        def aarch32javaPath = file('./zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf/bin/java').absolutePath
+        new File('./aarch32javac.sh').withWriter('utf-8') {
+            writer -> writer.writeLine 'qemu-arm -L /usr/arm-linux-gnueabihf/ ' + aarch32javacPath + ' "$@"'
+        }
+        new File('./aarch32java.sh').withWriter('utf-8') {
+            writer -> writer.writeLine 'qemu-arm -L /usr/arm-linux-gnueabihf/ ' + aarch32javaPath + ' "$@"'
+        }
+        options.forkOptions.executable = file('./aarch32javac.sh').absolutePath
+        test.executable = file('./aarch32java.sh').absolutePath
+    }
     System.setProperty("user.dir", project.projectDir.toString())
     options.compilerArgs += ["-h", file("src/main/include")]
     options.encoding = "UTF-8"
@@ -66,31 +89,72 @@ task compileJNI {
             if (OperatingSystem.current().isLinux() ||
                     OperatingSystem.current().isMacOsX() ||
                     OperatingSystem.current().isUnix()) {
-                if (project.hasProperty("androidBuild") && project.hasProperty("sdk_path")){
+                // ANDROID BUILD
+                if (project.hasProperty("androidBuild") && project.hasProperty("sdk_path")) {
                     def sdk_path = project.getProperties().getAt('sdk_path').toString()
+                    def architectures = ["arm64-v8a", "x86_64", "armeabi-v7a", "x86"] as String[]
+                    def commands = []
+                    for (arch in architectures) {
+                        def commandStr = 'cmake -G"Ninja" -DANDROID_ABI=' + arch + ' -DANDROID_NDK=' + sdk_path + '/ndk/22.0.7026061 -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=' + sdk_path + '/cmake/3.10.2.4988404/bin/ninja -DCMAKE_TOOLCHAIN_FILE=' + sdk_path + '/ndk/22.0.7026061/build/cmake/android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=23 -DANDROID_TOOLCHAIN=clang ../.. && ' +
+                                'cmake --build . --config Release && ' +
+                                'mv lib/Release/Android/ lib/Release/' + arch + ' && ' +
+                                'rm CMakeCache.txt'
+                        commands.add(commandStr)
+                    }
+                    def buildCommand = commands.join(' && ')
                     commandLine 'sh', '-c', 'mkdir -p build/natives && ' +
                             'cd build/natives && ' +
-                            'cmake -G"Ninja" -DANDROID_ABI=arm64-v8a -DANDROID_NDK='+sdk_path+'/ndk/22.0.7026061 -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM='+sdk_path+'/cmake/3.10.2.4988404/bin/ninja -DCMAKE_TOOLCHAIN_FILE='+sdk_path+'/ndk/22.0.7026061/build/cmake/android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=23 -DANDROID_TOOLCHAIN=clang ../.. && ' +
-                            'cmake --build . --config Release && ' +
-                            'mv lib/Release/Android/ lib/Release/arm64-v8a && ' +
-                            'rm CMakeCache.txt && ' +
-                            'cmake -G"Ninja" -DANDROID_ABI=x86_64 -DANDROID_NDK='+sdk_path+'/ndk/22.0.7026061 -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM='+sdk_path+'/cmake/3.10.2.4988404/bin/ninja -DCMAKE_TOOLCHAIN_FILE='+sdk_path+'/ndk/22.0.7026061/build/cmake/android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=23 -DANDROID_TOOLCHAIN=clang ../.. && ' +
-                            'cmake --build . --config Release && ' +
-                            'mv lib/Release/Android/ lib/Release/x86_64 && ' +
-                            'rm CMakeCache.txt && ' +
-                            'cmake -G"Ninja" -DANDROID_ABI=armeabi-v7a -DANDROID_NDK='+sdk_path+'/ndk/22.0.7026061 -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM='+sdk_path+'/cmake/3.10.2.4988404/bin/ninja -DCMAKE_TOOLCHAIN_FILE='+sdk_path+'/ndk/22.0.7026061/build/cmake/android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=23 -DANDROID_TOOLCHAIN=clang ../.. && ' +
-                            'cmake --build . --config Release && ' +
-                            'mv lib/Release/Android/ lib/Release/armeabi-v7a && ' +
-                            'rm CMakeCache.txt && ' +
-                            'cmake -G"Ninja" -DANDROID_ABI=x86 -DANDROID_NDK='+sdk_path+'/ndk/22.0.7026061 -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM='+sdk_path+'/cmake/3.10.2.4988404/bin/ninja -DCMAKE_TOOLCHAIN_FILE='+sdk_path+'/ndk/22.0.7026061/build/cmake/android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=23 -DANDROID_TOOLCHAIN=clang ../.. && ' +
-                            'cmake --build . --config Release && ' +
-                            'mv lib/Release/Android/ lib/Release/x86'
-                }
-                else {
+                            buildCommand
+                } else if (OperatingSystem.current().isLinux()) { // LINUX BUILD
+                    def nativeDir = new File('build/natives')
+                    if (!nativeDir.exists()) {
+                        nativeDir.mkdirs()
+                    }
+                    def architecture = ""
+                    def cmakeToolchain = ""
+                    if (System.getProperty("os.arch") == "aarch64" || project.hasProperty("aarch64Build")) {
+                        architecture = "aarch64"
+                        cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-aarch64-toolchain.cmake &&"
+                    } else if (System.getProperty("os.arch") == "aarch32" || System.getProperty("os.arch") == "arm" ||
+                            project.hasProperty("aarch32Build")) {
+                        architecture = "aarch32"
+                        cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-aarch32-toolchain.cmake &&"
+                    } else if (System.getProperty("os.arch").endsWith("86")) {
+                        architecture = "x86"
+                        cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-32bit-toolchain.cmake &&"
+                    } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
+                        architecture = "amd64"
+                        cmakeToolchain = "&&"
+                    }
+                    commandLine 'sh', '-c', 'cd build/natives && cmake ../.. ' + cmakeToolchain + ' cmake --build . --config Release && ' +
+                            'mv lib/Release/Linux lib/Release/Linux-' + architecture
+                } else { // MACOS BUILD
                     commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. && cmake --build . --config Release'
                 }
-            } else if (OperatingSystem.current().isWindows()) {
-                commandLine "cmd", "/c", 'if not exist "build\\natives" mkdir build\\natives && cd build\\natives && cmake ..\\.. && cmake --build . --config Release'
+            } else if (OperatingSystem.current().isWindows()) { // WINDOWS BUILD
+                def nativeDir = new File('build\\natives')
+                if (!nativeDir.exists()) {
+                    nativeDir.mkdirs()
+                }
+                def generator = ""
+                def architecture = ""
+                if (System.getProperty("os.arch").endsWith("arm64") || System.getProperty("os.arch").endsWith("aarch64")
+                        || project.hasProperty("aarch64Build")) {
+                    generator = "ARM64"
+                    architecture = "aarch64"
+                } else if (System.getProperty("os.arch").endsWith("arm") || System.getProperty("os.arch").endsWith("aarch32")
+                        || project.hasProperty("aarch32Build")) {
+                    generator = "ARM"
+                    architecture = "aarch32"
+                } else if (System.getProperty("os.arch").endsWith("86")) {
+                    generator = "Win32"
+                    architecture = "x86"
+                } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
+                    generator = "x64"
+                    architecture = "amd64"
+                }
+                commandLine "cmd", "/c", 'cd build\\natives && cmake -A ' + generator + ' ..\\.. && cmake --build . --config Release && ' +
+                        'ren bin\\Release\\Windows Windows-' + architecture
             }
         }
     }

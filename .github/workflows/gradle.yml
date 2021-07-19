@@ -69,6 +69,18 @@ jobs:
       run: |
         rm -rf build/natives/CMakeCache.txt
         ./gradlew build --rerun-tasks
+    - name: arm64 Windows Build with Gradle
+      if: matrix.os == 'windows-latest'
+      shell: bash
+      run: |
+        rm -rf build/natives/CMakeCache.txt
+        ./gradlew build -x test -Paarch64Build --rerun-tasks
+    - name: arm32 Windows Build with Gradle
+      if: matrix.os == 'windows-latest'
+      shell: bash
+      run: |
+        rm -rf build/natives/CMakeCache.txt
+        ./gradlew build -x test -Paarch32Build --rerun-tasks
     - name: Upload artifact
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
       uses: actions/upload-artifact@v2

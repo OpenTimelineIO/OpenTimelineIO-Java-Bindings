@@ -53,7 +53,7 @@ sourceSets {
 }
 
 compileJava {
-    if (project.hasProperty("aarch64Build")) {
+    if (OperatingSystem.current().isLinux() && project.hasProperty("aarch64Build")) {
         def aarch64javacPath = file('./jdk8u292/bin/javac').absolutePath
         def aarch64javaPath = file('./jdk8u292/bin/java').absolutePath
         new File('./aarch64javac.sh').withWriter('utf-8') {
@@ -64,7 +64,7 @@ compileJava {
         }
         options.forkOptions.executable = file('./aarch64javac.sh').absolutePath
         test.executable = file('./aarch64java.sh').absolutePath
-    } else if (project.hasProperty("aarch32Build")) {
+    } else if (OperatingSystem.current().isLinux() && project.hasProperty("aarch32Build")) {
         def aarch32javacPath = file('./zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf/bin/javac').absolutePath
         def aarch32javaPath = file('./zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf/bin/java').absolutePath
         new File('./aarch32javac.sh').withWriter('utf-8') {
@@ -112,16 +112,16 @@ task compileJNI {
                     }
                     def architecture = ""
                     def cmakeToolchain = ""
-                    if (System.getProperty("os.arch").endsWith("86")) {
-                        architecture = "x86"
-                        cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-32bit-toolchain.cmake &&"
-                    } else if (System.getProperty("os.arch") == "aarch64" || project.hasProperty("aarch64Build")) {
+                    if (System.getProperty("os.arch") == "aarch64" || project.hasProperty("aarch64Build")) {
                         architecture = "aarch64"
                         cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-aarch64-toolchain.cmake &&"
                     } else if (System.getProperty("os.arch") == "aarch32" || System.getProperty("os.arch") == "arm" ||
                             project.hasProperty("aarch32Build")) {
                         architecture = "aarch32"
                         cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-aarch32-toolchain.cmake &&"
+                    } else if (System.getProperty("os.arch").endsWith("86")) {
+                        architecture = "x86"
+                        cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-32bit-toolchain.cmake &&"
                     } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
                         architecture = "amd64"
                         cmakeToolchain = "&&"
@@ -138,7 +138,15 @@ task compileJNI {
                 }
                 def generator = ""
                 def architecture = ""
-                if (System.getProperty("os.arch").endsWith("86")) {
+                if (System.getProperty("os.arch").endsWith("arm64") || System.getProperty("os.arch").endsWith("aarch64")
+                        || project.hasProperty("aarch64Build")) {
+                    generator = "ARM64"
+                    architecture = "aarch64"
+                } else if (System.getProperty("os.arch").endsWith("arm") || System.getProperty("os.arch").endsWith("aarch32")
+                        || project.hasProperty("aarch32Build")) {
+                    generator = "ARM"
+                    architecture = "aarch32"
+                } else if (System.getProperty("os.arch").endsWith("86")) {
                     generator = "Win32"
                     architecture = "x86"
                 } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {

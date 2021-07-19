@@ -21,6 +21,10 @@ public class LibraryLoader {
                 return "Windows-x86";
             else if (System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64"))
                 return "Windows-amd64";
+            else if (System.getProperty("os.arch").equals("arm") || System.getProperty("os.arch").equals("aarch32"))
+                return "Windows-aarch32";
+            else if (System.getProperty("os.arch").equals("arm64") || System.getProperty("os.arch").equals("aarch64"))
+                return "Windows-aarch54";
             return "Windows";
         } else if (osName.contains("mac")) {
             return "Darwin";

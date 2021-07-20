@@ -11,8 +11,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>/${CMAKE_SYS
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/${CMAKE_SYSTEM_NAME})
 
 # jvm
-if(NOT DEFINED ANDROID_ABI)
-else()
+if(DEFINED ANDROID_ABI)
     set(JAVA_INCLUDE_PATH2 NotNeeded)
 endif()
 # https://stackoverflow.com/questions/51047978/cmake-could-not-find-jni

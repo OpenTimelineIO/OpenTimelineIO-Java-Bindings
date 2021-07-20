@@ -56,23 +56,31 @@ compileJava {
     if (OperatingSystem.current().isLinux() && project.hasProperty("aarch64Build")) {
         def aarch64javacPath = file('./jdk8u292/bin/javac').absolutePath
         def aarch64javaPath = file('./jdk8u292/bin/java').absolutePath
-        new File('./aarch64javac.sh').withWriter('utf-8') {
+        def javacFile = new File('./aarch64javac.sh')
+        def javaFile = new File('./aarch64java.sh')
+        javacFile.withWriter {
             writer -> writer.writeLine 'qemu-aarch64 -L /usr/aarch64-linux-gnu/ ' + aarch64javacPath + ' "$@"'
         }
-        new File('./aarch64java.sh').withWriter('utf-8') {
+        javacFile.setExecutable(true)
+        javaFile.withWriter {
             writer -> writer.writeLine 'qemu-aarch64 -L /usr/aarch64-linux-gnu/ ' + aarch64javaPath + ' "$@"'
         }
+        javaFile.setExecutable(true)
         options.forkOptions.executable = file('./aarch64javac.sh').absolutePath
         test.executable = file('./aarch64java.sh').absolutePath
     } else if (OperatingSystem.current().isLinux() && project.hasProperty("aarch32Build")) {
         def aarch32javacPath = file('./zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf/bin/javac').absolutePath
         def aarch32javaPath = file('./zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf/bin/java').absolutePath
-        new File('./aarch32javac.sh').withWriter('utf-8') {
+        def javacFile = new File('./aarch32javac.sh')
+        def javaFile = new File('./aarch32java.sh')
+        javacFile.withWriter {
             writer -> writer.writeLine 'qemu-arm -L /usr/arm-linux-gnueabihf/ ' + aarch32javacPath + ' "$@"'
         }
-        new File('./aarch32java.sh').withWriter('utf-8') {
+        javacFile.setExecutable(true)
+        javaFile.withWriter {
             writer -> writer.writeLine 'qemu-arm -L /usr/arm-linux-gnueabihf/ ' + aarch32javaPath + ' "$@"'
         }
+        javaFile.setExecutable(true)
         options.forkOptions.executable = file('./aarch32javac.sh').absolutePath
         test.executable = file('./aarch32java.sh').absolutePath
     }

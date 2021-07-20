@@ -14,34 +14,44 @@ import static io.opentimeline.OTIOFactory.OTIO_VERSION;
 public class LibraryLoader {
     private static boolean libLoaded = false;
 
-    private static String getOSName() {
+    private static String getPlatformName() {
         String osName = System.getProperty("os.name").toLowerCase();
-        if (osName.contains("win")) {
-            if (System.getProperty("os.arch").endsWith("86"))
-                return "Windows-x86";
-            else if (System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64"))
-                return "Windows-amd64";
-            else if (System.getProperty("os.arch").equals("arm") || System.getProperty("os.arch").equals("aarch32"))
-                return "Windows-aarch32";
-            else if (System.getProperty("os.arch").equals("arm64") || System.getProperty("os.arch").equals("aarch64"))
-                return "Windows-aarch64";
-            return "Windows";
-        } else if (osName.contains("mac")) {
+        // All macOS architectures share the same binary
+        if (osName.contains("mac")) {
             return "Darwin";
-        } else if (osName.contains("nux")) {
-            if (System.getProperty("java.vm.name").toLowerCase().contains("dalvik"))
-                return "Android";
-            else if (System.getProperty("os.arch").equals("aarch64"))
-                return "Linux-aarch64";
-            else if (System.getProperty("os.arch").equals("arm") || System.getProperty("os.arch").equals("aarch32"))
-                return "Linux-aarch32";
-            else if (System.getProperty("os.arch").endsWith("86"))
-                return "Linux-x86";
-            else if (System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64"))
-                return "Linux-amd64";
-            return "Linux";
         }
-        return "";
+
+        // determine CPU architecture name
+        String architecture = "";
+        if (System.getProperty("os.arch").endsWith("86")) {
+            architecture = "x86";
+        } else if (System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64")) {
+            architecture = "amd64";
+        } else if (System.getProperty("os.arch").equals("arm") || System.getProperty("os.arch").equals("aarch32")) {
+            architecture = "aarch32";
+        } else if (System.getProperty("os.arch").equals("arm64") || System.getProperty("os.arch").equals("aarch64")) {
+            architecture = "aarch64";
+        }
+
+        // Determine the OS name
+        String outOsName = "";
+        if (osName.contains("win")) {
+            outOsName = "Windows";
+        } else if (osName.contains("nux") || osName.contains("nix")) {
+            // Android dalvik bytecode need special handling
+            if (System.getProperty("java.vm.name").toLowerCase().contains("dalvik")) {
+                outOsName = "Android";
+                architecture = ""; // We do not need to specify architecture for Android
+            } else {
+                outOsName = "Linux";
+            }
+        }
+
+// build the platform name
+        String delimiter = (outOsName.isEmpty() || architecture.isEmpty()) ? "" : "-";
+        String platform = outOsName + delimiter + architecture;
+
+        return platform;
     }
 
     public static void load(String name) {
@@ -50,7 +60,7 @@ public class LibraryLoader {
         final String libname = System.mapLibraryName(name);
         final String opentimelibname = System.mapLibraryName("opentime");
         final String OTIOlibname = System.mapLibraryName("opentimelineio");
-        final String platformName = getOSName();
+        final String platformName = getPlatformName();
         final String libPkgPath = "/" + platformName + "/" + libname;
         final String libOpentimePath = "/" + platformName + "/" + opentimelibname;
         final String libOTIOPath = "/" + platformName + "/" + OTIOlibname;

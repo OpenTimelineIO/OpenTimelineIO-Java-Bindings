@@ -38,18 +38,18 @@ jobs:
         sudo apt update
         sudo apt install qemu-user qemu-user-static gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu binutils-aarch64-linux-gnu-dbg build-essential g++-aarch64-linux-gnu
         wget https://download.bell-sw.com/java/8u292+10/bellsoft-jdk8u292+10-linux-aarch64.tar.gz
-        tar -xvzf bellsoft-jdk8u292+10-linux-aarch64.tar.gz
+        tar -xvzf bellsoft-jdk8u292+10-linux-aarch64.tar.gz && mv jdk8u292 aarch64JDK
         rm build/natives/CMakeCache.txt
-        ./gradlew build -Paarch64Build --rerun-tasks
+        ./gradlew build -Paarch64Build -ParmJdkPath=./aarch64JDK --rerun-tasks
     - name: aarch32 Linux Build with Gradle
       if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
         sudo apt install gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf binutils-arm-linux-gnueabihf-dbg g++-arm-linux-gnueabihf
         wget https://cdn.azul.com/zulu-embedded/bin/zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf.tar.gz
-        tar -xvzf zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf.tar.gz
+        tar -xvzf zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf.tar.gz && mv zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf aarch32JDK
         rm build/natives/CMakeCache.txt
-        ./gradlew build -Paarch32Build --rerun-tasks
+        ./gradlew build -Paarch32Build -ParmJdkPath=./aarch32JDK --rerun-tasks
     - name: Set up 32-bit JDK 1.8
       uses: actions/setup-java@v1
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'windows-latest'

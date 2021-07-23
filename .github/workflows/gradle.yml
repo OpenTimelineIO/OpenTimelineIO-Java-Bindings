@@ -90,9 +90,6 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-      - name: Install CMake
-        shell: bash
-        run: sudo apt-get install cmake
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'

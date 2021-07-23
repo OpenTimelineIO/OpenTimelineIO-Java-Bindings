@@ -82,6 +82,8 @@ compileJava {
             }
             modifiedJavaFile.setExecutable(true)
 
+            project.logger.info(qemuCommand + armJavaPath + ' "$@"')
+
             if (modifiedJavacFile.exists() && modifiedJavaFile.exists()) {
                 options.forkOptions.executable = file(modifiedJavacFile.path).absolutePath
                 test.executable = file(modifiedJavaFile.path).absolutePath

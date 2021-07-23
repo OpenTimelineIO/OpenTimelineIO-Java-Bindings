@@ -56,21 +56,22 @@ jobs:
           sudo apt update
           if [ $ARCHITECTURE = "aarch32" ]; then
             sudo apt install gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf binutils-arm-linux-gnueabihf-dbg g++-arm-linux-gnueabihf
-            wget https://cdn.azul.com/zulu-embedded/bin/zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf.tar.gz
-            tar -xvzf zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf.tar.gz && mv zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf aarch32JDK
-            armJdkPath="./aarch32Jdk"
+            wget https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jdk_arm_linux_hotspot_8u292b10.tar.gz
+            tar -xvzf OpenJDK8U-jdk_arm_linux_hotspot_8u292b10.tar.gz && mv jdk8u292-b10-aarch32-20210423 aarch32JDK
+            armJdkPath="./aarch32JDK"
           elif [ $ARCHITECTURE = "aarch64" ]; then
             sudo apt install qemu-user qemu-user-static gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu binutils-aarch64-linux-gnu-dbg build-essential g++-aarch64-linux-gnu
-            wget https://download.bell-sw.com/java/8u292+10/bellsoft-jdk8u292+10-linux-aarch64.tar.gz
-            tar -xvzf bellsoft-jdk8u292+10-linux-aarch64.tar.gz && mv jdk8u292 aarch64JDK
-            armJdkPath="./aarch32Jdk"
+            wget https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jdk_aarch64_linux_hotspot_8u292b10.tar.gz
+            tar -xvzf OpenJDK8U-jdk_aarch64_linux_hotspot_8u292b10.tar.gz && mv jdk8u292-b10 aarch64JDK
+            armJdkPath="./aarch64JDK"
           elif [ $ARCHITECTURE == "x86" ]; then
             sudo apt-get install gcc-multilib g++-multilib
           fi
         fi
-        ./gradlew build -P${ARCHITECTURE}Build -ParmJdkPath=${armJdkPath} -x test
-        if [ $OS != "windows-latest" ] && [ $ARCHITECTURE != "aarch32" ] && [ $ARCHITECTURE != "aarch64" ]; then
-          ./gradlew test -P${ARCHITECTURE}Build -ParmJdkPath=${armJdkPath}
+        if [ $OS = "windows-latest" ] && ([ $ARCHITECTURE = "aarch32" ] || [ $ARCHITECTURE = "aarch64" ]); then
+          ./gradlew build -P${ARCHITECTURE}Build -ParmJdkPath=${armJdkPath} -x test
+        else
+          ./gradlew build -P${ARCHITECTURE}Build -ParmJdkPath=${armJdkPath}
         fi
     - name: Upload artifact
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'

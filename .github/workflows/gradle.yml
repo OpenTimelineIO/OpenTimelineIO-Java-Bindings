@@ -10,12 +10,21 @@ on:
     branches: [ main ]
 
 jobs:
+    
   build:
     
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        architecture: [x86, x86_64, aarch32, aarch64]
+        exclude:
+          - os: macos-latest
+            architecture: x86
+          - os: macos-latest
+            architecture: aarch32
+          - os: macos-latest
+            architecture: aarch64
 
     steps:
     - name: Get latest CMake
@@ -24,94 +33,57 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
-    - name: Set up JDK 1.8
+    - name: Set up x86 JDK 1.8
+      if: matrix.architecture == 'x86'
       uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-    - name: Build with Gradle
-      shell: bash
-      run: ./gradlew build
-    - name: aarch64 Linux Build with Gradle
-      if: matrix.os == 'ubuntu-latest'
-      shell: bash
-      run: |
-        sudo apt update
-        sudo apt install qemu-user qemu-user-static gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu binutils-aarch64-linux-gnu-dbg build-essential g++-aarch64-linux-gnu
-        wget https://download.bell-sw.com/java/8u292+10/bellsoft-jdk8u292+10-linux-aarch64.tar.gz
-        tar -xvzf bellsoft-jdk8u292+10-linux-aarch64.tar.gz && mv jdk8u292 aarch64JDK
-        rm build/natives/CMakeCache.txt
-        ./gradlew build -Paarch64Build -ParmJdkPath=./aarch64JDK --rerun-tasks
-    - name: aarch32 Linux Build with Gradle
-      if: matrix.os == 'ubuntu-latest'
-      shell: bash
-      run: |
-        sudo apt install gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf binutils-arm-linux-gnueabihf-dbg g++-arm-linux-gnueabihf
-        wget https://cdn.azul.com/zulu-embedded/bin/zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf.tar.gz
-        tar -xvzf zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf.tar.gz && mv zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf aarch32JDK
-        rm build/natives/CMakeCache.txt
-        ./gradlew build -Paarch32Build -ParmJdkPath=./aarch32JDK --rerun-tasks
-    - name: Set up 32-bit JDK 1.8
-      uses: actions/setup-java@v1
-      if: matrix.os == 'ubuntu-latest' || matrix.os == 'windows-latest'
       with:
         java-version: 1.8
         architecture: x86
-    - name: 32-bit Linux Build with Gradle
-      if: matrix.os == 'ubuntu-latest'
+    - name: Set up x64 JDK 1.8
+      if: matrix.architecture != 'x86' 
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+        architecture: x64
+    - name: Build with Gradle
+      env:
+         ARCHITECTURE: ${{ matrix.architecture }}
+         OS: ${{ matrix.os }}
       shell: bash
       run: |
-        sudo apt-get install gcc-multilib g++-multilib
-        rm build/natives/CMakeCache.txt
-        ./gradlew build --rerun-tasks
-    - name: 32-bit Windows Build with Gradle
-      if: matrix.os == 'windows-latest'
-      shell: bash
-      run: |
-        rm -rf build/natives/CMakeCache.txt
-        ./gradlew build --rerun-tasks
-    - name: arm64 Windows Build with Gradle
-      if: matrix.os == 'windows-latest'
-      shell: bash
-      run: |
-        rm -rf build/natives/CMakeCache.txt
-        ./gradlew build -x test -Paarch64Build --rerun-tasks
-    - name: arm32 Windows Build with Gradle
-      if: matrix.os == 'windows-latest'
-      shell: bash
-      run: |
-        rm -rf build/natives/CMakeCache.txt
-        ./gradlew build -x test -Paarch32Build --rerun-tasks
+        armJdkPath=""
+        if [ $OS = "ubuntu-latest" ]; then
+          sudo apt update
+          if [ $ARCHITECTURE = "aarch32" ]; then
+            sudo apt install gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf binutils-arm-linux-gnueabihf-dbg g++-arm-linux-gnueabihf
+            wget https://cdn.azul.com/zulu-embedded/bin/zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf.tar.gz
+            tar -xvzf zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf.tar.gz && mv zulu8.54.0.21-ca-jdk8.0.292-linux_aarch32hf aarch32JDK
+            armJdkPath="./aarch32Jdk"
+          elif [ $ARCHITECTURE = "aarch64" ]; then
+            sudo apt install qemu-user qemu-user-static gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu binutils-aarch64-linux-gnu-dbg build-essential g++-aarch64-linux-gnu
+            wget https://download.bell-sw.com/java/8u292+10/bellsoft-jdk8u292+10-linux-aarch64.tar.gz
+            tar -xvzf bellsoft-jdk8u292+10-linux-aarch64.tar.gz && mv jdk8u292 aarch64JDK
+            armJdkPath="./aarch32Jdk"
+          elif [ $ARCHITECTURE == "x86" ]; then
+            sudo apt-get install gcc-multilib g++-multilib
+          fi
+        fi
+        ./gradlew build -P${ARCHITECTURE}Build -ParmJdkPath=${armJdkPath} -x test
+        if [ $OS != "windows-latest" ] && [ $ARCHITECTURE != "aarch32" ] && [ $ARCHITECTURE != "aarch64" ]; then
+          ./gradlew test -P${ARCHITECTURE}Build -ParmJdkPath=${armJdkPath}
+        fi
     - name: Upload artifact
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
       uses: actions/upload-artifact@v2
       with:
-        name: Package-${{ matrix.os }}
+        name: Package-${{ matrix.os }}-${{ matrix.architecture }}
         path: build/natives/lib/Release
     - name: Upload Windows artifact
       if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v2
       with:
-        name: Package-${{ matrix.os }}
+        name: Package-${{ matrix.os }}-${{ matrix.architecture }}
         path: build/natives/bin/Release
-
-  android:
-    name: Build for android
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install NDK and CMake
-        shell: bash
-        run: $ANDROID_HOME/tools/bin/sdkmanager "ndk;22.0.7026061" "cmake;3.10.2.4988404"
-      - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-      - name: Build
-        shell: bash
-        run: ./gradlew build -x test -PandroidBuild -Psdk_path=$ANDROID_HOME
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: Android-JAR
-          path: build/libs
   
   combine:
     name: Download platform-specific binaries and combine into single JAR
@@ -132,21 +104,18 @@ jobs:
         shell: bash
         run: |
           mkdir -p ./build/natives/downloads
-      - name: Download Linux binaries
+      - name: Download binaries
         uses: actions/download-artifact@v2
         with:
-          name: Package-ubuntu-latest
           path: ./build/natives/downloads/
-      - name: Download Darwin binaries
-        uses: actions/download-artifact@v2
-        with:
-          name: Package-macos-latest
-          path: ./build/natives/downloads/
-      - name: Download Windows binaries
-        uses: actions/download-artifact@v2
-        with:
-          name: Package-windows-latest
-          path: ./build/natives/downloads/
+      - name: Extract binaries from subdirectories
+        shell: bash
+        run: |
+          dirArray=(./build/natives/downloads/*/);
+          for dir in "${dirArray[@]}"; do
+            cp -a ${dir}. ./build/natives/downloads/;
+            rm -r ${dir};
+          done
       - name: Repackage JAR with all binaries
         shell: bash
         run: ./gradlew build -x compileJNI -x test

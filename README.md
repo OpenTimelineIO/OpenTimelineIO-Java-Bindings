@@ -70,7 +70,7 @@ cd OpenTimelineIO-Java-Bindings
 
 ./gradlew build # this builds and runs all tests
 ```
-If you're using `gradle build`, ensure `gradle` version to be 6.5.
+If you're using a system-wide gradle installation, ensure the version to be 6.x.x.
 You can find the generated jar file in the `build/libs` directory.
 
 Building OpenTimelineIO-Java-Bindings for Android

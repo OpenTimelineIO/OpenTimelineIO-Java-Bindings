@@ -2,7 +2,6 @@ import org.gradle.internal.os.OperatingSystem
 
 buildscript {
     repositories {
-        jcenter()
         mavenLocal()
         mavenCentral()
     }
@@ -17,12 +16,8 @@ plugins {
     id 'maven-publish'
     id 'maven'
 }
-apply plugin: 'com.jfrog.bintray'
 
 repositories {
-    // Use jcenter for resolving dependencies.
-    // You can declare any Maven/Ivy/file repository here.
-    jcenter()
     mavenLocal()
     mavenCentral()
 }

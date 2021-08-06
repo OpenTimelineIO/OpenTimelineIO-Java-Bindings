@@ -66,11 +66,11 @@ After installing Gradle and CMake follw these steps:
 ```shell
 git clone --recurse-submodules https://github.com/OpenTimelineIO/OpenTimelineIO-Java-Bindings
 
-cd otio-java
+cd OpenTimelineIO-Java-Bindings
 
-gradle build # this builds and runs all tests
+./gradlew build # this builds and runs all tests
 ```
-
+If you're using a system-wide gradle installation, ensure the version to be 6.x.x.
 You can find the generated jar file in the `build/libs` directory.
 
 Building OpenTimelineIO-Java-Bindings for Android

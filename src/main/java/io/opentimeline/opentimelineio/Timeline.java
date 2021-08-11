@@ -202,6 +202,12 @@ public class Timeline extends SerializableObjectWithMetadata {
         return this.eachClip(null);
     }
 
+    public List<Composable> childrenIf(TimeRange search_range, boolean shallow_search){
+        return Arrays.asList(childrenIfNative(search_range, shallow_search));
+    }
+
+    private native Composable[] childrenIfNative(TimeRange search_range, boolean shallow_search);
+
     @Override
     public String toString() {
         return this.getClass().getCanonicalName() +

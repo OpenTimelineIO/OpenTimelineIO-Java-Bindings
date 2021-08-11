@@ -187,3 +187,27 @@ Java_io_opentimeline_opentimelineio_Timeline_getVideoTracksNative(
     auto result = timeline->video_tracks();
     return trackVectorToArray(env, result);
 }
+
+/*
+ * Class:     io_opentimeline_opentimelineio_Timeline
+ * Method:    childrenIfNative
+ * Signature: (Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Composable;
+ */
+JNIEXPORT jobjectArray JNICALL
+Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative(
+        JNIEnv *env, jobject thisObj, jobject searchRangeTimeRange, jboolean shallowSearch){
+    if (searchRangeTimeRange == nullptr) {
+        throwNullPointerException(env, "");
+        return nullptr;
+    }
+
+    auto thisHandle =
+            getHandle<SerializableObject::Retainer<Timeline>>(env, thisObj);
+    auto timeline = thisHandle->value;
+    optional<TimeRange> searchRange = nullopt;
+    searchRange = timeRangeFromJObject(env, searchRangeTimeRange);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    auto result = timeline->children_if(&errorStatus, searchRange, shallowSearch);
+    processOTIOErrorStatus(env, errorStatus);
+    return composableRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Composable>>(result)));
+}

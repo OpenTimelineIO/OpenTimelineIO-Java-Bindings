@@ -247,4 +247,41 @@ public class TimelineTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testChildrenIf() throws ChildAlreadyParentedException{
+        Timeline timeline = new Timeline.TimelineBuilder().build();
+        Stack stack = new Stack.StackBuilder().build();
+        Track V1 = new Track.TrackBuilder()
+                        .setName("V1")
+                        .setKind(Track.Kind.video)
+                        .build();
+        Track V2 = new Track.TrackBuilder()
+                        .setName("V2")
+                        .setKind(Track.Kind.video)
+                        .build();
+        assertTrue(stack.appendChild(V1));
+        assertTrue(stack.appendChild(V2));
+        timeline.setTracks(stack);
+        List<Composable> composableChildrenList = Arrays.asList(V1,V2);
+        TimeRange search_range = new TimeRange(
+                new RationalTime(0, 1),
+                new RationalTime(40, 1));
+        List<Composable> result = timeline.childrenIf(search_range, false);
+        for(int i = 0; i < composableChildrenList.size(); i++){
+            assertTrue((result.get(i)).isEquivalentTo(composableChildrenList.get(i)));
+        }
+
+        //test for null pointer exception when search_range is null
+        assertThrows(NullPointerException.class,
+                ()->{timeline.childrenIf(null, false);});
+
+        try{
+            timeline.close();
+            V1.close();
+            V2.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

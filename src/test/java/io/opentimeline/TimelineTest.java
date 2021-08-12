@@ -249,7 +249,7 @@ public class TimelineTest {
     }
 
     @Test
-    public void testChildrenIf() throws ChildAlreadyParentedException{
+    public void testChildrenIfEquality() throws ChildAlreadyParentedException{
         Timeline timeline = new Timeline.TimelineBuilder().build();
         Stack stack = new Stack.StackBuilder().build();
         Track V1 = new Track.TrackBuilder()
@@ -272,10 +272,6 @@ public class TimelineTest {
             assertTrue((result.get(i)).isEquivalentTo(composableChildrenList.get(i)));
         }
 
-        //test for null pointer exception when search_range is null
-        assertThrows(NullPointerException.class,
-                ()->{timeline.childrenIf(null, false);});
-
         try{
             timeline.close();
             V1.close();
@@ -284,4 +280,16 @@ public class TimelineTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testChildrenIfNullTimeRange(){
+        try(Timeline timeline = new Timeline.TimelineBuilder().build();)
+        {
+            assertThrows(NullPointerException.class,
+                    ()->{timeline.childrenIf(null, false);});
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 }

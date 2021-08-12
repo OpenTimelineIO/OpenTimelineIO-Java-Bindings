@@ -206,7 +206,7 @@ public class Timeline extends SerializableObjectWithMetadata {
         return Arrays.asList(childrenIfNative(search_range, shallow_search));
     }
 
-    private native Composable[] childrenIfNative(TimeRange search_range, boolean shallow_search);
+    private native <T extends Composable> T[] childrenIfNative(TimeRange search_range, boolean shallow_search);
 
     @Override
     public String toString() {

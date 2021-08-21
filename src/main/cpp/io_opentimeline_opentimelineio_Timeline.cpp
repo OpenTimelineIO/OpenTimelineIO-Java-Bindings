@@ -8,6 +8,8 @@
 #include <opentimelineio/timeline.h>
 #include <opentimelineio/version.h>
 #include <utilities.h>
+#include <iostream>
+#include <cstring>
 
 using namespace opentimelineio::OPENTIMELINEIO_VERSION;
 
@@ -191,23 +193,46 @@ Java_io_opentimeline_opentimelineio_Timeline_getVideoTracksNative(
 /*
  * Class:     io_opentimeline_opentimelineio_Timeline
  * Method:    childrenIfNative
- * Signature: (Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Composable;
+ * Signature: (Ljava/lang/Class;Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Composable;
  */
 JNIEXPORT jobjectArray JNICALL
 Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative(
-        JNIEnv *env, jobject thisObj, jobject searchRangeTimeRange, jboolean shallowSearch){
+        JNIEnv *env, jobject thisObj, jclass descendedFromClass, jobject searchRangeTimeRange, jboolean shallowSearch){
     if (searchRangeTimeRange == nullptr) {
         throwNullPointerException(env, "");
         return nullptr;
     }
-
     auto thisHandle =
             getHandle<SerializableObject::Retainer<Timeline>>(env, thisObj);
     auto timeline = thisHandle->value;
     optional<TimeRange> searchRange = nullopt;
     searchRange = timeRangeFromJObject(env, searchRangeTimeRange);
+    jclass cls = env->GetObjectClass(descendedFromClass);
+    jmethodID getName = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
+    auto name = (jstring)env->CallObjectMethod(descendedFromClass, getName);
+    const char* str = env->GetStringUTFChars(name, NULL);
     auto errorStatus = OTIO_NS::ErrorStatus();
+    if(strcmp(str,"io.opentimeline.opentimelineio.Clip") == 0){
+        auto result = timeline->children_if<Clip>(&errorStatus, searchRange, shallowSearch);
+        processOTIOErrorStatus(env, errorStatus);
+        env->ReleaseStringUTFChars(name, str);
+        return clipRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Clip>>(result)));
+    }
+    else if(strcmp(str,"io.opentimeline.opentimelineio.Track") == 0){
+        auto result = timeline->children_if<Track>(&errorStatus, searchRange, shallowSearch);
+        processOTIOErrorStatus(env, errorStatus);
+        env->ReleaseStringUTFChars(name, str);
+        return trackRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Track>>(result)));
+    }
+    else if(strcmp(str,"io.opentimeline.opentimelineio.Gap") == 0){
+        auto result = timeline->children_if<Gap>(&errorStatus, searchRange, shallowSearch);
+        processOTIOErrorStatus(env, errorStatus);
+        env->ReleaseStringUTFChars(name, str);
+        return gapRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Gap>>(result)));
+    }
+    //default return for Composable Type
     auto result = timeline->children_if(&errorStatus, searchRange, shallowSearch);
     processOTIOErrorStatus(env, errorStatus);
+    env->ReleaseStringUTFChars(name, str);
     return composableRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Composable>>(result)));
 }

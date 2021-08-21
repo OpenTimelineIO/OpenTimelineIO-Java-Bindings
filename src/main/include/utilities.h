@@ -18,6 +18,8 @@
 #include <opentimelineio/stack.h>
 #include <opentimelineio/track.h>
 #include <opentimelineio/version.h>
+#include <opentimelineio/clip.h>
+#include <opentimelineio/gap.h>
 
 #ifndef _UTILITIES_H_INCLUDED_
 #define _UTILITIES_H_INCLUDED_
@@ -570,6 +572,74 @@ stackFromNative(JNIEnv *env, OTIO_NS::Stack *native) {
 }
 
 inline jobject
+clipFromNative(JNIEnv *env, OTIO_NS::Clip *native) {
+    if (native == nullptr)return nullptr;
+    std::string javaCls = getSerializableObjectJavaClassFromNative(native);
+    jclass cls =
+            env->FindClass(javaCls.c_str());
+    if (cls == NULL) return NULL;
+
+    // Get the Method ID of the constructor which takes an otioNative
+    jmethodID clipInit = env->GetMethodID(cls, "<init>", "(Lio/opentimeline/OTIONative;)V");
+    if (NULL == clipInit) return NULL;
+
+    auto clipManager =
+            new SerializableObject::Retainer<Clip>(native);
+    jclass otioNativeClass = env->FindClass("io/opentimeline/OTIONative");
+    jfieldID classNameID =
+            env->GetFieldID(otioNativeClass, "className", "Ljava/lang/String;");
+    jmethodID otioNativeInit =
+            env->GetMethodID(otioNativeClass, "<init>", "(J)V");
+    jobject otioNative = env->NewObject(
+            otioNativeClass,
+            otioNativeInit,
+            reinterpret_cast<jlong>(clipManager));
+    std::string classNameStr =
+            "io.opentimeline.opentimelineio.Clip";
+    jstring className = env->NewStringUTF(classNameStr.c_str());
+    env->SetObjectField(otioNative, classNameID, className);
+
+    // Call back constructor to allocate a new instance, with an otioNative argument
+    jobject newObj = env->NewObject(cls, clipInit, otioNative);
+    registerObjectToOTIOFactory(env, newObj);
+    return newObj;
+}
+
+inline jobject
+gapFromNative(JNIEnv *env, OTIO_NS::Gap *native) {
+    if (native == nullptr)return nullptr;
+    std::string javaCls = getSerializableObjectJavaClassFromNative(native);
+    jclass cls =
+            env->FindClass(javaCls.c_str());
+    if (cls == NULL) return NULL;
+
+    // Get the Method ID of the constructor which takes an otioNative
+    jmethodID gapInit = env->GetMethodID(cls, "<init>", "(Lio/opentimeline/OTIONative;)V");
+    if (NULL == gapInit) return NULL;
+
+    auto gapManager =
+            new SerializableObject::Retainer<Gap>(native);
+    jclass otioNativeClass = env->FindClass("io/opentimeline/OTIONative");
+    jfieldID classNameID =
+            env->GetFieldID(otioNativeClass, "className", "Ljava/lang/String;");
+    jmethodID otioNativeInit =
+            env->GetMethodID(otioNativeClass, "<init>", "(J)V");
+    jobject otioNative = env->NewObject(
+            otioNativeClass,
+            otioNativeInit,
+            reinterpret_cast<jlong>(gapManager));
+    std::string classNameStr =
+            "io.opentimeline.opentimelineio.Gap";
+    jstring className = env->NewStringUTF(classNameStr.c_str());
+    env->SetObjectField(otioNative, classNameID, className);
+
+    // Call back constructor to allocate a new instance, with an otioNative argument
+    jobject newObj = env->NewObject(cls, gapInit, otioNative);
+    registerObjectToOTIOFactory(env, newObj);
+    return newObj;
+}
+
+inline jobject
 trackFromNative(JNIEnv *env, OTIO_NS::Track *native) {
     if (native == nullptr)return nullptr;
     std::string javaCls = getSerializableObjectJavaClassFromNative(native);
@@ -665,6 +735,59 @@ composableRetainerVectorToArray(
             env->NewObjectArray((jsize)v.size(), composableClass, nullptr);
     for (int i = 0; i < v.size(); i++) {
         auto newObj = composableFromNative(env, v[i]);
+        registerObjectToOTIOFactory(env, newObj);
+        env->SetObjectArrayElement(
+                result, i, newObj);
+    }
+    return result;
+}
+
+inline jobjectArray
+clipRetainerVectorToArray(
+        JNIEnv *env,
+        std::vector<OTIO_NS::SerializableObject::Retainer<OTIO_NS::Clip>> &v) {
+    jclass clipClass = env->FindClass(
+            "io/opentimeline/opentimelineio/Clip");
+    jobjectArray result =
+            env->NewObjectArray((jsize)v.size(), clipClass, nullptr);
+    for (int i = 0; i < v.size(); i++) {
+        auto newObj = clipFromNative(env, v[i]);
+        registerObjectToOTIOFactory(env, newObj);
+        env->SetObjectArrayElement(
+                result, i, newObj);
+    }
+    return result;
+}
+
+
+inline jobjectArray
+gapRetainerVectorToArray(
+        JNIEnv *env,
+        std::vector<OTIO_NS::SerializableObject::Retainer<OTIO_NS::Gap>> &v) {
+    jclass gapClass = env->FindClass(
+            "io/opentimeline/opentimelineio/Gap");
+    jobjectArray result =
+            env->NewObjectArray((jsize)v.size(), gapClass, nullptr);
+    for (int i = 0; i < v.size(); i++) {
+        auto newObj = gapFromNative(env, v[i]);
+        registerObjectToOTIOFactory(env, newObj);
+        env->SetObjectArrayElement(
+                result, i, newObj);
+    }
+    return result;
+}
+
+
+inline jobjectArray
+trackRetainerVectorToArray(
+        JNIEnv *env,
+        std::vector<OTIO_NS::SerializableObject::Retainer<OTIO_NS::Track>> &v) {
+    jclass trackClass = env->FindClass(
+            "io/opentimeline/opentimelineio/Track");
+    jobjectArray result =
+            env->NewObjectArray((jsize)v.size(), trackClass, nullptr);
+    for (int i = 0; i < v.size(); i++) {
+        auto newObj = trackFromNative(env, v[i]);
         registerObjectToOTIOFactory(env, newObj);
         env->SetObjectArrayElement(
                 result, i, newObj);

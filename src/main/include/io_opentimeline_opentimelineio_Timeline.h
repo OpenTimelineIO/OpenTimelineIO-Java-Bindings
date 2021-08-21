@@ -82,10 +82,10 @@ JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Timeline_getV
 /*
  * Class:     io_opentimeline_opentimelineio_Timeline
  * Method:    childrenIfNative
- * Signature: (Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Composable;
+ * Signature: (Ljava/lang/Class;Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Composable;
  */
 JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative
-  (JNIEnv *, jobject, jobject, jboolean);
+  (JNIEnv *, jobject, jclass, jobject, jboolean);
 
 #ifdef __cplusplus
 }

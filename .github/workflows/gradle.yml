@@ -25,8 +25,6 @@ jobs:
             architecture: aarch32
           - os: macos-latest
             architecture: aarch64
-          - os: ubuntu-latest
-            architecture: aarch32
 
     steps:
     - name: Get latest CMake
@@ -57,7 +55,7 @@ jobs:
         if [ $OS = "ubuntu-latest" ]; then
           sudo apt update
           if [ $ARCHITECTURE = "aarch32" ]; then
-            sudo apt install gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf binutils-arm-linux-gnueabihf-dbg g++-arm-linux-gnueabihf
+            sudo apt install qemu-user qemu-user-static gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf binutils-arm-linux-gnueabihf-dbg g++-arm-linux-gnueabihf
             wget https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jdk_arm_linux_hotspot_8u292b10.tar.gz
             tar -xvzf OpenJDK8U-jdk_arm_linux_hotspot_8u292b10.tar.gz && mv jdk8u292-b10-aarch32-20210423 aarch32JDK
             armJdkPath="./aarch32JDK"

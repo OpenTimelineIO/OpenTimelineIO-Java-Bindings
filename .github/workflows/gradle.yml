@@ -25,6 +25,8 @@ jobs:
             architecture: aarch32
           - os: macos-latest
             architecture: aarch64
+          - os: ubuntu-latest
+            architecture: aarch32
 
     steps:
     - name: Get latest CMake

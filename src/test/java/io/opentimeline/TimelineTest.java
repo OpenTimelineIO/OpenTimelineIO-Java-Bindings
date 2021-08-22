@@ -415,6 +415,205 @@ public class TimelineTest {
         }
 
     }
+
+    @Test
+    public void testChildrenIfStackEquality(){
+        try(
+                Timeline timeline = new Timeline.TimelineBuilder().build();
+                Stack topLevelStack = new Stack.StackBuilder().build();
+                Track V1 = new Track.TrackBuilder()
+                        .setName("V1")
+                        .setKind(Track.Kind.video)
+                        .build();
+                Stack stackChild1 = new Stack.StackBuilder().build();
+                Stack stackChild2 = new Stack.StackBuilder().build();
+                Track V2 = new Track.TrackBuilder()
+                        .setName("V2")
+                        .setKind(Track.Kind.video)
+                        .build();
+                Track V3 = new Track.TrackBuilder()
+                        .setName("V3")
+                        .setKind(Track.Kind.video)
+                        .build();
+
+        )
+        {
+            //nested stack within track
+            assertTrue(V2.appendChild(stackChild1));
+            assertTrue(V3.appendChild(stackChild2));
+            assertTrue(topLevelStack.appendChild(V1));
+            assertTrue(topLevelStack.appendChild(V2));
+            assertTrue(topLevelStack.appendChild(V3));
+            timeline.setTracks(topLevelStack);
+            List<Stack> stackChildrenList = Arrays.asList(stackChild1, stackChild2);
+            TimeRange search_range = new TimeRange(
+                    new RationalTime(0, 1),
+                    new RationalTime(40, 1));
+            List<Stack> result = timeline.childrenIf(Stack.class,search_range, false);
+            for(int i = 0; i < stackChildrenList.size(); i++){
+                assertTrue((result.get(i)).isEquivalentTo(stackChildrenList.get(i)));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void testChildrenIfCompositionEquality(){
+        try(
+                Timeline timeline = new Timeline.TimelineBuilder().build();
+                Stack topLevelStack = new Stack.StackBuilder().build();
+                Track V1 = new Track.TrackBuilder()
+                        .setName("V1")
+                        .setKind(Track.Kind.video)
+                        .build();
+                Stack stackChild1 = new Stack.StackBuilder().build();
+                Track V2 = new Track.TrackBuilder()
+                        .setName("V2")
+                        .setKind(Track.Kind.video)
+                        .build();
+
+        )
+        {
+            assertTrue(V2.appendChild(stackChild1));
+            assertTrue(topLevelStack.appendChild(V1));
+            assertTrue(topLevelStack.appendChild(V2));
+            timeline.setTracks(topLevelStack);
+            List<Composition> compositionChildrenList = Arrays.asList(V1, V2, stackChild1);
+            TimeRange search_range = new TimeRange(
+                    new RationalTime(0, 1),
+                    new RationalTime(40, 1));
+            List<Composition> result = timeline.childrenIf(Composition.class,search_range, false);
+            for(int i = 0; i < compositionChildrenList.size(); i++){
+                assertTrue((result.get(i)).isEquivalentTo(compositionChildrenList.get(i)));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void testChildrenIfItemEquality(){
+        try(
+                Timeline timeline = new Timeline.TimelineBuilder().build();
+                Stack stack = new Stack.StackBuilder().build();
+                Track V1 = new Track.TrackBuilder()
+                        .setName("V1")
+                        .setKind(Track.Kind.video)
+                        .build();
+                Track V2 = new Track.TrackBuilder()
+                        .setName("V2")
+                        .setKind(Track.Kind.video)
+                        .build();
+                ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
+                        .setAvailableRange(TimeRange.rangeFromStartEndTime(
+                                new RationalTime(0, 2),
+                                new RationalTime(50, 15)))
+                        .setTargetURL("/var/tmp/test.mov")
+                        .build();
+                Clip C1 = new Clip.ClipBuilder()
+                        .setName("test clip1")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(5, 24)).build())
+                        .build();
+                Clip C2 = new Clip.ClipBuilder()
+                        .setName("test clip2")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(5, 24)).build())
+                        .build();
+                Gap G1 = new Gap.GapBuilder().build();
+
+        )
+        {
+            assertTrue(V1.appendChild(C1));
+            assertTrue(V1.appendChild(G1));
+            assertTrue(V2.appendChild(C2));
+            assertTrue(stack.appendChild(V1));
+            assertTrue(stack.appendChild(V2));
+            timeline.setTracks(stack);
+            List<Item> itemChildrenList = Arrays.asList(V1, C1, G1, V2, C2);
+            TimeRange search_range = new TimeRange(
+                    new RationalTime(0, 1),
+                    new RationalTime(40, 1));
+            List<Item> result = timeline.childrenIf(Item.class,search_range, false);
+            for(int i = 0; i < itemChildrenList.size(); i++){
+                assertTrue((result.get(i)).isEquivalentTo(itemChildrenList.get(i)));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void testChildrenIfTransitionEquality(){
+        try(
+                Timeline timeline = new Timeline.TimelineBuilder().build();
+                Stack stack = new Stack.StackBuilder().build();
+                Track V1 = new Track.TrackBuilder()
+                        .setName("V1")
+                        .setKind(Track.Kind.video)
+                        .build();
+                Track V2 = new Track.TrackBuilder()
+                        .setName("V2")
+                        .setKind(Track.Kind.video)
+                        .build();
+                ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
+                        .setAvailableRange(TimeRange.rangeFromStartEndTime(
+                                new RationalTime(0, 2),
+                                new RationalTime(50, 15)))
+                        .setTargetURL("/var/tmp/test.mov")
+                        .build();
+                Clip C1 = new Clip.ClipBuilder()
+                        .setName("test clip1")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(5, 24)).build())
+                        .build();
+                Clip C2 = new Clip.ClipBuilder()
+                        .setName("test clip2")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(4, 10)).build())
+                        .build();
+                Clip C3 = new Clip.ClipBuilder()
+                        .setName("test clip3")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(2, 20)).build())
+                        .build();
+                Clip C4 = new Clip.ClipBuilder()
+                        .setName("test clip4")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(3, 15)).build())
+                        .build();
+                Transition transition1 = new Transition.TransitionBuilder().build();
+                Transition transition2 = new Transition.TransitionBuilder().build();
+
+
+        )
+        {
+            assertTrue(V1.appendChild(C1));
+            assertTrue(V1.appendChild(C2));
+            assertTrue(V2.appendChild(C3));
+            assertTrue(V2.appendChild(C4));
+            assertTrue(V1.appendChild(transition1));
+            assertTrue(V2.appendChild(transition2));
+            assertTrue(stack.appendChild(V1));
+            assertTrue(stack.appendChild(V2));
+            timeline.setTracks(stack);
+            List<Transition> transitionsChildrenList = Arrays.asList(transition1, transition2);
+            TimeRange search_range = new TimeRange(
+                    new RationalTime(0, 1),
+                    new RationalTime(40, 1));
+            List<Transition> result = timeline.childrenIf(Transition.class,search_range, false);
+            for(int i = 0; i < transitionsChildrenList.size(); i++){
+                assertTrue((result.get(i)).isEquivalentTo(transitionsChildrenList.get(i)));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     @Test
     public void testChildrenIfNullTimeRange(){
         try(Timeline timeline = new Timeline.TimelineBuilder().build();)

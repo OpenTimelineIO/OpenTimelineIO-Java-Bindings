@@ -230,6 +230,30 @@ Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative(
         env->ReleaseStringUTFChars(name, str);
         return gapRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Gap>>(result)));
     }
+    else if(strcmp(str,"io.opentimeline.opentimelineio.Stack") == 0){
+        auto result = timeline->children_if<Stack>(&errorStatus, searchRange, shallowSearch);
+        processOTIOErrorStatus(env, errorStatus);
+        env->ReleaseStringUTFChars(name, str);
+        return stackRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Stack>>(result)));
+    }
+    else if(strcmp(str,"io.opentimeline.opentimelineio.Transition") == 0){
+        auto result = timeline->children_if<Transition>(&errorStatus, searchRange, shallowSearch);
+        processOTIOErrorStatus(env, errorStatus);
+        env->ReleaseStringUTFChars(name, str);
+        return transitionRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Transition>>(result)));
+    }
+    else if(strcmp(str,"io.opentimeline.opentimelineio.Composition") == 0){
+        auto result = timeline->children_if<Composition>(&errorStatus, searchRange, shallowSearch);
+        processOTIOErrorStatus(env, errorStatus);
+        env->ReleaseStringUTFChars(name, str);
+        return compositionRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Composition>>(result)));
+    }
+    else if(strcmp(str,"io.opentimeline.opentimelineio.Item") == 0){
+        auto result = timeline->children_if<Item>(&errorStatus, searchRange, shallowSearch);
+        processOTIOErrorStatus(env, errorStatus);
+        env->ReleaseStringUTFChars(name, str);
+        return itemRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Item>>(result)));
+    }
     //default return for Composable Type
     auto result = timeline->children_if(&errorStatus, searchRange, shallowSearch);
     processOTIOErrorStatus(env, errorStatus);

@@ -20,6 +20,8 @@
 #include <opentimelineio/version.h>
 #include <opentimelineio/clip.h>
 #include <opentimelineio/gap.h>
+#include <opentimelineio/transition.h>
+#include <opentimelineio/composition.h>
 
 #ifndef _UTILITIES_H_INCLUDED_
 #define _UTILITIES_H_INCLUDED_
@@ -673,6 +675,74 @@ trackFromNative(JNIEnv *env, OTIO_NS::Track *native) {
     return newObj;
 }
 
+inline jobject
+transitionFromNative(JNIEnv *env, OTIO_NS::Transition *native) {
+    if (native == nullptr)return nullptr;
+    std::string javaCls = getSerializableObjectJavaClassFromNative(native);
+    jclass cls =
+            env->FindClass(javaCls.c_str());
+    if (cls == NULL) return NULL;
+
+    // Get the Method ID of the constructor which takes an otioNative
+    jmethodID transitionInit = env->GetMethodID(cls, "<init>", "(Lio/opentimeline/OTIONative;)V");
+    if (NULL == transitionInit) return NULL;
+
+    auto transitionManager =
+            new SerializableObject::Retainer<Transition>(native);
+    jclass otioNativeClass = env->FindClass("io/opentimeline/OTIONative");
+    jfieldID classNameID =
+            env->GetFieldID(otioNativeClass, "className", "Ljava/lang/String;");
+    jmethodID otioNativeInit =
+            env->GetMethodID(otioNativeClass, "<init>", "(J)V");
+    jobject otioNative = env->NewObject(
+            otioNativeClass,
+            otioNativeInit,
+            reinterpret_cast<jlong>(transitionManager));
+    std::string classNameStr =
+            "io.opentimeline.opentimelineio.Transition";
+    jstring className = env->NewStringUTF(classNameStr.c_str());
+    env->SetObjectField(otioNative, classNameID, className);
+
+    // Call back constructor to allocate a new instance, with an otioNative argument
+    jobject newObj = env->NewObject(cls, transitionInit, otioNative);
+    registerObjectToOTIOFactory(env, newObj);
+    return newObj;
+}
+
+inline jobject
+itemFromNative(JNIEnv *env, OTIO_NS::Item *native) {
+    if (native == nullptr)return nullptr;
+    std::string javaCls = getSerializableObjectJavaClassFromNative(native);
+    jclass cls =
+            env->FindClass(javaCls.c_str());
+    if (cls == NULL) return NULL;
+
+    // Get the Method ID of the constructor which takes an otioNative
+    jmethodID itemInit = env->GetMethodID(cls, "<init>", "(Lio/opentimeline/OTIONative;)V");
+    if (NULL == itemInit) return NULL;
+
+    auto itemManager =
+            new SerializableObject::Retainer<Item>(native);
+    jclass otioNativeClass = env->FindClass("io/opentimeline/OTIONative");
+    jfieldID classNameID =
+            env->GetFieldID(otioNativeClass, "className", "Ljava/lang/String;");
+    jmethodID otioNativeInit =
+            env->GetMethodID(otioNativeClass, "<init>", "(J)V");
+    jobject otioNative = env->NewObject(
+            otioNativeClass,
+            otioNativeInit,
+            reinterpret_cast<jlong>(itemManager));
+    std::string classNameStr =
+            "io.opentimeline.opentimelineio.Item";
+    jstring className = env->NewStringUTF(classNameStr.c_str());
+    env->SetObjectField(otioNative, classNameID, className);
+
+    // Call back constructor to allocate a new instance, with an otioNative argument
+    jobject newObj = env->NewObject(cls, itemInit, otioNative);
+    registerObjectToOTIOFactory(env, newObj);
+    return newObj;
+}
+
 inline jobjectArray
 serializableObjectRetainerVectorToArray(
         JNIEnv *env,
@@ -788,6 +858,74 @@ trackRetainerVectorToArray(
             env->NewObjectArray((jsize)v.size(), trackClass, nullptr);
     for (int i = 0; i < v.size(); i++) {
         auto newObj = trackFromNative(env, v[i]);
+        registerObjectToOTIOFactory(env, newObj);
+        env->SetObjectArrayElement(
+                result, i, newObj);
+    }
+    return result;
+}
+
+inline jobjectArray
+stackRetainerVectorToArray(
+        JNIEnv *env,
+        std::vector<OTIO_NS::SerializableObject::Retainer<OTIO_NS::Stack>> &v) {
+    jclass stackClass = env->FindClass(
+            "io/opentimeline/opentimelineio/Stack");
+    jobjectArray result =
+            env->NewObjectArray((jsize)v.size(), stackClass, nullptr);
+    for (int i = 0; i < v.size(); i++) {
+        auto newObj = stackFromNative(env, v[i]);
+        registerObjectToOTIOFactory(env, newObj);
+        env->SetObjectArrayElement(
+                result, i, newObj);
+    }
+    return result;
+}
+
+inline jobjectArray
+transitionRetainerVectorToArray(
+        JNIEnv *env,
+        std::vector<OTIO_NS::SerializableObject::Retainer<OTIO_NS::Transition>> &v) {
+    jclass transitionClass = env->FindClass(
+            "io/opentimeline/opentimelineio/Transition");
+    jobjectArray result =
+            env->NewObjectArray((jsize)v.size(), transitionClass, nullptr);
+    for (int i = 0; i < v.size(); i++) {
+        auto newObj = transitionFromNative(env, v[i]);
+        registerObjectToOTIOFactory(env, newObj);
+        env->SetObjectArrayElement(
+                result, i, newObj);
+    }
+    return result;
+}
+
+inline jobjectArray
+compositionRetainerVectorToArray(
+        JNIEnv *env,
+        std::vector<OTIO_NS::SerializableObject::Retainer<OTIO_NS::Composition>> &v) {
+    jclass compositionClass = env->FindClass(
+            "io/opentimeline/opentimelineio/Composition");
+    jobjectArray result =
+            env->NewObjectArray((jsize)v.size(), compositionClass, nullptr);
+    for (int i = 0; i < v.size(); i++) {
+        auto newObj = compositionFromNative(env, v[i]);
+        registerObjectToOTIOFactory(env, newObj);
+        env->SetObjectArrayElement(
+                result, i, newObj);
+    }
+    return result;
+}
+
+inline jobjectArray
+itemRetainerVectorToArray(
+        JNIEnv *env,
+        std::vector<OTIO_NS::SerializableObject::Retainer<OTIO_NS::Item>> &v) {
+    jclass itemClass = env->FindClass(
+            "io/opentimeline/opentimelineio/Item");
+    jobjectArray result =
+            env->NewObjectArray((jsize)v.size(), itemClass, nullptr);
+    for (int i = 0; i < v.size(); i++) {
+        auto newObj = itemFromNative(env, v[i]);
         registerObjectToOTIOFactory(env, newObj);
         env->SetObjectArrayElement(
                 result, i, newObj);

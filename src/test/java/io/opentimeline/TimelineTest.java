@@ -633,4 +633,66 @@ public class TimelineTest {
         }
     }
 
+    @Test
+    public void testClipIfNullTimeRange(){
+        try(Timeline timeline = new Timeline.TimelineBuilder().build();)
+        {
+            assertThrows(NullPointerException.class,
+                    ()->{timeline.clipIf(null, false);});
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testClipIfEquality(){
+        try(
+                Timeline timeline = new Timeline.TimelineBuilder().build();
+                Stack stack = new Stack.StackBuilder().build();
+                Track V1 = new Track.TrackBuilder()
+                        .setName("V1")
+                        .setKind(Track.Kind.video)
+                        .build();
+                Track V2 = new Track.TrackBuilder()
+                        .setName("V2")
+                        .setKind(Track.Kind.video)
+                        .build();
+                ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
+                        .setAvailableRange(TimeRange.rangeFromStartEndTime(
+                                new RationalTime(0, 2),
+                                new RationalTime(50, 15)))
+                        .setTargetURL("/var/tmp/test.mov")
+                        .build();
+                Clip C1 = new Clip.ClipBuilder()
+                        .setName("test clip1")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(5, 24)).build())
+                        .build();
+                Clip C2 = new Clip.ClipBuilder()
+                        .setName("test clip2")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(5, 24)).build())
+                        .build();
+        )
+        {
+            assertTrue(V1.appendChild(C1));
+            assertTrue(V2.appendChild(C2));
+            assertTrue(stack.appendChild(V1));
+            assertTrue(stack.appendChild(V2));
+            timeline.setTracks(stack);
+            List<Clip> clipChildrenList = Arrays.asList(C1, C2);
+            TimeRange search_range = new TimeRange(
+                    new RationalTime(0, 1),
+                    new RationalTime(40, 1));
+            List<Clip> result = timeline.clipIf(search_range, false);
+            assertEquals(clipChildrenList.size(), result.size());
+            for(int i = 0; i < clipChildrenList.size(); i++){
+                assertTrue((result.get(i)).isEquivalentTo(clipChildrenList.get(i)));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
 }

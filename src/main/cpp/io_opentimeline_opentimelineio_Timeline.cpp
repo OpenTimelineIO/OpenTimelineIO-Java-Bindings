@@ -9,7 +9,6 @@
 #include <opentimelineio/version.h>
 #include <utilities.h>
 #include <iostream>
-#include <cstring>
 
 using namespace opentimelineio::OPENTIMELINEIO_VERSION;
 
@@ -202,61 +201,5 @@ Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative(
         throwNullPointerException(env, "");
         return nullptr;
     }
-    auto thisHandle =
-            getHandle<SerializableObject::Retainer<Timeline>>(env, thisObj);
-    auto timeline = thisHandle->value;
-    optional<TimeRange> searchRange = nullopt;
-    searchRange = timeRangeFromJObject(env, searchRangeTimeRange);
-    jclass cls = env->GetObjectClass(descendedFromClass);
-    jmethodID getName = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
-    auto name = (jstring)env->CallObjectMethod(descendedFromClass, getName);
-    const char* str = env->GetStringUTFChars(name, NULL);
-    auto errorStatus = OTIO_NS::ErrorStatus();
-    if(strcmp(str,"io.opentimeline.opentimelineio.Clip") == 0){
-        auto result = timeline->children_if<Clip>(&errorStatus, searchRange, shallowSearch);
-        processOTIOErrorStatus(env, errorStatus);
-        env->ReleaseStringUTFChars(name, str);
-        return clipRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Clip>>(result)));
-    }
-    else if(strcmp(str,"io.opentimeline.opentimelineio.Track") == 0){
-        auto result = timeline->children_if<Track>(&errorStatus, searchRange, shallowSearch);
-        processOTIOErrorStatus(env, errorStatus);
-        env->ReleaseStringUTFChars(name, str);
-        return trackRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Track>>(result)));
-    }
-    else if(strcmp(str,"io.opentimeline.opentimelineio.Gap") == 0){
-        auto result = timeline->children_if<Gap>(&errorStatus, searchRange, shallowSearch);
-        processOTIOErrorStatus(env, errorStatus);
-        env->ReleaseStringUTFChars(name, str);
-        return gapRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Gap>>(result)));
-    }
-    else if(strcmp(str,"io.opentimeline.opentimelineio.Stack") == 0){
-        auto result = timeline->children_if<Stack>(&errorStatus, searchRange, shallowSearch);
-        processOTIOErrorStatus(env, errorStatus);
-        env->ReleaseStringUTFChars(name, str);
-        return stackRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Stack>>(result)));
-    }
-    else if(strcmp(str,"io.opentimeline.opentimelineio.Transition") == 0){
-        auto result = timeline->children_if<Transition>(&errorStatus, searchRange, shallowSearch);
-        processOTIOErrorStatus(env, errorStatus);
-        env->ReleaseStringUTFChars(name, str);
-        return transitionRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Transition>>(result)));
-    }
-    else if(strcmp(str,"io.opentimeline.opentimelineio.Composition") == 0){
-        auto result = timeline->children_if<Composition>(&errorStatus, searchRange, shallowSearch);
-        processOTIOErrorStatus(env, errorStatus);
-        env->ReleaseStringUTFChars(name, str);
-        return compositionRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Composition>>(result)));
-    }
-    else if(strcmp(str,"io.opentimeline.opentimelineio.Item") == 0){
-        auto result = timeline->children_if<Item>(&errorStatus, searchRange, shallowSearch);
-        processOTIOErrorStatus(env, errorStatus);
-        env->ReleaseStringUTFChars(name, str);
-        return itemRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Item>>(result)));
-    }
-    //default return for Composable Type
-    auto result = timeline->children_if(&errorStatus, searchRange, shallowSearch);
-    processOTIOErrorStatus(env, errorStatus);
-    env->ReleaseStringUTFChars(name, str);
-    return composableRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Composable>>(result)));
+    return getChildrenIfResult<Timeline>(env, thisObj, descendedFromClass, searchRangeTimeRange, shallowSearch);
 }

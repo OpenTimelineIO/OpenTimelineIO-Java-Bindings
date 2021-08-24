@@ -22,6 +22,7 @@
 #include <opentimelineio/gap.h>
 #include <opentimelineio/transition.h>
 #include <opentimelineio/composition.h>
+#include <cstring>
 
 #ifndef _UTILITIES_H_INCLUDED_
 #define _UTILITIES_H_INCLUDED_
@@ -1037,6 +1038,60 @@ timeTransformToJObject(JNIEnv *env, opentime::TimeTransform timeTransform) {
     jobject tx = env->NewObject(
             txClass, txInit, offset, timeTransform.scale(), timeTransform.rate());
     return tx;
+}
+
+template<typename T=Composable>
+inline jobjectArray
+getChildrenIfResult(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, jobject searchRangeTimeRange, jboolean shallowSearch) {
+    auto thisHandle =
+            getHandle<SerializableObject::Retainer<T>>(env, thisObj);
+    auto baseClass = thisHandle->value;
+    jclass cls = env->GetObjectClass(descendedFromCLass);
+    jmethodID getNameID = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
+    auto clsName = (jstring)env->CallObjectMethod(descendedFromCLass, getNameID);
+    const char* clsNameString = env->GetStringUTFChars(clsName, NULL);
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    processOTIOErrorStatus(env, errorStatus);
+    optional<TimeRange> searchRange = timeRangeFromJObject(env, searchRangeTimeRange);
+    if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Clip") == 0){
+        auto result = baseClass->template children_if<Clip>(&errorStatus, searchRange, shallowSearch);
+        env->ReleaseStringUTFChars(clsName, clsNameString);
+        return clipRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Clip>>(result)));
+    }
+    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Track") == 0){
+        auto result = baseClass->template children_if<Track>(&errorStatus, searchRange, shallowSearch);
+        env->ReleaseStringUTFChars(clsName, clsNameString);
+        return trackRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Track>>(result)));
+    }
+    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Gap") == 0){
+        auto result = baseClass->template children_if<Gap>(&errorStatus, searchRange, shallowSearch);
+        env->ReleaseStringUTFChars(clsName, clsNameString);
+        return gapRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Gap>>(result)));
+    }
+    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Stack") == 0){
+        auto result = baseClass->template children_if<Stack>(&errorStatus, searchRange, shallowSearch);
+        env->ReleaseStringUTFChars(clsName, clsNameString);
+        return stackRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Stack>>(result)));
+    }
+    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Transition") == 0){
+        auto result = baseClass->template children_if<Transition>(&errorStatus, searchRange, shallowSearch);
+        env->ReleaseStringUTFChars(clsName, clsNameString);
+        return transitionRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Transition>>(result)));
+    }
+    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Composition") == 0){
+        auto result = baseClass->template children_if<Composition>(&errorStatus, searchRange, shallowSearch);
+        env->ReleaseStringUTFChars(clsName, clsNameString);
+        return compositionRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Composition>>(result)));
+    }
+    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Item") == 0){
+        auto result = baseClass->template children_if<Item>(&errorStatus, searchRange, shallowSearch);
+        env->ReleaseStringUTFChars(clsName, clsNameString);
+        return itemRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Item>>(result)));
+    }
+    //default return for Composable Type
+    auto result = baseClass->children_if(&errorStatus, searchRange, shallowSearch);
+    env->ReleaseStringUTFChars(clsName, clsNameString);
+    return composableRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Composable>>(result)));
 }
 
 #endif

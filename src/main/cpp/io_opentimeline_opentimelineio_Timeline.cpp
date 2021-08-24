@@ -203,3 +203,18 @@ Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative(
     }
     return getChildrenIfResult<Timeline>(env, thisObj, descendedFromClass, searchRangeTimeRange, shallowSearch);
 }
+
+/*
+ * Class:     io_opentimeline_opentimelineio_Timeline
+ * Method:    clipIfNative
+ * Signature: (Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Clip;
+ */
+JNIEXPORT jobjectArray JNICALL
+Java_io_opentimeline_opentimelineio_Timeline_clipIfNative(
+        JNIEnv *env, jobject thisObj, jobject searchRangeTimeRange, jboolean shallowSearch){
+    if (searchRangeTimeRange == nullptr) {
+        throwNullPointerException(env, "");
+        return nullptr;
+    }
+    return getClipIfResult<Timeline>(env, thisObj, searchRangeTimeRange, shallowSearch);
+}

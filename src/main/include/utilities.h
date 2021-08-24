@@ -1094,4 +1094,17 @@ getChildrenIfResult(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, job
     return composableRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Composable>>(result)));
 }
 
+template <typename T>
+inline jobjectArray
+getClipIfResult(JNIEnv *env, jobject thisObj, jobject searchRangeTimeRange, jboolean shallowSearch){
+    auto thisHandle =
+            getHandle<SerializableObject::Retainer<T>>(env, thisObj);
+    auto baseClass = thisHandle->value;
+    auto errorStatus = OTIO_NS::ErrorStatus();
+    optional<TimeRange> searchRange = timeRangeFromJObject(env, searchRangeTimeRange);
+    auto result = baseClass->clip_if(&errorStatus, searchRange, shallowSearch);
+    processOTIOErrorStatus(env, errorStatus);
+    return clipRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Clip>>(result)));
+}
+
 #endif

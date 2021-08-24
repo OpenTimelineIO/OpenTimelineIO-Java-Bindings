@@ -87,6 +87,14 @@ JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Timeline_getV
 JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative
   (JNIEnv *, jobject, jclass, jobject, jboolean);
 
+/*
+ * Class:     io_opentimeline_opentimelineio_Timeline
+ * Method:    clipIfNative
+ * Signature: (Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Clip;
+ */
+JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Timeline_clipIfNative
+  (JNIEnv *, jobject, jobject, jboolean);
+
 #ifdef __cplusplus
 }
 #endif

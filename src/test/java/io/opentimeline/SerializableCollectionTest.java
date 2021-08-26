@@ -3,6 +3,8 @@
 
 package io.opentimeline;
 
+import io.opentimeline.opentime.RationalTime;
+import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
 import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.AfterEach;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -82,6 +85,59 @@ public class SerializableCollectionTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testClipIfNullTimeRange(){
+        try(SerializableCollection sc = new SerializableCollection.SerializableCollectionBuilder().build();)
+        {
+            assertThrows(NullPointerException.class,
+                    ()->{sc.clipIf(null, false);});
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testClipIfEquality(){
+        try(
+                SerializableCollection sc = new SerializableCollection.SerializableCollectionBuilder().build();
+                ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
+                        .setAvailableRange(TimeRange.rangeFromStartEndTime(
+                                new RationalTime(0, 2),
+                                new RationalTime(50, 15)))
+                        .setTargetURL("/var/tmp/test.mov")
+                        .build();
+                Clip C1 = new Clip.ClipBuilder()
+                        .setName("test clip1")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(5, 24)).build())
+                        .build();
+                Clip C2 = new Clip.ClipBuilder()
+                        .setName("test clip2")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(5, 24)).build())
+                        .build();
+        )
+        {
+
+            children = new ArrayList<>();
+            assertTrue(children.add(C1));
+            assertTrue(children.add(C2));
+            sc.setChildren(children);
+            List<Clip> clipChildrenList = Arrays.asList(C1, C2);
+            TimeRange search_range = new TimeRange(
+                    new RationalTime(0, 1),
+                    new RationalTime(40, 1));
+            List<Clip> result = sc.clipIf(search_range, false);
+            assertEquals(clipChildrenList.size(), result.size());
+            for(int i = 0; i < clipChildrenList.size(); i++){
+                assertTrue((result.get(i)).isEquivalentTo(clipChildrenList.get(i)));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @AfterEach

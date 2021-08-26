@@ -138,6 +138,12 @@ public class SerializableCollection extends SerializableObjectWithMetadata {
         return this.eachChild(searchRange, Clip.class);
     }
 
+    public List<Clip> clipIf(TimeRange search_range, boolean shallow_search){
+        return Arrays.asList(clipIfNative(search_range, shallow_search));
+    }
+
+    public native Clip[] clipIfNative(TimeRange search_range, boolean shallow_search);
+
     @Override
     public String toString() {
         return this.getClass().getCanonicalName() +

@@ -245,8 +245,8 @@ JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Track_clipIfN
         jobject searchRangeTimeRange,
         jboolean shallowSearch) {
     if (searchRangeTimeRange == nullptr) {
-    throwNullPointerException(env, "");
-    return nullptr;
+        throwNullPointerException(env, "");
+        return nullptr;
     }
     return getClipIfResult<Track>(env, thisObj, searchRangeTimeRange, shallowSearch);
 }

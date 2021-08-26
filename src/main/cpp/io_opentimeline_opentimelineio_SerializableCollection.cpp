@@ -151,3 +151,17 @@ JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_SerializableColle
     processOTIOErrorStatus(env, errorStatus);
     return result;
 }
+
+/*
+ * Class:     io_opentimeline_opentimelineio_SerializableCollection
+ * Method:    clipIfNative
+ * Signature: (Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Clip;
+ */
+JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_SerializableCollection_clipIfNative
+        (JNIEnv *env, jobject thisObj, jobject searchRangeTimeRange, jboolean shallowSearch){
+    if (searchRangeTimeRange == nullptr) {
+        throwNullPointerException(env, "");
+        return nullptr;
+    }
+    return getClipIfResult<SerializableCollection>(env, thisObj, searchRangeTimeRange, shallowSearch);
+}

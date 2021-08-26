@@ -79,6 +79,14 @@ JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_getNeighbors
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_getRangeOfAllChildren
   (JNIEnv *, jobject);
 
+/*
+ * Class:     io_opentimeline_opentimelineio_Track
+ * Method:    clipIfNative
+ * Signature: (Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Clip;
+ */
+JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Track_clipIfNative
+  (JNIEnv *, jobject, jobject, jboolean);
+
 #ifdef __cplusplus
 }
 #endif

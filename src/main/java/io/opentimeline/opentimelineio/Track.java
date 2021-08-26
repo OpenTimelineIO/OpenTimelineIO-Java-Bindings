@@ -9,7 +9,10 @@ import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.util.Pair;
 import io.opentimeline.opentimelineio.exception.*;
 
+import java.sql.Time;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -195,4 +198,10 @@ public class Track extends Composition {
             TimeRange searchRange) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return this.eachChild(searchRange, Clip.class, false);
     }
+
+    public List<Clip> clipIf(TimeRange search_range, boolean shallow_search){
+        return Arrays.asList(clipIfNative(search_range, shallow_search));
+    }
+
+    public native Clip[] clipIfNative(TimeRange search_range, boolean shallow_search);
 }

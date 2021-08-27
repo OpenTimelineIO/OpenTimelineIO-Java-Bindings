@@ -11,9 +11,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>/${CMAKE_SYS
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/${CMAKE_SYSTEM_NAME})
 
 # jvm
-if(NOT DEFINED ANDROID_ABI)
-    find_package(Java REQUIRED)
-else()
+if(DEFINED ANDROID_ABI)
     set(JAVA_INCLUDE_PATH2 NotNeeded)
 endif()
 # https://stackoverflow.com/questions/51047978/cmake-could-not-find-jni
@@ -47,6 +45,10 @@ set(OTIO_INSTALL_COMMANDLINE_TOOLS OFF CACHE BOOL "")
 set(OTIO_SHARED_LIBS ON)
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
+if(APPLE)
+    set(CMAKE_OSX_ARCHITECTURES arm64;x86_64)
+endif()
 
 include_directories(src/main/include)
 add_subdirectory(deps/OpenTimelineIO build/natives)

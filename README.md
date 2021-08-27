@@ -66,11 +66,11 @@ After installing Gradle and CMake follw these steps:
 ```shell
 git clone --recurse-submodules https://github.com/OpenTimelineIO/OpenTimelineIO-Java-Bindings
 
-cd otio-java
+cd OpenTimelineIO-Java-Bindings
 
-gradle build # this builds and runs all tests
+./gradlew build # this builds and runs all tests
 ```
-
+If you're using a system-wide gradle installation, ensure the version to be 6.x.x.
 You can find the generated jar file in the `build/libs` directory.
 
 Building OpenTimelineIO-Java-Bindings for Android
@@ -136,6 +136,17 @@ dependencies {
 
 ```
 
+
+Architecture Support Matrix
+---------------------------
+
+| Operating System | x86_64/amd64       | x86                                            | aarch64/arm64            | aarch32                  |
+|------------------|--------------------|------------------------------------------------|--------------------------|--------------------------|
+| **Linux**        | :heavy_check_mark: | :heavy_check_mark:                             | :heavy_check_mark:       | :heavy_check_mark:       |
+| **Windows**      | :heavy_check_mark: | :heavy_check_mark:                             | EXPERIMENTAL             | EXPERIMENTAL             |
+| **macOS**        | :heavy_check_mark: | :heavy_multiplication_x: (DEPRECATED BY APPLE) | EXPERIMENTAL             | N/A                      |
+
+Apple Silicon and Windows ARM support is experimental. The pre-built JAR includes support, but it is **untested** since we can't run CI tests on Apple Silicon or Windows ARM.
 
 Examples
 --------

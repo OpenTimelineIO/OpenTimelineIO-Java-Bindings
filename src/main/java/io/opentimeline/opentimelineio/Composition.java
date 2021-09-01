@@ -276,6 +276,11 @@ public class Composition extends Item {
      */
     public native TimeRange trimChildRange(TimeRange childRange);
 
+    public <T extends Composable> List<T> childrenIf(Class<T> descendedFrom, TimeRange search_range, boolean shallow_search){
+        return Arrays.asList(childrenIfNative(descendedFrom, search_range, shallow_search));
+    }
+
+    private native <T extends Composable> T[] childrenIfNative(Class<T> descendedFrom, TimeRange search_range, boolean shallow_search);
     /**
      * @param child child to find
      * @return does the composition contain the child?

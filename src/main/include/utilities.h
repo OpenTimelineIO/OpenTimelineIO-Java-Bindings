@@ -1083,7 +1083,7 @@ getChildrenIfResult(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, job
         descendedFromClassChildren = itemRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Item>>(result)));
     }
     else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Composable") == 0){
-        auto result = baseClass->children_if(&errorStatus, searchRange, shallowSearch);
+        auto result = baseClass->template children_if<Composable>(&errorStatus, searchRange, shallowSearch);
         descendedFromClassChildren = composableRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Composable>>(result)));
     }
     env->ReleaseStringUTFChars(clsName, clsNameString);

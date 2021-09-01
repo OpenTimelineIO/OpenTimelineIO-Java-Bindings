@@ -85,7 +85,7 @@ public class SerializableCollection extends SerializableObjectWithMetadata {
     private native SerializableObject[] getChildrenNative();
 
     public void setChildren(List<SerializableObject> children) {
-        setChildrenNative((SerializableObject[]) children.toArray());
+        setChildrenNative(children.toArray(new SerializableObject[0]));
     }
 
     private native void setChildrenNative(SerializableObject[] children);

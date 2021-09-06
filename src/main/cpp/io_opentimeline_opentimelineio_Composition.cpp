@@ -453,5 +453,5 @@ JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Composition_getRan
          throwNullPointerException(env, "");
          return nullptr;
      }
-     return getChildrenIfResult<Composition>(env, thisObj, descendedFromClass, searchRangeTimeRange, shallowSearch);
+     return childrenIfWrapperUtil<Composition>(env, thisObj, descendedFromClass, searchRangeTimeRange, shallowSearch);
  }

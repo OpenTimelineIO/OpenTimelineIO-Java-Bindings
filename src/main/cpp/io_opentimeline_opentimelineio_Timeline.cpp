@@ -201,7 +201,7 @@ Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative(
         throwNullPointerException(env, "");
         return nullptr;
     }
-    return getChildrenIfResult<Timeline>(env, thisObj, descendedFromClass, searchRangeTimeRange, shallowSearch);
+    return childrenIfWrapperUtil<Timeline>(env, thisObj, descendedFromClass, searchRangeTimeRange, shallowSearch);
 }
 
 /*

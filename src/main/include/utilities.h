@@ -1042,7 +1042,51 @@ timeTransformToJObject(JNIEnv *env, opentime::TimeTransform timeTransform) {
 
 template<typename T>
 inline jobjectArray
-getChildrenIfResult(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, jobject searchRangeTimeRange, jboolean shallowSearch) {
+getChildrenIfResult(std::string clsNameString,
+               JNIEnv *env,T *baseClass,
+               OTIO_NS::ErrorStatus errorStatus,
+               nonstd::optional_lite::optional<TimeRange> searchRange,
+               jboolean shallowSearch) {
+    static std::unique_ptr<std::map<std::string, jobjectArray>> childrenIf_dispatch_table = std::unique_ptr<std::map<std::string, jobjectArray>>(
+            new std::map<std::string, jobjectArray>());
+    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Clip"] = clipRetainerVectorToArray(
+            env,*(new std::vector<SerializableObject::Retainer<Clip>>(
+                    baseClass->template children_if<Clip>(&errorStatus, searchRange, shallowSearch))
+                    ));
+    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Composable"] = composableRetainerVectorToArray(
+            env,*(new std::vector<SerializableObject::Retainer<Composable>>(
+                    baseClass -> template children_if<Composable>(&errorStatus, searchRange, shallowSearch))
+                    ));
+    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Composition"] = compositionRetainerVectorToArray(
+            env, *(new std::vector<SerializableObject::Retainer<Composition>>(
+                    baseClass -> template children_if<Composition>(&errorStatus, searchRange, shallowSearch))
+                    ));
+    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Gap"] = gapRetainerVectorToArray(
+            env, *(new std::vector<SerializableObject::Retainer<Gap>>(
+                    baseClass -> template children_if<Gap>(&errorStatus, searchRange, shallowSearch))
+                    ));
+    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Item"] = itemRetainerVectorToArray(
+            env, *(new std::vector<SerializableObject::Retainer<Item>>(
+                    baseClass -> template children_if<Item>(&errorStatus, searchRange, shallowSearch))
+                    ));
+    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Stack"] = stackRetainerVectorToArray(
+            env, *(new std::vector<SerializableObject::Retainer<Stack>>(
+                    baseClass -> template children_if<Stack>(&errorStatus, searchRange, shallowSearch))
+                    ));
+    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Track"] = trackRetainerVectorToArray(
+            env, *(new std::vector<SerializableObject::Retainer<Track>>(
+                    baseClass -> template children_if<Track>(&errorStatus, searchRange, shallowSearch))
+                    ));
+    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Transition"] = transitionRetainerVectorToArray(
+            env, *(new std::vector<SerializableObject::Retainer<Transition>>(
+                    baseClass -> template children_if<Transition>(&errorStatus, searchRange, shallowSearch))
+                    ));
+    return (*childrenIf_dispatch_table)[clsNameString];
+}
+
+template<typename T>
+inline jobjectArray
+childrenIfWrapperUtil(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, jobject searchRangeTimeRange, jboolean shallowSearch) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<T>>(env, thisObj);
     auto baseClass = thisHandle->value;
@@ -1052,44 +1096,10 @@ getChildrenIfResult(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, job
     const char* clsNameString = env->GetStringUTFChars(clsName, NULL);
     auto errorStatus = OTIO_NS::ErrorStatus();
     optional<TimeRange> searchRange = timeRangeFromJObject(env, searchRangeTimeRange);
-    jobjectArray descendedFromClassChildren =  env->NewObjectArray(0, descendedFromCLass, NULL);
-
-    if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Clip") == 0){
-        auto result = baseClass->template children_if<Clip>(&errorStatus, searchRange, shallowSearch);
-        descendedFromClassChildren = clipRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Clip>>(result)));
-    }
-    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Track") == 0){
-        auto result = baseClass->template children_if<Track>(&errorStatus, searchRange, shallowSearch);
-        descendedFromClassChildren = trackRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Track>>(result)));
-    }
-    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Gap") == 0){
-        auto result = baseClass->template children_if<Gap>(&errorStatus, searchRange, shallowSearch);
-        descendedFromClassChildren = gapRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Gap>>(result)));
-    }
-    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Stack") == 0){
-        auto result = baseClass->template children_if<Stack>(&errorStatus, searchRange, shallowSearch);
-        descendedFromClassChildren = stackRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Stack>>(result)));
-    }
-    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Transition") == 0){
-        auto result = baseClass->template children_if<Transition>(&errorStatus, searchRange, shallowSearch);
-        descendedFromClassChildren = transitionRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Transition>>(result)));
-    }
-    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Composition") == 0){
-        auto result = baseClass->template children_if<Composition>(&errorStatus, searchRange, shallowSearch);
-        descendedFromClassChildren = compositionRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Composition>>(result)));
-    }
-    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Item") == 0){
-        auto result = baseClass->template children_if<Item>(&errorStatus, searchRange, shallowSearch);
-        descendedFromClassChildren = itemRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Item>>(result)));
-    }
-    else if(strcmp(clsNameString,"io.opentimeline.opentimelineio.Composable") == 0){
-        auto result = baseClass->template children_if<Composable>(&errorStatus, searchRange, shallowSearch);
-        descendedFromClassChildren = composableRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Composable>>(result)));
-    }
-    env->ReleaseStringUTFChars(clsName, clsNameString);
+    jobjectArray descendedFromClassChildren = getChildrenIfResult<T>(clsNameString, env, baseClass, errorStatus, searchRange, shallowSearch);
     processOTIOErrorStatus(env, errorStatus);
+    env->ReleaseStringUTFChars(clsName, clsNameString);
     return descendedFromClassChildren;
-
 }
 
 template <typename T>

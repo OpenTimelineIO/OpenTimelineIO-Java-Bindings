@@ -8,7 +8,6 @@
 #include <opentimelineio/timeline.h>
 #include <opentimelineio/version.h>
 #include <utilities.h>
-#include <iostream>
 
 using namespace opentimelineio::OPENTIMELINEIO_VERSION;
 

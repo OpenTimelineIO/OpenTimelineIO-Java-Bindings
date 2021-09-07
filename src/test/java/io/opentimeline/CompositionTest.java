@@ -3,8 +3,6 @@
 
 package io.opentimeline;
 
-import io.opentimeline.opentime.RationalTime;
-import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
 import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
@@ -374,5 +372,4 @@ public class CompositionTest {
             e.printStackTrace();
         }
     }
-
 }

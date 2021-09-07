@@ -9,7 +9,6 @@ import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.util.Pair;
 import io.opentimeline.opentimelineio.exception.*;
 
-import java.sql.Time;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

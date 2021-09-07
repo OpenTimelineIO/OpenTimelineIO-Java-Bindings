@@ -360,6 +360,7 @@ public class Composition extends Item {
      * @param <T>           type of children to fetch
      * @return a Stream consisting of all the children of specified type in the composition in the order in which it is found
      */
+    @Deprecated
     public <T extends Composable> Stream<T> eachChild(
             TimeRange searchRange, Class<T> descendedFrom, boolean shallowSearch) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         List<Composable> children;
@@ -428,6 +429,7 @@ public class Composition extends Item {
      * @param shallowSearch should the algorithm recurse into compositions or not?
      * @return a Stream consisting of all the children in the composition (in the searchRange) in the order in which it is found
      */
+    @Deprecated
     public Stream<Composable> eachChild(TimeRange searchRange, boolean shallowSearch) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return eachChild(searchRange, Composable.class, shallowSearch);
     }
@@ -440,6 +442,7 @@ public class Composition extends Item {
      * @param <T>           type of children to fetch
      * @return a Stream consisting of all the children of specified type in the composition in the order in which it is found
      */
+    @Deprecated
     public <T extends Composable> Stream<T> eachChild(Class<T> descendedFrom) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return eachChild(null, descendedFrom, false);
     }

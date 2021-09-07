@@ -129,11 +129,13 @@ public class Stack extends Composition {
 
     public native HashMap<Composable, TimeRange> getRangeOfAllChildren() throws IndexOutOfBoundsException, UnsupportedOperationException, CannotComputeAvailableRangeException;
 
+    @Deprecated
     public Stream<Clip> eachClip(
             TimeRange searchRange) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return this.eachChild(searchRange, Clip.class, false);
     }
 
+    @Deprecated
     public Stream<Clip> eachClip() throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return this.eachChild(null);
     }

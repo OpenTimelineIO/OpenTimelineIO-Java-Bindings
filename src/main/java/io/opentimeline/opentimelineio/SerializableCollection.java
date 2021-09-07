@@ -98,6 +98,7 @@ public class SerializableCollection extends SerializableObjectWithMetadata {
 
     public native boolean removeChild(int index) throws IndexOutOfBoundsException;
 
+    @Deprecated
     public <T extends Composable> Stream<T> eachChild(
             TimeRange searchRange, Class<T> descendedFrom) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         List<SerializableObject> children = this.getChildren();
@@ -134,6 +135,7 @@ public class SerializableCollection extends SerializableObjectWithMetadata {
         return resultStream;
     }
 
+    @Deprecated
     public Stream<Clip> eachClip(TimeRange searchRange) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return this.eachChild(searchRange, Clip.class);
     }

@@ -181,6 +181,7 @@ public class Track extends Composition {
      * @param shallowSearch should the algorithm recurse into compositions or not?
      * @return a Stream of all clips in the timeline (in the searchRange) in the order they are found
      */
+    @Deprecated
     public Stream<Clip> eachClip(
             TimeRange searchRange, boolean shallowSearch) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return this.eachChild(searchRange, Clip.class, shallowSearch);
@@ -193,6 +194,7 @@ public class Track extends Composition {
      * @param searchRange TimeRange to search in
      * @return a Stream of all clips in the timeline (in the searchRange) in the order they are found
      */
+    @Deprecated
     public Stream<Clip> eachClip(
             TimeRange searchRange) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return this.eachChild(searchRange, Clip.class, false);

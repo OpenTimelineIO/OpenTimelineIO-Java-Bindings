@@ -23,6 +23,7 @@
 #include <opentimelineio/transition.h>
 #include <opentimelineio/composition.h>
 #include <cstring>
+#include <unordered_map>
 
 #ifndef _UTILITIES_H_INCLUDED_
 #define _UTILITIES_H_INCLUDED_
@@ -1048,41 +1049,40 @@ getChildrenIfResult(std::string clsNameString,
                OTIO_NS::ErrorStatus errorStatus,
                nonstd::optional_lite::optional<TimeRange> searchRange,
                jboolean shallowSearch) {
-    static std::unique_ptr<std::map<std::string, std::function<jobjectArray()>>> childrenIf_dispatch_table = std::unique_ptr<std::map<std::string, std::function<jobjectArray()>>>(
-            new std::map<std::string, std::function<jobjectArray()>>());
-    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Clip"] = [&](){
+    static std::unordered_map<std::string, std::function<jobjectArray()>> childrenIf_dispatch_table;
+    (childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Clip"] = [&](){
         auto result = baseClass->template children_if<Clip>(&errorStatus, searchRange, shallowSearch);
         return clipRetainerVectorToArray(env,*(new std::vector<SerializableObject::Retainer<Clip>>(result)));
     };
-    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Composable"] = [&](){
+    (childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Composable"] = [&](){
         auto result = baseClass->template children_if<Composable>(&errorStatus, searchRange, shallowSearch);
         return composableRetainerVectorToArray(env,*(new std::vector<SerializableObject::Retainer<Composable>>(result)));
     };
-    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Composition"] = [&](){
+    (childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Composition"] = [&](){
         auto result = baseClass->template children_if<Composition>(&errorStatus, searchRange, shallowSearch);
         return compositionRetainerVectorToArray(env,*(new std::vector<SerializableObject::Retainer<Composition>>(result)));
     };
-    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Gap"] = [&](){
+    (childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Gap"] = [&](){
         auto result = baseClass->template children_if<Gap>(&errorStatus, searchRange, shallowSearch);
         return gapRetainerVectorToArray(env,*(new std::vector<SerializableObject::Retainer<Gap>>(result)));
     };
-    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Item"] = [&](){
+    (childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Item"] = [&](){
         auto result = baseClass->template children_if<Item>(&errorStatus, searchRange, shallowSearch);
         return itemRetainerVectorToArray(env,*(new std::vector<SerializableObject::Retainer<Item>>(result)));
     };
-    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Stack"] = [&](){
+    (childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Stack"] = [&](){
         auto result = baseClass->template children_if<Stack>(&errorStatus, searchRange, shallowSearch);
         return stackRetainerVectorToArray(env,*(new std::vector<SerializableObject::Retainer<Stack>>(result)));
     };
-    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Track"] = [&](){
+    (childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Track"] = [&](){
         auto result = baseClass->template children_if<Track>(&errorStatus, searchRange, shallowSearch);
         return trackRetainerVectorToArray(env,*(new std::vector<SerializableObject::Retainer<Track>>(result)));
     };
-    (*childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Transition"] = [&](){
+    (childrenIf_dispatch_table)["io.opentimeline.opentimelineio.Transition"] = [&](){
         auto result = baseClass->template children_if<Transition>(&errorStatus, searchRange, shallowSearch);
         return transitionRetainerVectorToArray(env,*(new std::vector<SerializableObject::Retainer<Transition>>(result)));
     };
-    return (*childrenIf_dispatch_table)[clsNameString]();
+    return (childrenIf_dispatch_table)[clsNameString]();
 }
 
 template<typename T>

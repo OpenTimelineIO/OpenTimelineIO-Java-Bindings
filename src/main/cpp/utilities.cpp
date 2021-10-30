@@ -2,6 +2,7 @@
 // Copyright Contributors to the OpenTimelineIO Project.
 
 #include <utilities.h>
+#include <memory>
 
 std::map<std::type_info const *, std::string> getAnyType() {
     static std::once_flag typeFlag;

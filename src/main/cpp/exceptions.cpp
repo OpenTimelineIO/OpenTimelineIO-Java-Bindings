@@ -21,9 +21,6 @@ jint processOpenTimeErrorStatus(JNIEnv *env, opentime::ErrorStatus &errorStatus)
             return throwJavaException(env,
                                       "io/opentimeline/opentime/exception/InvalidRateForDropFrameTimecodeException",
                                       errorStatus.details);
-        case opentime::ErrorStatus::Outcome::NON_DROPFRAME_RATE:
-            return throwJavaException(env, "io/opentimeline/opentime/exception/NonDropframeRateException",
-                                      errorStatus.details);
         case opentime::ErrorStatus::Outcome::TIMECODE_RATE_MISMATCH:
             return throwJavaException(env, "io/opentimeline/opentime/exception/TimecodeRateMismatchException",
                                       errorStatus.details);

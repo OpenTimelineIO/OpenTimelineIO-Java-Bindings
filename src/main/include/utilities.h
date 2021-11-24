@@ -18,6 +18,7 @@
 #include <opentimelineio/stack.h>
 #include <opentimelineio/track.h>
 #include <opentimelineio/version.h>
+#include <memory>
 
 #ifndef _UTILITIES_H_INCLUDED_
 #define _UTILITIES_H_INCLUDED_

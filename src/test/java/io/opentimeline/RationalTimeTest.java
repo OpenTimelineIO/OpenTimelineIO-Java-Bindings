@@ -377,10 +377,10 @@ public class RationalTimeTest {
 
     @Test
     public void testFaultyFormattedTimecode() {
-        Exception exception = assertThrows(NonDropframeRateException.class, () -> {
+        Exception exception = assertThrows(InvalidRateForDropFrameTimecodeException.class, () -> {
             RationalTime t = RationalTime.fromTimecode("01:00:13;23", 24);
         });
-        assertEquals(exception.getMessage(), "Timecode '01:00:13;23' indicates drop frame rate due to the ';' frame divider. Passed in rate 24 is of non-drop-frame-rate.");
+        assertEquals(exception.getMessage(), "Timecode '01:00:13;23' indicates drop frame rate due to the ';' frame divider. Passed in rate 24 is not a valid drop frame rate.");
     }
 
     @Test

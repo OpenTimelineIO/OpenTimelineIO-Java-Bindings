@@ -203,7 +203,7 @@ public class RationalTime implements Comparable<RationalTime> {
      * @param rate     the frame-rate to calculate timecode in terms of
      * @return RationalTime equivalent to timecode
      */
-    public static native RationalTime fromTimecode(String timecode, double rate) throws InvalidTimecodeRateException, NonDropframeRateException, InvalidTimecodeStringException, TimecodeRateMismatchException;
+    public static native RationalTime fromTimecode(String timecode, double rate) throws InvalidTimecodeRateException, InvalidRateForDropFrameTimecodeException, InvalidTimecodeStringException, TimecodeRateMismatchException;
 
     /**
      * Convert a time with microseconds string into a RationalTime

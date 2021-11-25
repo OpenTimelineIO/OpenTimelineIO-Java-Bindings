@@ -28,6 +28,7 @@
 #include <opentimelineio/stack.h>
 #include <opentimelineio/track.h>
 #include <opentimelineio/timeline.h>
+#include <memory>
 
 using namespace opentimelineio::OPENTIMELINEIO_VERSION;
 

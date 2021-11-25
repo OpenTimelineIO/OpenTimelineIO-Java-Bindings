@@ -24,6 +24,7 @@
 #include <opentimelineio/composition.h>
 #include <cstring>
 #include <unordered_map>
+#include <memory>
 
 #ifndef _UTILITIES_H_INCLUDED_
 #define _UTILITIES_H_INCLUDED_

@@ -720,18 +720,16 @@ public class TrackTest {
     }
 
     @Test
-    public void testClipIfNullTimeRange(){
+    public void testClipIfNullTimeRange() throws Exception{
         try(Track track = new Track.TrackBuilder().build();)
         {
             assertThrows(NullPointerException.class,
                     ()->{track.clipIf(null, false);});
-        } catch (Exception e){
-            e.printStackTrace();
         }
     }
 
     @Test
-    public void testClipIfEquality(){
+    public void testClipIfEquality() throws Exception{
         try(
                 Track track = new Track.TrackBuilder()
                         .setName("V1")
@@ -766,9 +764,6 @@ public class TrackTest {
             for(int i = 0; i < clipChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(clipChildrenList.get(i)));
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
-
     }
 }

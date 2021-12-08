@@ -249,7 +249,7 @@ public class TimelineTest {
     }
 
     @Test
-    public void testChildrenIfComposableEquality(){
+    public void testChildrenIfComposableEquality() throws Exception{
         try(
                 Timeline timeline = new Timeline.TimelineBuilder().build();
                 Stack stack = new Stack.StackBuilder().build();
@@ -293,14 +293,11 @@ public class TimelineTest {
             for(int i = 0; i < composableChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(composableChildrenList.get(i)));
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
-
     }
 
     @Test
-    public void testChildrenIfClipEquality(){
+    public void testChildrenIfClipEquality() throws Exception{
         try(
                 Timeline timeline = new Timeline.TimelineBuilder().build();
                 Stack stack = new Stack.StackBuilder().build();
@@ -344,14 +341,12 @@ public class TimelineTest {
             for(int i = 0; i < clipChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(clipChildrenList.get(i)));
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
 
     }
 
     @Test
-    public void testChildrenIfTrackEquality(){
+    public void testChildrenIfTrackEquality() throws Exception{
         try(
                 Timeline timeline = new Timeline.TimelineBuilder().build();
                 Stack stack = new Stack.StackBuilder().build();
@@ -377,13 +372,10 @@ public class TimelineTest {
             for(int i = 0; i < trackChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(trackChildrenList.get(i)));
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
-
     }
     @Test
-    public void testChildrenIfGapEquality(){
+    public void testChildrenIfGapEquality() throws Exception{
         try(
                 Timeline timeline = new Timeline.TimelineBuilder().build();
                 Stack stack = new Stack.StackBuilder().build();
@@ -414,14 +406,11 @@ public class TimelineTest {
             for(int i = 0; i < gapChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(gapChildrenList.get(i)));
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
-
     }
 
     @Test
-    public void testChildrenIfStackEquality(){
+    public void testChildrenIfStackEquality() throws Exception{
         try(
                 Timeline timeline = new Timeline.TimelineBuilder().build();
                 Stack topLevelStack = new Stack.StackBuilder().build();
@@ -458,14 +447,11 @@ public class TimelineTest {
             for(int i = 0; i < stackChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(stackChildrenList.get(i)));
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
-
     }
 
     @Test
-    public void testChildrenIfCompositionEquality(){
+    public void testChildrenIfCompositionEquality() throws Exception{
         try(
                 Timeline timeline = new Timeline.TimelineBuilder().build();
                 Stack topLevelStack = new Stack.StackBuilder().build();
@@ -494,14 +480,12 @@ public class TimelineTest {
             for(int i = 0; i < compositionChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(compositionChildrenList.get(i)));
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
 
     }
 
     @Test
-    public void testChildrenIfItemEquality(){
+    public void testChildrenIfItemEquality() throws Exception{
         try(
                 Timeline timeline = new Timeline.TimelineBuilder().build();
                 Stack stack = new Stack.StackBuilder().build();
@@ -548,14 +532,12 @@ public class TimelineTest {
             for(int i = 0; i < itemChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(itemChildrenList.get(i)));
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
 
     }
 
     @Test
-    public void testChildrenIfTransitionEquality(){
+    public void testChildrenIfTransitionEquality() throws Exception{
         try(
                 Timeline timeline = new Timeline.TimelineBuilder().build();
                 Stack stack = new Stack.StackBuilder().build();
@@ -617,35 +599,29 @@ public class TimelineTest {
             for(int i = 0; i < transitionsChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(transitionsChildrenList.get(i)));
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
     }
 
     @Test
-    public void testChildrenIfNullTimeRange(){
+    public void testChildrenIfNullTimeRange() throws Exception{
         try(Timeline timeline = new Timeline.TimelineBuilder().build();)
         {
             assertThrows(NullPointerException.class,
                     ()->{timeline.childrenIf(Composable.class, null, false);});
-        } catch (Exception e){
-            e.printStackTrace();
         }
     }
 
     @Test
-    public void testClipIfNullTimeRange(){
+    public void testClipIfNullTimeRange() throws Exception{
         try(Timeline timeline = new Timeline.TimelineBuilder().build();)
         {
             assertThrows(NullPointerException.class,
                     ()->{timeline.clipIf(null, false);});
-        } catch (Exception e){
-            e.printStackTrace();
         }
     }
 
     @Test
-    public void testClipIfEquality(){
+    public void testClipIfEquality() throws Exception{
         try(
                 Timeline timeline = new Timeline.TimelineBuilder().build();
                 Stack stack = new Stack.StackBuilder().build();
@@ -689,8 +665,6 @@ public class TimelineTest {
             for(int i = 0; i < clipChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(clipChildrenList.get(i)));
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
 
     }

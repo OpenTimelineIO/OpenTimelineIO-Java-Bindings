@@ -88,18 +88,16 @@ public class SerializableCollectionTest {
     }
 
     @Test
-    public void testClipIfNullTimeRange(){
+    public void testClipIfNullTimeRange() throws Exception{
         try(SerializableCollection sc = new SerializableCollection.SerializableCollectionBuilder().build();)
         {
             assertThrows(NullPointerException.class,
                     ()->{sc.clipIf(null, false);});
-        } catch (Exception e){
-            e.printStackTrace();
         }
     }
 
     @Test
-    public void testClipIfEquality(){
+    public void testClipIfEquality() throws Exception{
         try(
                 SerializableCollection sc = new SerializableCollection.SerializableCollectionBuilder().build();
                 ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
@@ -134,8 +132,6 @@ public class SerializableCollectionTest {
             for(int i = 0; i < clipChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(clipChildrenList.get(i)));
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
 
     }

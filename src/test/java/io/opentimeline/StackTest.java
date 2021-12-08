@@ -318,18 +318,16 @@ public class StackTest {
     }
 
     @Test
-    public void testClipIfNullTimeRange(){
+    public void testClipIfNullTimeRange() throws Exception{
         try(Stack stack = new Stack.StackBuilder().build();)
         {
             assertThrows(NullPointerException.class,
                     ()->{stack.clipIf(null, false);});
-        } catch (Exception e){
-            e.printStackTrace();
         }
     }
 
     @Test
-    public void testClipIfEquality(){
+    public void testClipIfEquality() throws Exception{
         try(
                 Stack stack = new Stack.StackBuilder().build();
                 Track V1 = new Track.TrackBuilder()
@@ -371,8 +369,6 @@ public class StackTest {
             for(int i = 0; i < clipChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(clipChildrenList.get(i)));
             }
-        } catch (Exception e){
-            e.printStackTrace();
         }
     }
 }

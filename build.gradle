@@ -120,6 +120,12 @@ task compileJNI {
                 generator = "x64";
             }
 
+            String buildConcurrency = ""
+            // this property will not be used for android builds, as android builds use ninja instead of make
+            if (project.hasProperty("j")) {
+                buildConcurrency = "-j " + project.getAt('j').toString()
+            }
+
             if (OperatingSystem.current().isLinux() ||
                     OperatingSystem.current().isMacOsX() ||
                     OperatingSystem.current().isUnix()) {
@@ -140,7 +146,7 @@ task compileJNI {
                             'cd build/natives && ' +
                             buildCommand
                 } else if (OperatingSystem.current().isMacOsX()) {
-                    commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. && cmake --build . --config Release'
+                    commandLine 'sh', '-c', 'mkdir -p build/natives && cd build/natives && cmake ../.. && cmake --build . --config Release ' + buildConcurrency
                 } else if (OperatingSystem.current().isLinux()) { // LINUX BUILD
                     def nativeDir = new File('build/natives')
                     if (!nativeDir.exists()) {
@@ -153,15 +159,15 @@ task compileJNI {
                     } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
                         cmakeToolchain = "&&"
                     }
-                    commandLine 'sh', '-c', 'cd build/natives && cmake ../.. ' + cmakeToolchain + ' cmake --build . --config Release && ' +
-                            'mv lib/Release/Linux lib/Release/Linux-' + architecture
+                    commandLine 'sh', '-c', 'cd build/natives && cmake ../.. ' + cmakeToolchain + ' cmake --build . --config Release ' + buildConcurrency + ' && ' +
+                            'if [ -d "lib/Release/Linux-' + architecture + '" ]; then rm -rf lib/Release/Linux-' + architecture + '; fi && mv lib/Release/Linux lib/Release/Linux-' + architecture
                 }
             } else if (OperatingSystem.current().isWindows()) { // WINDOWS BUILD
                 def nativeDir = new File('build\\natives')
                 if (!nativeDir.exists()) {
                     nativeDir.mkdirs()
                 }
-                commandLine "cmd", "/c", 'cd build\\natives && cmake -A ' + generator + ' ..\\.. && cmake --build . --config Release && ' +
+                commandLine "cmd", "/c", 'cd build\\natives && cmake -A ' + generator + ' ..\\.. && cmake --build . --config Release ' + buildConcurrency + ' && ' +
                         'ren bin\\Release\\Windows Windows-' + architecture
             }
         }

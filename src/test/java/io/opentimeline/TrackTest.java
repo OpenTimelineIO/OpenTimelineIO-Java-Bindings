@@ -766,4 +766,58 @@ public class TrackTest {
             }
         }
     }
+
+    @Test
+    public void testChildrenIfComposableEquality() throws Exception {
+        try (
+                Track track = new Track.TrackBuilder()
+                        .setName("V1")
+                        .setKind(Track.Kind.video)
+                        .build();
+                ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
+                        .setAvailableRange(TimeRange.rangeFromStartEndTime(
+                                new RationalTime(0, 24),
+                                new RationalTime(48, 24)))
+                        .setTargetURL("/var/tmp/test.mov")
+                        .build();
+                ExternalReference mr2 = new ExternalReference.ExternalReferenceBuilder()
+                        .setAvailableRange(TimeRange.rangeFromStartEndTime(
+                                new RationalTime(48, 24),
+                                new RationalTime(96, 24)))
+                        .setTargetURL("/var/tmp/test.mov")
+                        .build();
+                Clip C1 = new Clip.ClipBuilder()
+                        .setName("test clip1")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(48, 24)).build())
+                        .build();
+                Clip C2 = new Clip.ClipBuilder()
+                        .setName("test clip2")
+                        .setMediaReference(mr2)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(48, 24)).build())
+                        .build();
+        ) {
+            assertTrue(track.appendChild(C1));
+            assertTrue(track.appendChild(C2));
+            List<Composable> composableChildrenList = Arrays.asList(C1, C2);
+            TimeRange search_range = new TimeRange(
+                    new RationalTime(0, 24),
+                    new RationalTime(100, 24));
+            List<Composable> result = track.childrenIf(Composable.class, search_range, false);
+            assertEquals(composableChildrenList.size(), result.size());
+            for (int i = 0; i < composableChildrenList.size(); i++) {
+                assertTrue((result.get(i)).isEquivalentTo(composableChildrenList.get(i)));
+            }
+        }
+
+    }
+
+    @Test
+    public void testChildrenIfNullTimeRange() throws Exception{
+        try(Track track = new Track.TrackBuilder().build();)
+        {
+            assertThrows(NullPointerException.class,
+                    ()->{track.childrenIf(Composable.class, null, false);});
+        }
+    }
 }

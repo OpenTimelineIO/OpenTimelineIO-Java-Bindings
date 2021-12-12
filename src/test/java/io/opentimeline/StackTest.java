@@ -371,4 +371,65 @@ public class StackTest {
             }
         }
     }
+
+    @Test
+    public void testChildrenIfComposableEquality() throws Exception {
+        try (
+                Stack stack = new Stack.StackBuilder().build();
+                Track V1 = new Track.TrackBuilder()
+                        .setName("V1")
+                        .setKind(Track.Kind.video)
+                        .build();
+                Track V2 = new Track.TrackBuilder()
+                        .setName("V2")
+                        .setKind(Track.Kind.video)
+                        .build();
+                ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
+                        .setAvailableRange(TimeRange.rangeFromStartEndTime(
+                                new RationalTime(0, 24),
+                                new RationalTime(48, 24)))
+                        .setTargetURL("/var/tmp/test.mov")
+                        .build();
+                ExternalReference mr2 = new ExternalReference.ExternalReferenceBuilder()
+                        .setAvailableRange(TimeRange.rangeFromStartEndTime(
+                                new RationalTime(48, 24),
+                                new RationalTime(96, 24)))
+                        .setTargetURL("/var/tmp/test.mov")
+                        .build();
+                Clip C1 = new Clip.ClipBuilder()
+                        .setName("test clip1")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(48, 24)).build())
+                        .build();
+                Clip C2 = new Clip.ClipBuilder()
+                        .setName("test clip2")
+                        .setMediaReference(mr2)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(48, 24)).build())
+                        .build();
+        ) {
+            assertTrue(V1.appendChild(C1));
+            assertTrue(V2.appendChild(C2));
+            assertTrue(stack.appendChild(V1));
+            assertTrue(stack.appendChild(V2));
+            List<Composable> composableChildrenList = Arrays.asList(V1, C1, V2, C2);
+            TimeRange search_range = new TimeRange(
+                    new RationalTime(0, 24),
+                    new RationalTime(100, 24));
+            List<Composable> result = stack.childrenIf(Composable.class, search_range, false);
+            assertEquals(composableChildrenList.size(), result.size());
+            for (int i = 0; i < composableChildrenList.size(); i++) {
+                assertTrue((result.get(i)).isEquivalentTo(composableChildrenList.get(i)));
+            }
+        }
+
+    }
+
+    @Test
+    public void testChildrenIfNullTimeRange() throws Exception{
+        try(Stack stack = new Stack.StackBuilder().build();)
+        {
+            assertThrows(NullPointerException.class,
+                    ()->{stack.childrenIf(Composable.class, null, false);});
+        }
+    }
 }

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -288,7 +289,7 @@ public class TimelineTest {
             TimeRange search_range = new TimeRange(
                     new RationalTime(0, 1),
                     new RationalTime(40, 1));
-            List<Composable> result = timeline.childrenIf(Composable.class,search_range, false);
+            List<Composable> result = timeline.childrenIf(Composable.class,Optional.of(search_range), false);
             assertEquals(composableChildrenList.size(), result.size());
             for(int i = 0; i < composableChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(composableChildrenList.get(i)));
@@ -336,7 +337,7 @@ public class TimelineTest {
             TimeRange search_range = new TimeRange(
                     new RationalTime(0, 1),
                     new RationalTime(40, 1));
-            List<Clip> result = timeline.childrenIf(Clip.class,search_range, false);
+            List<Clip> result = timeline.childrenIf(Clip.class, Optional.of(search_range), false);
             assertEquals(clipChildrenList.size(), result.size());
             for(int i = 0; i < clipChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(clipChildrenList.get(i)));
@@ -367,7 +368,7 @@ public class TimelineTest {
             TimeRange search_range = new TimeRange(
                     new RationalTime(0, 1),
                     new RationalTime(40, 1));
-            List<Track> result = timeline.childrenIf(Track.class,search_range, false);
+            List<Track> result = timeline.childrenIf(Track.class, Optional.of(search_range), false);
             assertEquals(trackChildrenList.size(), result.size());
             for(int i = 0; i < trackChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(trackChildrenList.get(i)));
@@ -401,7 +402,7 @@ public class TimelineTest {
             TimeRange search_range = new TimeRange(
                     new RationalTime(0, 1),
                     new RationalTime(40, 1));
-            List<Gap> result = timeline.childrenIf(Gap.class,search_range, false);
+            List<Gap> result = timeline.childrenIf(Gap.class, Optional.of(search_range), false);
             assertEquals(gapChildrenList.size(), result.size());
             for(int i = 0; i < gapChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(gapChildrenList.get(i)));
@@ -442,7 +443,7 @@ public class TimelineTest {
             TimeRange search_range = new TimeRange(
                     new RationalTime(0, 1),
                     new RationalTime(40, 1));
-            List<Stack> result = timeline.childrenIf(Stack.class,search_range, false);
+            List<Stack> result = timeline.childrenIf(Stack.class, Optional.of(search_range), false);
             assertEquals(stackChildrenList.size(), result.size());
             for(int i = 0; i < stackChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(stackChildrenList.get(i)));
@@ -475,7 +476,7 @@ public class TimelineTest {
             TimeRange search_range = new TimeRange(
                     new RationalTime(0, 1),
                     new RationalTime(40, 1));
-            List<Composition> result = timeline.childrenIf(Composition.class,search_range, false);
+            List<Composition> result = timeline.childrenIf(Composition.class, Optional.of(search_range), false);
             assertEquals(compositionChildrenList.size(), result.size());
             for(int i = 0; i < compositionChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(compositionChildrenList.get(i)));
@@ -527,7 +528,7 @@ public class TimelineTest {
             TimeRange search_range = new TimeRange(
                     new RationalTime(0, 1),
                     new RationalTime(40, 1));
-            List<Item> result = timeline.childrenIf(Item.class,search_range, false);
+            List<Item> result = timeline.childrenIf(Item.class, Optional.of(search_range), false);
             assertEquals(itemChildrenList.size(), result.size());
             for(int i = 0; i < itemChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(itemChildrenList.get(i)));
@@ -594,7 +595,7 @@ public class TimelineTest {
             TimeRange search_range = new TimeRange(
                     new RationalTime(0, 1),
                     new RationalTime(40, 1));
-            List<Transition> result = timeline.childrenIf(Transition.class,search_range, false);
+            List<Transition> result = timeline.childrenIf(Transition.class, Optional.of(search_range), false);
             assertEquals(transitionsChildrenList.size(), result.size());
             for(int i = 0; i < transitionsChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(transitionsChildrenList.get(i)));

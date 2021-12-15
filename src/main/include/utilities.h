@@ -25,6 +25,7 @@
 #include <cstring>
 #include <unordered_map>
 #include <memory>
+#include <iostream>
 
 #ifndef _UTILITIES_H_INCLUDED_
 #define _UTILITIES_H_INCLUDED_
@@ -1089,6 +1090,7 @@ getChildrenIfResult(std::string clsNameString,
 template<typename T>
 inline jobjectArray
 childrenIfWrapperUtil(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, jobject searchRangeTimeRange, jboolean shallowSearch) {
+    std::cout<<"inside wrapper util \n";
     auto thisHandle =
             getHandle<SerializableObject::Retainer<T>>(env, thisObj);
     auto baseClass = thisHandle->value;
@@ -1097,7 +1099,17 @@ childrenIfWrapperUtil(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, j
     auto clsName = (jstring)env->CallObjectMethod(descendedFromCLass, getNameID);
     const char* clsNameString = env->GetStringUTFChars(clsName, NULL);
     auto errorStatus = OTIO_NS::ErrorStatus();
-    optional<TimeRange> searchRange = timeRangeFromJObject(env, searchRangeTimeRange);
+
+    jclass opt = env->GetObjectClass(searchRangeTimeRange);
+    jmethodID getMethodID = env->GetMethodID(opt, "get", "()Ljava/lang/Object;");
+    jmethodID isPresentID = env->GetMethodID(opt, "isPresent", "()Z;");
+    jboolean ifPresent = env->CallObjectMethod(searchRangeTimeRange, isPresentID);
+    optional<TimeRange> searchRange = nullopt;
+    if (ifPresent){
+        jobject searchRangeJobject = env->CallObjectMethod(searchRangeTimeRange, getMethodID);
+        searchRange = timeRangeFromJObject(env, searchRangeJobject);
+    }
+    std::cout<<"after conversion \n";
     jobjectArray descendedFromClassChildren = getChildrenIfResult<T>(clsNameString, env, baseClass, errorStatus, searchRange, shallowSearch);
     processOTIOErrorStatus(env, errorStatus);
     env->ReleaseStringUTFChars(clsName, clsNameString);

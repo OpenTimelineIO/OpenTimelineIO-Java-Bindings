@@ -8,7 +8,7 @@
 #include <opentimelineio/timeline.h>
 #include <opentimelineio/version.h>
 #include <utilities.h>
-
+#include <iostream>
 using namespace opentimelineio::OPENTIMELINEIO_VERSION;
 
 /*
@@ -191,7 +191,7 @@ Java_io_opentimeline_opentimelineio_Timeline_getVideoTracksNative(
 /*
  * Class:     io_opentimeline_opentimelineio_Timeline
  * Method:    childrenIfNative
- * Signature: (Ljava/lang/Class;Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Composable;
+ * Signature: (Ljava/lang/Class;Ljava/util/Optional;Z)[Lio/opentimeline/opentimelineio/Composable;
  */
 JNIEXPORT jobjectArray JNICALL
 Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative(
@@ -200,6 +200,7 @@ Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative(
         throwNullPointerException(env, "");
         return nullptr;
     }
+    std::cout<<"inside jni implementation \n";
     return childrenIfWrapperUtil<Timeline>(env, thisObj, descendedFromClass, searchRangeTimeRange, shallowSearch);
 }
 

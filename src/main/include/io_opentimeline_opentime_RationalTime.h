@@ -137,6 +137,14 @@ JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentime_RationalTime_equals
 
 /*
  * Class:     io_opentimeline_opentime_RationalTime
+ * Method:    nearestValidTimecodeRate
+ * Signature: (D)D
+ */
+JNIEXPORT jdouble JNICALL Java_io_opentimeline_opentime_RationalTime_nearestValidTimecodeRate
+  (JNIEnv *, jclass, jdouble);
+
+/*
+ * Class:     io_opentimeline_opentime_RationalTime
  * Method:    compareTo
  * Signature: (Lio/opentimeline/opentime/RationalTime;)I
  */

@@ -82,7 +82,7 @@ JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_getRangeOfAl
 /*
  * Class:     io_opentimeline_opentimelineio_Track
  * Method:    clipIfNative
- * Signature: (Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Clip;
+ * Signature: (Ljava/util/Optional;Z)[Lio/opentimeline/opentimelineio/Clip;
  */
 JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Track_clipIfNative
   (JNIEnv *, jobject, jobject, jboolean);

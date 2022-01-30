@@ -200,7 +200,6 @@ Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative(
         throwNullPointerException(env, "");
         return nullptr;
     }
-    std::cout<<"inside jni implementation \n";
     return childrenIfWrapperUtil<Timeline>(env, thisObj, descendedFromClass, searchRangeTimeRange, shallowSearch);
 }
 

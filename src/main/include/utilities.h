@@ -1090,7 +1090,6 @@ getChildrenIfResult(std::string clsNameString,
 template<typename T>
 inline jobjectArray
 childrenIfWrapperUtil(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, jobject searchRangeTimeRange, jboolean shallowSearch) {
-    std::cout<<"inside wrapper util \n";
     auto thisHandle =
             getHandle<SerializableObject::Retainer<T>>(env, thisObj);
     auto baseClass = thisHandle->value;

@@ -661,7 +661,7 @@ public class TimelineTest {
             TimeRange search_range = new TimeRange(
                     new RationalTime(0, 1),
                     new RationalTime(40, 1));
-            List<Clip> result = timeline.clipIf(search_range, false);
+            List<Clip> result = timeline.clipIf(Optional.of(search_range), false);
             assertEquals(clipChildrenList.size(), result.size());
             for(int i = 0; i < clipChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(clipChildrenList.get(i)));

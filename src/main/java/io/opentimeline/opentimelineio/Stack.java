@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * A stack represents a series of composables. Composables that are arranged such
@@ -140,9 +141,9 @@ public class Stack extends Composition {
         return this.eachChild(null);
     }
 
-    public List<Clip> clipIf(TimeRange search_range, boolean shallow_search){
+    public List<Clip> clipIf(Optional<TimeRange> search_range, boolean shallow_search){
         return Arrays.asList(clipIfNative( search_range, shallow_search));
     }
 
-    private native Clip[] clipIfNative(TimeRange search_range, boolean shallow_search);
+    private native Clip[] clipIfNative(Optional<TimeRange> search_range, boolean shallow_search);
 }

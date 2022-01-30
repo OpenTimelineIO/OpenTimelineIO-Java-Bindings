@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -127,7 +128,7 @@ public class SerializableCollectionTest {
             TimeRange search_range = new TimeRange(
                     new RationalTime(0, 1),
                     new RationalTime(40, 1));
-            List<Clip> result = sc.clipIf(search_range, false);
+            List<Clip> result = sc.clipIf(Optional.of(search_range), false);
             assertEquals(clipChildrenList.size(), result.size());
             for(int i = 0; i < clipChildrenList.size(); i++){
                 assertTrue((result.get(i)).isEquivalentTo(clipChildrenList.get(i)));

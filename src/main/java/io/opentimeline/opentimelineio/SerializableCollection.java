@@ -10,6 +10,7 @@ import io.opentimeline.opentimelineio.exception.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * A kind of composition which can hold any serializable object.
@@ -140,11 +141,11 @@ public class SerializableCollection extends SerializableObjectWithMetadata {
         return this.eachChild(searchRange, Clip.class);
     }
 
-    public List<Clip> clipIf(TimeRange search_range, boolean shallow_search){
+    public List<Clip> clipIf(Optional<TimeRange> search_range, boolean shallow_search){
         return Arrays.asList(clipIfNative(search_range, shallow_search));
     }
 
-    public native Clip[] clipIfNative(TimeRange search_range, boolean shallow_search);
+    public native Clip[] clipIfNative(Optional<TimeRange> search_range, boolean shallow_search);
 
     @Override
     public String toString() {

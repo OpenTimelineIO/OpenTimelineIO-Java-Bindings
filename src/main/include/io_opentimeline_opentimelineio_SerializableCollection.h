@@ -66,7 +66,7 @@ JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_SerializableColle
 /*
  * Class:     io_opentimeline_opentimelineio_SerializableCollection
  * Method:    clipIfNative
- * Signature: (Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Clip;
+ * Signature: (Ljava/util/Optional;Z)[Lio/opentimeline/opentimelineio/Clip;
  */
 JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_SerializableCollection_clipIfNative
   (JNIEnv *, jobject, jobject, jboolean);

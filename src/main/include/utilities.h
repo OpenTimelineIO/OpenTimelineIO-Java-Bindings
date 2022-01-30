@@ -1122,7 +1122,16 @@ getClipIfResult(JNIEnv *env, jobject thisObj, jobject searchRangeTimeRange, jboo
             getHandle<SerializableObject::Retainer<T>>(env, thisObj);
     auto baseClass = thisHandle->value;
     auto errorStatus = OTIO_NS::ErrorStatus();
-    optional<TimeRange> searchRange = timeRangeFromJObject(env, searchRangeTimeRange);
+    jclass optionalClass = env->GetObjectClass(searchRangeTimeRange);
+    jmethodID getMethodID = env->GetMethodID(optionalClass, "get", "()Ljava/lang/Object;");
+    jmethodID isPresentID = env->GetMethodID(optionalClass, "isPresent", "()Z");
+    jboolean ifPresent = env->CallBooleanMethod(searchRangeTimeRange, isPresentID);
+    optional<TimeRange> searchRange = nullopt;
+    if (ifPresent){
+        jobject searchRangeJObject = env->CallObjectMethod(searchRangeTimeRange, getMethodID);
+        searchRange = timeRangeFromJObject(env, searchRangeJObject);
+
+    }
     auto result = baseClass->clip_if(&errorStatus, searchRange, shallowSearch);
     processOTIOErrorStatus(env, errorStatus);
     return clipRetainerVectorToArray(env, *(new std::vector<SerializableObject::Retainer<Clip>>(result)));

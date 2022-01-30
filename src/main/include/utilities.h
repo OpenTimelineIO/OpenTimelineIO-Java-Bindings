@@ -1100,16 +1100,16 @@ childrenIfWrapperUtil(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, j
     const char* clsNameString = env->GetStringUTFChars(clsName, NULL);
     auto errorStatus = OTIO_NS::ErrorStatus();
 
-    jclass opt = env->GetObjectClass(searchRangeTimeRange);
-    jmethodID getMethodID = env->GetMethodID(opt, "get", "()Ljava/lang/Object;");
-    jmethodID isPresentID = env->GetMethodID(opt, "isPresent", "()Z;");
-    jboolean ifPresent = env->CallObjectMethod(searchRangeTimeRange, isPresentID);
+    jclass optionalClass = env->GetObjectClass(searchRangeTimeRange);
+    jmethodID getMethodID = env->GetMethodID(optionalClass, "get", "()Ljava/lang/Object;");
+    jmethodID isPresentID = env->GetMethodID(optionalClass, "isPresent", "()Z");
+    jboolean ifPresent = env->CallBooleanMethod(searchRangeTimeRange, isPresentID);
     optional<TimeRange> searchRange = nullopt;
     if (ifPresent){
-        jobject searchRangeJobject = env->CallObjectMethod(searchRangeTimeRange, getMethodID);
-        searchRange = timeRangeFromJObject(env, searchRangeJobject);
+        jobject searchRangeJObject = env->CallObjectMethod(searchRangeTimeRange, getMethodID);
+        searchRange = timeRangeFromJObject(env, searchRangeJObject);
+
     }
-    std::cout<<"after conversion \n";
     jobjectArray descendedFromClassChildren = getChildrenIfResult<T>(clsNameString, env, baseClass, errorStatus, searchRange, shallowSearch);
     processOTIOErrorStatus(env, errorStatus);
     env->ReleaseStringUTFChars(clsName, clsNameString);

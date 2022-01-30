@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -803,7 +805,7 @@ public class TrackTest {
             TimeRange search_range = new TimeRange(
                     new RationalTime(0, 24),
                     new RationalTime(100, 24));
-            List<Composable> result = track.childrenIf(Composable.class, search_range, false);
+            List<Composable> result = track.childrenIf(Composable.class, Optional.of(search_range), false);
             assertEquals(composableChildrenList.size(), result.size());
             for (int i = 0; i < composableChildrenList.size(); i++) {
                 assertTrue((result.get(i)).isEquivalentTo(composableChildrenList.get(i)));

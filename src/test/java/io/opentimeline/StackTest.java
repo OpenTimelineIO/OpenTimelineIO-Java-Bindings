@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -415,7 +417,7 @@ public class StackTest {
             TimeRange search_range = new TimeRange(
                     new RationalTime(0, 24),
                     new RationalTime(100, 24));
-            List<Composable> result = stack.childrenIf(Composable.class, search_range, false);
+            List<Composable> result = stack.childrenIf(Composable.class, Optional.of(search_range), false);
             assertEquals(composableChildrenList.size(), result.size());
             for (int i = 0; i < composableChildrenList.size(); i++) {
                 assertTrue((result.get(i)).isEquivalentTo(composableChildrenList.get(i)));

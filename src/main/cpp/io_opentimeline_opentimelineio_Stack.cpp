@@ -145,11 +145,11 @@ JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Stack_getRangeOfAl
  */
 JNIEXPORT jobjectArray JNICALL
 Java_io_opentimeline_opentimelineio_Stack_clipIfNative(
-        JNIEnv *env, jobject thisObj, jobject searchRangeTimeRange, jboolean shallowSearch){
-    if (searchRangeTimeRange == nullptr) {
+        JNIEnv *env, jobject thisObj, jobject searchRangeTimeRangeOptional, jboolean shallowSearch){
+    if (searchRangeTimeRangeOptional == nullptr) {
         throwNullPointerException(env, "");
         return nullptr;
     }
-    return getClipIfResult<Stack>(env, thisObj, searchRangeTimeRange, shallowSearch);
+    return getClipIfResult<Stack>(env, thisObj, searchRangeTimeRangeOptional, shallowSearch);
 }
 

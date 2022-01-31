@@ -158,10 +158,10 @@ JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_SerializableColle
  * Signature: (Ljava/util/Optional;Z)[Lio/opentimeline/opentimelineio/Clip;
  */
 JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_SerializableCollection_clipIfNative
-        (JNIEnv *env, jobject thisObj, jobject searchRangeTimeRange, jboolean shallowSearch){
-    if (searchRangeTimeRange == nullptr) {
+        (JNIEnv *env, jobject thisObj, jobject searchRangeTimeRangeOptional, jboolean shallowSearch){
+    if (searchRangeTimeRangeOptional == nullptr) {
         throwNullPointerException(env, "");
         return nullptr;
     }
-    return getClipIfResult<SerializableCollection>(env, thisObj, searchRangeTimeRange, shallowSearch);
+    return getClipIfResult<SerializableCollection>(env, thisObj, searchRangeTimeRangeOptional, shallowSearch);
 }

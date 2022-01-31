@@ -242,11 +242,11 @@ JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Track_getRangeOfAl
 JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Track_clipIfNative(
         JNIEnv *env,
         jobject thisObj,
-        jobject searchRangeTimeRange,
+        jobject searchRangeTimeRangeOptional,
         jboolean shallowSearch) {
-    if (searchRangeTimeRange == nullptr) {
+    if (searchRangeTimeRangeOptional == nullptr) {
         throwNullPointerException(env, "");
         return nullptr;
     }
-    return getClipIfResult<Track>(env, thisObj, searchRangeTimeRange, shallowSearch);
+    return getClipIfResult<Track>(env, thisObj, searchRangeTimeRangeOptional, shallowSearch);
 }

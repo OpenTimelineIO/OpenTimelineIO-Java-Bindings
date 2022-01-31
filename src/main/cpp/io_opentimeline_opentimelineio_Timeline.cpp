@@ -195,12 +195,12 @@ Java_io_opentimeline_opentimelineio_Timeline_getVideoTracksNative(
  */
 JNIEXPORT jobjectArray JNICALL
 Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative(
-        JNIEnv *env, jobject thisObj, jclass descendedFromClass, jobject searchRangeTimeRange, jboolean shallowSearch){
-    if (searchRangeTimeRange == nullptr) {
+        JNIEnv *env, jobject thisObj, jclass descendedFromClass, jobject searchRangeTimeRangeOptional, jboolean shallowSearch){
+    if (searchRangeTimeRangeOptional == nullptr) {
         throwNullPointerException(env, "");
         return nullptr;
     }
-    return childrenIfWrapperUtil<Timeline>(env, thisObj, descendedFromClass, searchRangeTimeRange, shallowSearch);
+    return childrenIfWrapperUtil<Timeline>(env, thisObj, descendedFromClass, searchRangeTimeRangeOptional, shallowSearch);
 }
 
 /*
@@ -210,10 +210,10 @@ Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative(
  */
 JNIEXPORT jobjectArray JNICALL
 Java_io_opentimeline_opentimelineio_Timeline_clipIfNative(
-        JNIEnv *env, jobject thisObj, jobject searchRangeTimeRange, jboolean shallowSearch){
-    if (searchRangeTimeRange == nullptr) {
+        JNIEnv *env, jobject thisObj, jobject searchRangeTimeRangeOptional, jboolean shallowSearch){
+    if (searchRangeTimeRangeOptional == nullptr) {
         throwNullPointerException(env, "");
         return nullptr;
     }
-    return getClipIfResult<Timeline>(env, thisObj, searchRangeTimeRange, shallowSearch);
+    return getClipIfResult<Timeline>(env, thisObj, searchRangeTimeRangeOptional, shallowSearch);
 }

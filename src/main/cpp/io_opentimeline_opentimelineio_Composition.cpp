@@ -448,10 +448,10 @@ JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Composition_getRan
  */
  JNIEXPORT jobjectArray JNICALL
  Java_io_opentimeline_opentimelineio_Composition_childrenIfNative(
-         JNIEnv *env, jobject thisObj, jclass descendedFromClass, jobject searchRangeTimeRange, jboolean shallowSearch){
-     if (searchRangeTimeRange == nullptr) {
+         JNIEnv *env, jobject thisObj, jclass descendedFromClass, jobject searchRangeTimeRangeOptional, jboolean shallowSearch){
+     if (searchRangeTimeRangeOptional == nullptr) {
          throwNullPointerException(env, "");
          return nullptr;
      }
-     return childrenIfWrapperUtil<Composition>(env, thisObj, descendedFromClass, searchRangeTimeRange, shallowSearch);
+     return childrenIfWrapperUtil<Composition>(env, thisObj, descendedFromClass, searchRangeTimeRangeOptional, shallowSearch);
  }

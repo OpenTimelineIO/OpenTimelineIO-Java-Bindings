@@ -1089,7 +1089,7 @@ getChildrenIfResult(std::string clsNameString,
 
 template<typename T>
 inline jobjectArray
-childrenIfWrapperUtil(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, jobject searchRangeTimeRange, jboolean shallowSearch) {
+childrenIfWrapperUtil(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, jobject searchRangeTimeRangeOptional, jboolean shallowSearch) {
     auto thisHandle =
             getHandle<SerializableObject::Retainer<T>>(env, thisObj);
     auto baseClass = thisHandle->value;
@@ -1099,13 +1099,13 @@ childrenIfWrapperUtil(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, j
     const char* clsNameString = env->GetStringUTFChars(clsName, NULL);
     auto errorStatus = OTIO_NS::ErrorStatus();
 
-    jclass optionalClass = env->GetObjectClass(searchRangeTimeRange);
+    jclass optionalClass = env->GetObjectClass(searchRangeTimeRangeOptional);
     jmethodID getMethodID = env->GetMethodID(optionalClass, "get", "()Ljava/lang/Object;");
     jmethodID isPresentID = env->GetMethodID(optionalClass, "isPresent", "()Z");
-    jboolean ifPresent = env->CallBooleanMethod(searchRangeTimeRange, isPresentID);
+    jboolean ifPresent = env->CallBooleanMethod(searchRangeTimeRangeOptional, isPresentID);
     optional<TimeRange> searchRange = nullopt;
     if (ifPresent){
-        jobject searchRangeJObject = env->CallObjectMethod(searchRangeTimeRange, getMethodID);
+        jobject searchRangeJObject = env->CallObjectMethod(searchRangeTimeRangeOptional, getMethodID);
         searchRange = timeRangeFromJObject(env, searchRangeJObject);
 
     }
@@ -1117,18 +1117,18 @@ childrenIfWrapperUtil(JNIEnv *env, jobject thisObj, jclass descendedFromCLass, j
 
 template <typename T>
 inline jobjectArray
-getClipIfResult(JNIEnv *env, jobject thisObj, jobject searchRangeTimeRange, jboolean shallowSearch){
+getClipIfResult(JNIEnv *env, jobject thisObj, jobject searchRangeTimeRangeOptional, jboolean shallowSearch){
     auto thisHandle =
             getHandle<SerializableObject::Retainer<T>>(env, thisObj);
     auto baseClass = thisHandle->value;
     auto errorStatus = OTIO_NS::ErrorStatus();
-    jclass optionalClass = env->GetObjectClass(searchRangeTimeRange);
+    jclass optionalClass = env->GetObjectClass(searchRangeTimeRangeOptional);
     jmethodID getMethodID = env->GetMethodID(optionalClass, "get", "()Ljava/lang/Object;");
     jmethodID isPresentID = env->GetMethodID(optionalClass, "isPresent", "()Z");
-    jboolean ifPresent = env->CallBooleanMethod(searchRangeTimeRange, isPresentID);
+    jboolean ifPresent = env->CallBooleanMethod(searchRangeTimeRangeOptional, isPresentID);
     optional<TimeRange> searchRange = nullopt;
     if (ifPresent){
-        jobject searchRangeJObject = env->CallObjectMethod(searchRangeTimeRange, getMethodID);
+        jobject searchRangeJObject = env->CallObjectMethod(searchRangeTimeRangeOptional, getMethodID);
         searchRange = timeRangeFromJObject(env, searchRangeJObject);
 
     }

@@ -189,12 +189,14 @@ task compileJNI {
 
 def renamePlatformArtifactsDirectoryAccordingToArchitecture(File nativeDir, String architecture) {
     def platformArtifactsDirectoryPath = ""
+    def artifactsDirectoryPath = "lib/Release/"
+
+    // determine path for directory created after cmake build, eg: build/natives/lib/Release/Linux
     if (OperatingSystem.current().isLinux()) {
-        platformArtifactsDirectoryPath = "lib/Release/"
         if (project.hasProperty("androidBuild") && project.hasProperty("sdk_path")) {
-            platformArtifactsDirectoryPath = platformArtifactsDirectoryPath + "Android"
+            platformArtifactsDirectoryPath = artifactsDirectoryPath + "Android"
         } else {
-            platformArtifactsDirectoryPath = platformArtifactsDirectoryPath + "Linux"
+            platformArtifactsDirectoryPath = artifactsDirectoryPath + "Linux"
         }
     } else if (OperatingSystem.current().isWindows()) {
         platformArtifactsDirectoryPath = "bin/Release/Windows"
@@ -202,16 +204,27 @@ def renamePlatformArtifactsDirectoryAccordingToArchitecture(File nativeDir, Stri
         // do not rename artifacts directory for OSes other than windows & linux
         return
     }
-
     def platformArtifactsDirectory = new File(nativeDir, platformArtifactsDirectoryPath)
 
-    def architectureArtifactsDir = new File(platformArtifactsDirectory.getPath() + "-" + architecture)
-    if (architectureArtifactsDir.exists()) {
-        architectureArtifactsDir.deleteDir()
+    // determine renamed path, including the architecture for the build, eg: build/natives/lib/Release/Linux-amd64
+    def architectureArtifactsDirectoryPath = ""
+    if (OperatingSystem.current().isLinux() && project.hasProperty("androidBuild") && project.hasProperty("sdk_path")) {
+        // naming pattern for android is different, eg:  build/natives/lib/Release/arm64-v8a
+        // so, handle that separately
+        architectureArtifactsDirectoryPath = artifactsDirectoryPath + architecture
+    } else {
+        architectureArtifactsDirectoryPath = platformArtifactsDirectoryPath + "-" + architecture
+    }
+    def architectureArtifactsDirectory = new File(architectureArtifactsDirectoryPath)
+
+    // if build has been rerun, delete the existing artifacts
+    if (architectureArtifactsDirectory.exists()) {
+        architectureArtifactsDirectory.deleteDir()
     }
 
+    // rename the directory created after cmake build to include architecture in the directory name
     if (platformArtifactsDirectory.exists()) {
-        platformArtifactsDirectory.renameTo(architectureArtifactsDir)
+        platformArtifactsDirectory.renameTo(architectureArtifactsDirectory)
     }
 }
 

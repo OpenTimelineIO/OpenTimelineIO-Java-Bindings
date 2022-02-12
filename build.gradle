@@ -107,7 +107,7 @@ task compileJNI {
     outputs.upToDateWhen { false }
     doLast {
         def nativeDir = new File(project.projectDir.toString() + '/build/natives')
-        System.out.println(nativeDir.getAbsolutePath())
+
         if (!nativeDir.exists()) {
             nativeDir.mkdirs()
         }

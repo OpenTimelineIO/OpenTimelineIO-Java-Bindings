@@ -14,7 +14,7 @@ using namespace opentimelineio::OPENTIMELINEIO_VERSION;
 /*
  * Class:     io_opentimeline_opentimelineio_Item
  * Method:    initialize
- * Signature: (Ljava/lang/String;Lio/opentimeline/opentime/TimeRange;Lio/opentimeline/opentimelineio/AnyDictionary;[Lio/opentimeline/opentimelineio/Effect;[Lio/opentimeline/opentimelineio/Marker;)V
+ * Signature: (Ljava/lang/String;Lio/opentimeline/opentime/TimeRange;Lio/opentimeline/opentimelineio/AnyDictionary;[Lio/opentimeline/opentimelineio/Effect;[Lio/opentimeline/opentimelineio/Marker;Z)V
  */
 JNIEXPORT void JNICALL
 Java_io_opentimeline_opentimelineio_Item_initialize(
@@ -24,7 +24,8 @@ Java_io_opentimeline_opentimelineio_Item_initialize(
         jobject sourceRangeObj,
         jobject metadataObj,
         jobjectArray effectsArray,
-        jobjectArray markersArray) {
+        jobjectArray markersArray,
+        jboolean enabled) {
     if (name == nullptr || metadataObj == nullptr)
         throwNullPointerException(env, "");
     else {
@@ -36,7 +37,7 @@ Java_io_opentimeline_opentimelineio_Item_initialize(
         auto effects = effectVectorFromArray(env, effectsArray);
         auto markers = markerVectorFromArray(env, markersArray);
         auto item = new Item(
-                nameStr, sourceRange, *metadataHandle, effects, markers);
+                nameStr, sourceRange, *metadataHandle, effects, markers, enabled);
         auto itemManager =
                 new SerializableObject::Retainer<OTIO_NS::Item>(item);
         setHandle(env, thisObj, itemManager);
@@ -68,6 +69,32 @@ Java_io_opentimeline_opentimelineio_Item_isOverlapping(
             getHandle<SerializableObject::Retainer<Item>>(env, thisObj);
     auto item = thisHandle->value;
     return item->overlapping();
+}
+
+/*
+ * Class:     io_opentimeline_opentimelineio_Item
+ * Method:    isEnabled
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_Item_isEnabled
+        (JNIEnv *env, jobject thisObj) {
+    auto thisHandle =
+            getHandle<SerializableObject::Retainer<Item>>(env, thisObj);
+    auto item = thisHandle->value;
+    return item->enabled();
+}
+
+/*
+ * Class:     io_opentimeline_opentimelineio_Item
+ * Method:    setEnabled
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_Item_setEnabled
+        (JNIEnv *env, jobject thisObj, jboolean enabled) {
+    auto thisHandle =
+            getHandle<SerializableObject::Retainer<Item>>(env, thisObj);
+    auto item = thisHandle->value;
+    item->set_enabled(enabled);
 }
 
 /*

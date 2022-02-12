@@ -33,13 +33,30 @@ public class Item extends Composable {
             TimeRange sourceRange,
             AnyDictionary metadata,
             List<Effect> effects,
+            List<Marker> markers,
+            boolean enabled) {
+        this.initObject(
+                name,
+                sourceRange,
+                metadata,
+                effects,
+                markers,
+                enabled);
+    }
+
+    public Item(
+            String name,
+            TimeRange sourceRange,
+            AnyDictionary metadata,
+            List<Effect> effects,
             List<Marker> markers) {
         this.initObject(
                 name,
                 sourceRange,
                 metadata,
                 effects,
-                markers);
+                markers,
+                true);
     }
 
     public Item(Item.ItemBuilder builder) {
@@ -48,14 +65,16 @@ public class Item extends Composable {
                 builder.sourceRange,
                 builder.metadata,
                 builder.effects,
-                builder.markers);
+                builder.markers,
+                builder.enabled);
     }
 
     private void initObject(String name,
                             TimeRange sourceRange,
                             AnyDictionary metadata,
                             List<Effect> effects,
-                            List<Marker> markers) {
+                            List<Marker> markers,
+                            boolean enabled) {
         Effect[] effectsArray = new Effect[effects.size()];
         effectsArray = effects.toArray(effectsArray);
         Marker[] markersArray = new Marker[markers.size()];
@@ -65,7 +84,8 @@ public class Item extends Composable {
                 sourceRange,
                 metadata,
                 effectsArray,
-                markersArray);
+                markersArray,
+                enabled);
         this.nativeManager.className = this.getClass().getCanonicalName();
     }
 
@@ -73,7 +93,8 @@ public class Item extends Composable {
                                    TimeRange sourceRange,
                                    AnyDictionary metadata,
                                    Effect[] effects,
-                                   Marker[] markers);
+                                   Marker[] markers,
+                                   boolean enabled);
 
     public static class ItemBuilder {
         private String name = "";
@@ -81,6 +102,7 @@ public class Item extends Composable {
         private AnyDictionary metadata = new AnyDictionary();
         private List<Effect> effects = new ArrayList<>();
         private List<Marker> markers = new ArrayList<>();
+        private boolean enabled = true;
 
         public ItemBuilder() {
         }
@@ -110,6 +132,11 @@ public class Item extends Composable {
             return this;
         }
 
+        public Item.ItemBuilder setEnabled(boolean enabled) {
+            this.enabled = enabled;
+            return this;
+        }
+
         public Item build() {
             return new Item(this);
         }
@@ -121,6 +148,13 @@ public class Item extends Composable {
     public native boolean isVisible();
 
     public native boolean isOverlapping();
+
+    /**
+     * @return true if an Item contributes to compositions. Analogous to Mute in various NLEs.
+     */
+    public native boolean isEnabled();
+
+    public native void setEnabled(boolean enabled);
 
     public native TimeRange getSourceRange();
 
@@ -224,6 +258,7 @@ public class Item extends Composable {
                 .stream().map(Objects::toString).collect(Collectors.joining(", ")) + "]" +
                 ", markers=[" + this.getMarkers()
                 .stream().map(Objects::toString).collect(Collectors.joining(", ")) + "]" +
+                ", enabled=" + this.isEnabled() +
                 ", metadata=" + this.getMetadata().toString() +
                 ")";
     }

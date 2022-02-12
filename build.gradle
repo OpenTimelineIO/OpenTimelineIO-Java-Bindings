@@ -29,8 +29,14 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
 }
 version = '0.14.0-beta-2'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
 test {
     useJUnitPlatform()
+    systemProperty "file.encoding", "utf-8"
 }
 
 sourceSets {
@@ -100,8 +106,8 @@ task compileJNI {
     dependsOn compileJava
     outputs.upToDateWhen { false }
     doLast {
-
-        def nativeDir = new File('build/natives')
+        def nativeDir = new File(project.projectDir.toString() + '/build/natives')
+        System.out.println(nativeDir.getAbsolutePath())
         if (!nativeDir.exists()) {
             nativeDir.mkdirs()
         }
@@ -192,6 +198,9 @@ def renamePlatformArtifactsDirectoryAccordingToArchitecture(File nativeDir, Stri
         }
     } else if (OperatingSystem.current().isWindows()) {
         platformArtifactsDirectoryPath = "bin/Release/Windows"
+    } else {
+        // do not rename artifacts directory for OSes other than windows & linux
+        return
     }
 
     def platformArtifactsDirectory = new File(nativeDir, platformArtifactsDirectoryPath)

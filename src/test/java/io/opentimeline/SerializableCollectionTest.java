@@ -103,36 +103,55 @@ public class SerializableCollectionTest {
                 SerializableCollection sc = new SerializableCollection.SerializableCollectionBuilder().build();
                 ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
                         .setAvailableRange(TimeRange.rangeFromStartEndTime(
-                                new RationalTime(0, 2),
-                                new RationalTime(50, 15)))
+                                new RationalTime(0, 24),
+                                new RationalTime(50, 24)))
                         .setTargetURL("/var/tmp/test.mov")
                         .build();
                 Clip C1 = new Clip.ClipBuilder()
                         .setName("test clip1")
                         .setMediaReference(mr)
-                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(5, 24)).build())
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(10, 24)).build())
                         .build();
                 Clip C2 = new Clip.ClipBuilder()
                         .setName("test clip2")
                         .setMediaReference(mr)
-                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(5, 24)).build())
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(10, 24)).build())
+                        .build();
+                Clip C3 = new Clip.ClipBuilder()
+                        .setName("test clip3")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(10, 24)).build())
+                        .build();
+                Clip C4 = new Clip.ClipBuilder()
+                        .setName("test clip4")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(10, 24)).build())
                         .build();
         )
         {
 
-            children = new ArrayList<>();
+            List<SerializableObject> children = new ArrayList<SerializableObject>();
             assertTrue(children.add(C1));
             assertTrue(children.add(C2));
+            assertTrue(children.add(C3));
+            assertTrue(children.add(C4));
             sc.setChildren(children);
-            List<Clip> clipChildrenList = Arrays.asList(C1, C2);
-            TimeRange search_range = new TimeRange(
-                    new RationalTime(0, 1),
-                    new RationalTime(40, 1));
-            List<Clip> result = sc.clipIf(Optional.of(search_range), false);
-            assertEquals(clipChildrenList.size(), result.size());
-            for(int i = 0; i < clipChildrenList.size(); i++){
-                assertTrue((result.get(i)).isEquivalentTo(clipChildrenList.get(i)));
+
+            //testing full time range
+            List<Clip> clips_fullTimeRange = Arrays.asList(C1, C2, C3, C4);
+            List<Clip> result_fullTimeRange = sc.clipIf(Optional.empty(), false);
+            assertEquals(clips_fullTimeRange.size(), result_fullTimeRange.size());
+            for(int i = 0; i < clips_fullTimeRange.size(); i++){
+                assertTrue((result_fullTimeRange.get(i)).isEquivalentTo(clips_fullTimeRange.get(i)));
             }
+//            TODO: add test for trimmed time range
+//            TimeRange search_range = new TimeRange(new RationalTime(0, 24), new RationalTime(10, 24));
+//            List<Clip> clips_trimmedTimeRange = Arrays.asList(C1, C2);
+//            List<Clip> result_trimmedTimeRange = sc.clipIf(Optional.of(search_range), false);
+//            assertEquals(clips_trimmedTimeRange.size(), result_trimmedTimeRange.size());
+//            for(int i = 0; i < clips_trimmedTimeRange.size(); i++){
+//                assertTrue((result_trimmedTimeRange.get(i)).isEquivalentTo(clips_trimmedTimeRange.get(i)));
+//            }
         }
 
     }

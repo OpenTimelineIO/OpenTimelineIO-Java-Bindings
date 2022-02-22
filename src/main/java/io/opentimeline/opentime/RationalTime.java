@@ -273,6 +273,8 @@ public class RationalTime implements Comparable<RationalTime> {
 
     public native boolean equals(RationalTime rationalTime);
 
+    public static native double nearestValidTimecodeRate(double rate);
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof RationalTime))

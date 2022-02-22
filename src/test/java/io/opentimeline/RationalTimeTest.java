@@ -11,6 +11,7 @@ import io.opentimeline.util.Triplet;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -686,5 +687,21 @@ public class RationalTimeTest {
 
         RationalTime t2 = RationalTime.fromTimecode(NDF_TC, 29.97);
         assertEquals(t2.getValue(), frames);
+    }
+
+    @Test
+    public void testNearestValidTimecodeRate() {
+        List<Pair<Double, Double>> invalidValidTimecodeRates = new ArrayList<>();
+        invalidValidTimecodeRates.add(new Pair<>(23.97602397602397, 24000.0 / 1001.0));
+        invalidValidTimecodeRates.add(new Pair<>(23.97, 24000.0 / 1001.0));
+        invalidValidTimecodeRates.add(new Pair<>(23.976, 24000.0 / 1001.0));
+        invalidValidTimecodeRates.add(new Pair<>(23.98, 24000.0 / 1001.0));
+        invalidValidTimecodeRates.add(new Pair<>(29.97, 30000.0 / 1001.0));
+        invalidValidTimecodeRates.add(new Pair<>(59.94, 60000.0 / 1001.0));
+
+        for (Pair<Double, Double> invalidValidPair: invalidValidTimecodeRates) {
+            assertTrue(RationalTime.isValidTimecodeRate(invalidValidPair.getSecond()));
+            assertEquals(RationalTime.nearestValidTimecodeRate(invalidValidPair.getFirst()), invalidValidPair.getSecond());
+        }
     }
 }

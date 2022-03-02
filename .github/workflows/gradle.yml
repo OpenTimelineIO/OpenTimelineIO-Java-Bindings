@@ -30,7 +30,7 @@ jobs:
     - name: Get latest CMake
       # Using 'latest' branch, the latest CMake is installed.
       uses: lukka/get-cmake@latest
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: 'recursive'
     - name: Set up x86 JDK 1.8
@@ -91,7 +91,7 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: 'recursive'
       - name: Set up JDK 1.8

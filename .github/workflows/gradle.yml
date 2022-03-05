@@ -79,12 +79,6 @@ jobs:
       with:
         name: Package-${{ matrix.os }}-${{ matrix.architecture }}
         path: build/natives/lib/Release
-    - name: Upload spock reports
-      if: matrix.os == 'ubuntu-latest'
-      uses: actions/upload-artifact@v2
-      with:
-        name: spock-reports
-        path: build/spock-reports
     - name: Upload Windows artifact
       if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v2

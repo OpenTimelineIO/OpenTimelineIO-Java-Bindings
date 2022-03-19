@@ -112,79 +112,105 @@ task compileJNI {
             nativeDir.mkdirs()
         }
 
-        String architecture = "";
-        def androidArchitectures = ["arm64-v8a", "x86_64", "armeabi-v7a", "x86"] as String[]
+        String architecture = ""
 
         // determine CPU architecture name and windows generator name
-        String generator = "";
-        if (System.getProperty("os.arch").equals("arm") || System.getProperty("os.arch").equals("aarch32")
-                || project.hasProperty("aarch32Build")) {
-            architecture = "aarch32";
-            generator = "ARM";
-        } else if (System.getProperty("os.arch").equals("arm64") || System.getProperty("os.arch").equals("aarch64")
-                || project.hasProperty("aarch64Build")) {
-            architecture = "aarch64";
-            generator = "ARM64";
-        } else if (System.getProperty("os.arch").endsWith("86")) {
-            architecture = "x86";
-            generator = "Win32";
-        } else if (System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64")) {
-            architecture = "amd64";
-            generator = "x64";
+        String generator = ""
+        String osArch = System.getProperty("os.arch")
+
+        if (osArch in ["arm", "aarch32"] || project.hasProperty("aarch32Build")) {
+            architecture = "aarch32"
+            generator = "ARM"
+        } else if (osArch in ["arm64", "aarch64"] || project.hasProperty("aarch64Build")) {
+            architecture = "aarch64"
+            generator = "ARM64"
+        } else if (osArch.endsWith("86")) {
+            architecture = "x86"
+            generator = "Win32"
+        } else if (osArch in ["amd64", "x86_64"]) {
+            architecture = "amd64"
+            generator = "x64"
         }
 
         String buildConcurrency = "-j " + Runtime.getRuntime().availableProcessors().toString()
         // this property will not be used for android builds, as android builds use ninja instead of make
         if (project.hasProperty("j")) {
-            buildConcurrency = "-j " + project.getAt('j').toString()
+            buildConcurrency = "-j " + project['j'].toString()
         }
 
-        Map<String, String> architectureCommandsMap = new HashMap<>()
-
-        if (OperatingSystem.current().isLinux() ||
-                OperatingSystem.current().isMacOsX() ||
-                OperatingSystem.current().isUnix()) {
-
-            // ANDROID BUILD
-            if (project.hasProperty("androidBuild") && project.hasProperty("sdk_path")) {
-                def sdk_path = project.getProperties().getAt('sdk_path').toString()
-                for (arch in androidArchitectures) {
-                    def commandStr = 'cmake -G"Ninja" -DANDROID_ABI=' + arch + ' -DANDROID_NDK=' + sdk_path + '/ndk/22.0.7026061 -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=' + sdk_path + '/cmake/3.10.2.4988404/bin/ninja -DCMAKE_TOOLCHAIN_FILE=' + sdk_path + '/ndk/22.0.7026061/build/cmake/android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=23 -DANDROID_TOOLCHAIN=clang ../.. && ' +
-                            'cmake --build . --config Release && ' +
-                            'mv lib/Release/Android/ lib/Release/' + arch + ' && ' +
-                            'rm CMakeCache.txt'
-                    architectureCommandsMap.put(arch, 'cd build/natives && ' + commandStr)
-                }
-            } else if (OperatingSystem.current().isMacOsX()) {
-                architectureCommandsMap.put(architecture, 'cd build/natives && cmake ../.. && cmake --build . --config Release ' + buildConcurrency)
-            } else if (OperatingSystem.current().isLinux()) { // LINUX BUILD
-                def cmakeToolchain = ""
-                if (architecture == "aarch64" || architecture == "aarch32" || architecture == "x86" ||
-                        project.hasProperty("aarch64Build") || project.hasProperty("aarch32Build")) {
-                    cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=../../linux-" + architecture + "-toolchain.cmake"
-                } else if (System.getProperty("os.arch") == "x86_64" || System.getProperty("os.arch") == "amd64") {
-                    cmakeToolchain = ""
-                }
-                architectureCommandsMap.put(architecture, 'cd build/natives && cmake ../.. ' + cmakeToolchain + ' && cmake --build . --config Release ' + buildConcurrency)
-            }
+        // ANDROID BUILD
+        if (OperatingSystem.current().isLinux() &&
+                (project.hasProperty("androidBuild") && project.hasProperty("androidSDKPath"))) {
+            invokeAndroidBuild(nativeDir)
+        } else if (OperatingSystem.current().isMacOsX()) {
+            invokeMacOSBuild(nativeDir, architecture, buildConcurrency)
+        } else if (OperatingSystem.current().isLinux()) { // LINUX BUILD
+            invokeLinuxBuild(nativeDir, architecture, buildConcurrency)
         } else if (OperatingSystem.current().isWindows()) { // WINDOWS BUILD
-            architectureCommandsMap.put(architecture, 'cd build\\natives && cmake -A ' + generator + ' ..\\.. && cmake --build . --config Release')
+            invokeWindowsBuild(nativeDir, architecture, buildConcurrency, generator)
+        } else {
+            throw new GradleException(String.format("Operating System not supported: %s", OperatingSystem.current().getName()))
         }
-
-        architectureCommandsMap.each {arch, command ->
-            exec {
-                if (OperatingSystem.current().isLinux() ||
-                        OperatingSystem.current().isMacOsX() ||
-                        OperatingSystem.current().isUnix()) {
-                    commandLine 'sh', '-c', command
-                } else if (OperatingSystem.current().isWindows()) {
-                    commandLine "cmd", "/c", command
-                }
-            }
-            renamePlatformArtifactsDirectoryAccordingToArchitecture(nativeDir, arch)
-        }
-
     }
+}
+
+def invokeAndroidBuild(File nativeDir) {
+    def androidArchitectures = ["arm64-v8a", "x86_64", "armeabi-v7a", "x86"] as String[]
+    def androidSDKPath = project.getProperties()['androidSDKPath'].toString()
+
+    logger.info(String.format("Executing Android build. Architectures: %s", Arrays.toString(androidArchitectures)))
+
+    for (arch in androidArchitectures) {
+        exec {
+            commandLine 'cmake', '-B' + nativeDir.getPath(), '-S.', '-GNinja', '-DANDROID_ABI=' + arch, '-DANDROID_NDK=' + androidSDKPath + '/ndk/22.0.7026061', '-DCMAKE_BUILD_TYPE=Release', '-DCMAKE_MAKE_PROGRAM=' + androidSDKPath + '/cmake/3.10.2.4988404/bin/ninja', '-DCMAKE_TOOLCHAIN_FILE=' + androidSDKPath + '/ndk/22.0.7026061/build/cmake/android.toolchain.cmake', '-DANDROID_NATIVE_API_LEVEL=23', '-DANDROID_TOOLCHAIN=clang'
+        }
+        exec {
+            commandLine 'cmake', '--build', nativeDir.getPath(), '--config', 'Release'
+        }
+        exec {
+            commandLine 'rm', nativeDir.getPath() + '/CMakeCache.txt'
+        }
+        renamePlatformArtifactsDirectoryAccordingToArchitecture(nativeDir, arch)
+    }
+}
+
+def invokeMacOSBuild(File nativeDir, String architecture, String buildConcurrency) {
+    logger.info(String.format("Executing macOS build. Architecture: %s", architecture))
+    exec {
+        commandLine 'cmake', '-B' + nativeDir.getPath(), '-S.'
+    }
+    exec {
+        commandLine 'cmake', '--build', nativeDir.getPath(), '--config', 'Release', buildConcurrency
+    }
+    renamePlatformArtifactsDirectoryAccordingToArchitecture(nativeDir, architecture)
+}
+
+def invokeLinuxBuild(File nativeDir, String architecture, String buildConcurrency) {
+    logger.info(String.format("Executing Linux build. Architecture: %s", architecture))
+    def isARMBuild = architecture == "aarch64" || architecture == "aarch32" || architecture == "x86" ||
+            project.hasProperty("aarch64Build") || project.hasProperty("aarch32Build")
+    def cmakeToolchain = ""
+    if (isARMBuild) {
+        cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=./linux-" + architecture + "-toolchain.cmake"
+    }
+    exec {
+        commandLine 'cmake', '-B' + nativeDir.getPath(), '-S.', cmakeToolchain
+    }
+    exec {
+        commandLine 'cmake', '--build', nativeDir.getPath(), '--config', 'Release', buildConcurrency
+    }
+    renamePlatformArtifactsDirectoryAccordingToArchitecture(nativeDir, architecture)
+}
+
+def invokeWindowsBuild(File nativeDir, String architecture, String generator, String buildConcurrency) {
+    logger.info(String.format("Executing Windows build. Architecture: %s", architecture))
+    exec {
+        commandLine 'cmake', '-B' + nativeDir.getPath(), '-S.', '-A', generator
+    }
+    exec {
+        commandLine 'cmake', '--build', nativeDir.getPath(), '--config', 'Release', buildConcurrency
+    }
+    renamePlatformArtifactsDirectoryAccordingToArchitecture(nativeDir, architecture)
 }
 
 def renamePlatformArtifactsDirectoryAccordingToArchitecture(File nativeDir, String architecture) {
@@ -193,7 +219,7 @@ def renamePlatformArtifactsDirectoryAccordingToArchitecture(File nativeDir, Stri
 
     // determine path for directory created after cmake build, eg: build/natives/lib/Release/Linux
     if (OperatingSystem.current().isLinux()) {
-        if (project.hasProperty("androidBuild") && project.hasProperty("sdk_path")) {
+        if (project.hasProperty("androidBuild") && project.hasProperty("androidSDKPath")) {
             platformArtifactsDirectoryPath = artifactsDirectoryPath + "Android"
         } else {
             platformArtifactsDirectoryPath = artifactsDirectoryPath + "Linux"
@@ -205,17 +231,18 @@ def renamePlatformArtifactsDirectoryAccordingToArchitecture(File nativeDir, Stri
         return
     }
     def platformArtifactsDirectory = new File(nativeDir, platformArtifactsDirectoryPath)
+    System.out.println(platformArtifactsDirectory.getPath())
 
     // determine renamed path, including the architecture for the build, eg: build/natives/lib/Release/Linux-amd64
     def architectureArtifactsDirectoryPath = ""
-    if (OperatingSystem.current().isLinux() && project.hasProperty("androidBuild") && project.hasProperty("sdk_path")) {
+    if (OperatingSystem.current().isLinux() && project.hasProperty("androidBuild") && project.hasProperty("androidSDKPath")) {
         // naming pattern for android is different, eg:  build/natives/lib/Release/arm64-v8a
         // so, handle that separately
         architectureArtifactsDirectoryPath = artifactsDirectoryPath + architecture
     } else {
         architectureArtifactsDirectoryPath = platformArtifactsDirectoryPath + "-" + architecture
     }
-    def architectureArtifactsDirectory = new File(architectureArtifactsDirectoryPath)
+    def architectureArtifactsDirectory = new File(nativeDir, architectureArtifactsDirectoryPath)
 
     // if build has been rerun, delete the existing artifacts
     if (architectureArtifactsDirectory.exists()) {

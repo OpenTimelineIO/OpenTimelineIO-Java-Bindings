@@ -92,7 +92,7 @@ Set the `ANDROID_HOME` environment variable and from the root directory of the p
 
 ```shell
 gradle clean
-gradle build -x test -PandroidBuild -Psdk_path=$ANDROID_HOME
+gradle build -x test -PandroidBuild -PandroidSDKPath=$ANDROID_HOME
 ```
 
 You'll find the JAR in `build/libs`

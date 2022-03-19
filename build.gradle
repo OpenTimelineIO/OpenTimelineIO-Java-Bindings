@@ -147,7 +147,7 @@ task compileJNI {
         } else if (OperatingSystem.current().isLinux()) { // LINUX BUILD
             invokeLinuxBuild(nativeDir, architecture, buildConcurrency)
         } else if (OperatingSystem.current().isWindows()) { // WINDOWS BUILD
-            invokeWindowsBuild(nativeDir, architecture, buildConcurrency, generator)
+            invokeWindowsBuild(nativeDir, architecture, generator, buildConcurrency)
         } else {
             throw new GradleException(String.format("Operating System not supported: %s", OperatingSystem.current().getName()))
         }

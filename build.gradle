@@ -189,10 +189,9 @@ def invokeMacOSBuild(File nativeDir, String architecture, String buildConcurrenc
 
 def invokeLinuxBuild(File nativeDir, String architecture, String buildConcurrency) {
     logger.info(String.format("Executing Linux build. Architecture: %s", architecture))
-    def isARMBuild = architecture == "aarch64" || architecture == "aarch32" || architecture == "x86" ||
-            project.hasProperty("aarch64Build") || project.hasProperty("aarch32Build")
+    def isCMakeToolchainFileRequired = architecture in ["aarch64", "aarch32", "x86"] || project.hasProperty("aarch64Build") || project.hasProperty("aarch32Build")
     def cmakeToolchain = ""
-    if (isARMBuild) {
+    if (isCMakeToolchainFileRequired) {
         cmakeToolchain = "-DCMAKE_TOOLCHAIN_FILE=./linux-" + architecture + "-toolchain.cmake"
     }
     exec {

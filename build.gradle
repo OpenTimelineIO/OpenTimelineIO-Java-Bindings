@@ -138,14 +138,16 @@ task compileJNI {
             buildConcurrency = "-j " + project['j'].toString()
         }
 
-        // ANDROID BUILD
-        if (OperatingSystem.current().isLinux() &&
-                (project.hasProperty("androidBuild") && project.hasProperty("androidSDKPath"))) {
-            invokeAndroidBuild(nativeDir)
-        } else if (OperatingSystem.current().isMacOsX()) {
+        if (OperatingSystem.current().isLinux()) {
+            if (project.hasProperty("androidBuild") && project.hasProperty("androidSDKPath")) {
+                invokeAndroidBuild(nativeDir) // ANDROID BUILD
+            } else if (project.hasProperty("androidBuild") || project.hasProperty("androidSDKPath")) {
+                throw new GradleException("Both properties, androidBuild and androidSDKPath need to be defined.")
+            } else { // LINUX BUILD
+                invokeLinuxBuild(nativeDir, architecture, buildConcurrency)
+            }
+        } else if (OperatingSystem.current().isMacOsX()) { // MAC OS BUILD
             invokeMacOSBuild(nativeDir, architecture, buildConcurrency)
-        } else if (OperatingSystem.current().isLinux()) { // LINUX BUILD
-            invokeLinuxBuild(nativeDir, architecture, buildConcurrency)
         } else if (OperatingSystem.current().isWindows()) { // WINDOWS BUILD
             invokeWindowsBuild(nativeDir, architecture, generator, buildConcurrency)
         } else {

@@ -101,6 +101,10 @@ public class SerializableCollectionTest {
     public void testClipIfEquality() throws Exception{
         try(
                 SerializableCollection sc = new SerializableCollection.SerializableCollectionBuilder().build();
+                Track track = new Track.TrackBuilder()
+                        .setName("V1")
+                        .setKind(Track.Kind.video)
+                        .build();
                 ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
                         .setAvailableRange(TimeRange.rangeFromStartEndTime(
                                 new RationalTime(0, 24),
@@ -129,29 +133,30 @@ public class SerializableCollectionTest {
                         .build();
         )
         {
-
+            assertTrue(track.appendChild(C1));
+            assertTrue(track.appendChild(C2));
+            assertTrue(track.appendChild(C3));
+            assertTrue(track.appendChild(C4));
             List<SerializableObject> children = new ArrayList<SerializableObject>();
-            assertTrue(children.add(C1));
-            assertTrue(children.add(C2));
-            assertTrue(children.add(C3));
-            assertTrue(children.add(C4));
+            assertTrue(children.add(track));
             sc.setChildren(children);
 
             //testing full time range
-            List<Clip> clips_fullTimeRange = Arrays.asList(C1, C2, C3, C4);
+            List<Clip> clip_fullTimeRange = Arrays.asList(C1, C2, C3, C4);
             List<Clip> result_fullTimeRange = sc.clipIf(Optional.empty(), false);
-            assertEquals(clips_fullTimeRange.size(), result_fullTimeRange.size());
-            for(int i = 0; i < clips_fullTimeRange.size(); i++){
-                assertTrue((result_fullTimeRange.get(i)).isEquivalentTo(clips_fullTimeRange.get(i)));
+            assertEquals(clip_fullTimeRange.size(), result_fullTimeRange.size());
+            for(int i = 0; i < clip_fullTimeRange.size(); i++){
+                assertTrue((result_fullTimeRange.get(i)).isEquivalentTo(clip_fullTimeRange.get(i)));
             }
-//            TODO: add test for trimmed time range
-//            TimeRange search_range = new TimeRange(new RationalTime(0, 24), new RationalTime(10, 24));
-//            List<Clip> clips_trimmedTimeRange = Arrays.asList(C1, C2);
-//            List<Clip> result_trimmedTimeRange = sc.clipIf(Optional.of(search_range), false);
-//            assertEquals(clips_trimmedTimeRange.size(), result_trimmedTimeRange.size());
-//            for(int i = 0; i < clips_trimmedTimeRange.size(); i++){
-//                assertTrue((result_trimmedTimeRange.get(i)).isEquivalentTo(clips_trimmedTimeRange.get(i)));
-//            }
+
+            //testing trimmed time range
+            TimeRange search_range = new TimeRange(new RationalTime(0, 24), new RationalTime(20, 24));
+            List<Clip> clip_trimmedTimeRange = Arrays.asList(C1, C2);
+            List<Clip> result_trimmedTimeRange = sc.clipIf(Optional.of(search_range), false);
+            assertEquals(clip_trimmedTimeRange.size(), result_trimmedTimeRange.size());
+            for(int i = 0; i < clip_trimmedTimeRange.size(); i++){
+                assertTrue((result_trimmedTimeRange.get(i)).isEquivalentTo(clip_trimmedTimeRange.get(i)));
+            }
         }
 
     }

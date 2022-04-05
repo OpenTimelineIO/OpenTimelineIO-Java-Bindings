@@ -68,8 +68,10 @@ git clone --recurse-submodules https://github.com/OpenTimelineIO/OpenTimelineIO-
 
 cd OpenTimelineIO-Java-Bindings
 
-./gradlew build # this builds and runs all tests
+./gradlew build -Pj=<number of parallel jobs># this builds and runs all tests
 ```
+The optional property `-Pj` specifies the parallel build level for the C++/JNI code.
+
 If you're using a system-wide gradle installation, ensure the version to be 6.x.x.
 You can find the generated jar file in the `build/libs` directory.
 
@@ -90,7 +92,7 @@ Set the `ANDROID_HOME` environment variable and from the root directory of the p
 
 ```shell
 gradle clean
-gradle build -x test -PandroidBuild -Psdk_path=$ANDROID_HOME
+gradle build -x test -PandroidBuild -PandroidSDKPath=$ANDROID_HOME
 ```
 
 You'll find the JAR in `build/libs`

@@ -69,9 +69,9 @@ jobs:
           fi
         fi
         if [ $OS = "windows-latest" ] && ([ $ARCHITECTURE = "aarch32" ] || [ $ARCHITECTURE = "aarch64" ]); then
-          ./gradlew build -P${ARCHITECTURE}Build -ParmJdkPath=${armJdkPath} -x test
+          ./gradlew build -P${ARCHITECTURE}Build -ParmJdkPath=${armJdkPath} -Pj=2 -x test
         else
-          ./gradlew build -P${ARCHITECTURE}Build -ParmJdkPath=${armJdkPath}
+          ./gradlew build -P${ARCHITECTURE}Build -ParmJdkPath=${armJdkPath} -Pj=2
         fi
     - name: Upload artifact
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'

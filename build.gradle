@@ -10,6 +10,7 @@ buildscript {
 plugins {
     id 'java'
     id 'java-library'
+    id 'groovy'
     id 'maven-publish'
     id 'maven'
 }
@@ -25,6 +26,17 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.8.9'
+    testRuntime "org.codehaus.groovy:groovy-xml:3.0.9"
+    testRuntime "org.codehaus.groovy:groovy-json:3.0.9"
+    testRuntime "org.codehaus.groovy:groovy-templates:3.0.9"
+    testCompile "org.spockframework:spock-core:2.0-groovy-3.0"
+    // you can use testRuntimeClasspath if you don't want to use spock-report-specific features in your Specs
+    testImplementation( "com.athaydes:spock-reports:2.1.1-groovy-3.0" ) {
+        transitive = false // this avoids affecting your version of Groovy/Spock
+    }
+    // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
+    testImplementation 'org.slf4j:slf4j-api:1.7.30'
+    testRuntimeClasspath 'org.slf4j:slf4j-simple:1.7.30'
 }
 version = '0.14.0-beta-2'
 

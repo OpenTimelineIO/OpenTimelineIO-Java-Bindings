@@ -276,6 +276,11 @@ public class Composition extends Item {
      */
     public native TimeRange trimChildRange(TimeRange childRange);
 
+    public <T extends Composable> List<T> childrenIf(Class<T> descendedFrom, Optional<TimeRange> search_range, boolean shallow_search){
+        return Arrays.asList(childrenIfNative(descendedFrom, search_range, shallow_search));
+    }
+
+    private native <T extends Composable> T[] childrenIfNative(Class<T> descendedFrom, Optional<TimeRange> search_range, boolean shallow_search);
     /**
      * @param child child to find
      * @return does the composition contain the child?
@@ -355,6 +360,7 @@ public class Composition extends Item {
      * @param <T>           type of children to fetch
      * @return a Stream consisting of all the children of specified type in the composition in the order in which it is found
      */
+    @Deprecated
     public <T extends Composable> Stream<T> eachChild(
             TimeRange searchRange, Class<T> descendedFrom, boolean shallowSearch) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         List<Composable> children;
@@ -423,6 +429,7 @@ public class Composition extends Item {
      * @param shallowSearch should the algorithm recurse into compositions or not?
      * @return a Stream consisting of all the children in the composition (in the searchRange) in the order in which it is found
      */
+    @Deprecated
     public Stream<Composable> eachChild(TimeRange searchRange, boolean shallowSearch) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return eachChild(searchRange, Composable.class, shallowSearch);
     }
@@ -435,6 +442,7 @@ public class Composition extends Item {
      * @param <T>           type of children to fetch
      * @return a Stream consisting of all the children of specified type in the composition in the order in which it is found
      */
+    @Deprecated
     public <T extends Composable> Stream<T> eachChild(Class<T> descendedFrom) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return eachChild(null, descendedFrom, false);
     }

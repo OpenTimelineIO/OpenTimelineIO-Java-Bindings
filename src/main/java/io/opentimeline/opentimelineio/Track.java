@@ -9,8 +9,11 @@ import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.util.Pair;
 import io.opentimeline.opentimelineio.exception.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * A class that holds a list of Composables.
@@ -179,6 +182,7 @@ public class Track extends Composition {
      * @param shallowSearch should the algorithm recurse into compositions or not?
      * @return a Stream of all clips in the timeline (in the searchRange) in the order they are found
      */
+    @Deprecated
     public Stream<Clip> eachClip(
             TimeRange searchRange, boolean shallowSearch) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return this.eachChild(searchRange, Clip.class, shallowSearch);
@@ -191,8 +195,15 @@ public class Track extends Composition {
      * @param searchRange TimeRange to search in
      * @return a Stream of all clips in the timeline (in the searchRange) in the order they are found
      */
+    @Deprecated
     public Stream<Clip> eachClip(
             TimeRange searchRange) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return this.eachChild(searchRange, Clip.class, false);
     }
+
+    public List<Clip> clipIf(Optional<TimeRange> search_range, boolean shallow_search){
+        return Arrays.asList(clipIfNative(search_range, shallow_search));
+    }
+
+    public native Clip[] clipIfNative(Optional<TimeRange> search_range, boolean shallow_search);
 }

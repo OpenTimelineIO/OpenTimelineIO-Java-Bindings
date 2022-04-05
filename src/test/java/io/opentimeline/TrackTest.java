@@ -12,8 +12,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -715,6 +718,140 @@ public class TrackTest {
             stack.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testClipIfNullTimeRange() throws Exception{
+        try(Track track = new Track.TrackBuilder().build();)
+        {
+            assertThrows(NullPointerException.class,
+                    ()->{track.clipIf(null, false);});
+        }
+    }
+
+    @Test
+    public void testClipIfEquality() throws Exception{
+        try(
+                Track track = new Track.TrackBuilder()
+                        .setName("V1")
+                        .setKind(Track.Kind.video)
+                        .build();
+                ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
+                        .setAvailableRange(TimeRange.rangeFromStartEndTime(
+                                new RationalTime(0, 24),
+                                new RationalTime(50, 24)))
+                        .setTargetURL("/var/tmp/test.mov")
+                        .build();
+                Clip C1 = new Clip.ClipBuilder()
+                        .setName("test clip1")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(10, 24)).build())
+                        .build();
+                Clip C2 = new Clip.ClipBuilder()
+                        .setName("test clip2")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(10, 24)).build())
+                        .build();
+                Clip C3 = new Clip.ClipBuilder()
+                        .setName("test clip3")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(10, 24)).build())
+                        .build();
+                Clip C4 = new Clip.ClipBuilder()
+                        .setName("test clip4")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(10, 24)).build())
+                        .build();
+        )
+        {
+            assertTrue(track.appendChild(C1));
+            assertTrue(track.appendChild(C2));
+            assertTrue(track.appendChild(C3));
+            assertTrue(track.appendChild(C4));
+
+            //testing full time range
+            List<Clip> clip_fullTimeRange = Arrays.asList(C1, C2, C3, C4);
+            List<Clip> result_fullTimeRange = track.childrenIf(Clip.class, Optional.empty(), false);
+            assertEquals(clip_fullTimeRange.size(), result_fullTimeRange.size());
+            for(int i = 0; i < clip_fullTimeRange.size(); i++){
+                assertTrue((result_fullTimeRange.get(i)).isEquivalentTo(clip_fullTimeRange.get(i)));
+            }
+
+            //testing trimmed time range
+            TimeRange search_range = new TimeRange(new RationalTime(0, 24), new RationalTime(20, 24));
+            List<Clip> clip_trimmedTimeRange = Arrays.asList(C1, C2);
+            List<Clip> result_trimmedTimeRange = track.childrenIf(Clip.class ,Optional.of(search_range), false);
+            assertEquals(clip_trimmedTimeRange.size(), result_trimmedTimeRange.size());
+            for(int i = 0; i < clip_trimmedTimeRange.size(); i++){
+                assertTrue((result_trimmedTimeRange.get(i)).isEquivalentTo(clip_trimmedTimeRange.get(i)));
+            }
+        }
+    }
+
+    @Test
+    public void testChildrenIfComposableEquality() throws Exception {
+        try (
+                Track track = new Track.TrackBuilder()
+                        .setName("V1")
+                        .setKind(Track.Kind.video)
+                        .build();
+                Track track2 = new Track.TrackBuilder()
+                        .setName("V2")
+                        .setKind(Track.Kind.video)
+                        .build();
+                ExternalReference mr = new ExternalReference.ExternalReferenceBuilder()
+                        .setAvailableRange(TimeRange.rangeFromStartEndTime(
+                                new RationalTime(0, 24),
+                                new RationalTime(48, 24)))
+                        .setTargetURL("/var/tmp/test.mov")
+                        .build();
+                Clip C1 = new Clip.ClipBuilder()
+                        .setName("test clip1")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(10, 24)).build())
+                        .build();
+                Clip C2 = new Clip.ClipBuilder()
+                        .setName("test clip2")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(10, 24)).build())
+                        .build();
+                Clip C3 = new Clip.ClipBuilder()
+                        .setName("test clip3")
+                        .setMediaReference(mr)
+                        .setSourceRange(new TimeRange.TimeRangeBuilder().setDuration(new RationalTime(10, 24)).build())
+                        .build();
+        ) {
+            assertTrue(track.appendChild(track2));
+            assertTrue(track2.appendChild(C1));
+            assertTrue(track2.appendChild(C2));
+            assertTrue(track2.appendChild(C3));
+            //testing full time range
+            List<Composable> composable_fullTimeRange = Arrays.asList(track2, C1, C2, C3);
+            List<Composable> result_fullTimeRange = track.childrenIf(Composable.class, Optional.empty(), false);
+            assertEquals(composable_fullTimeRange.size(), result_fullTimeRange.size());
+            for(int i = 0; i < composable_fullTimeRange.size(); i++){
+                assertTrue((result_fullTimeRange.get(i)).isEquivalentTo(composable_fullTimeRange.get(i)));
+            }
+
+            //testing trimmed time range
+            TimeRange search_range = new TimeRange(new RationalTime(0, 24), new RationalTime(20, 24));
+            List<Composable> composable_trimmedTimeRange = Arrays.asList(track2, C1, C2);
+            List<Composable> result_trimmedTimeRange = track.childrenIf(Composable.class ,Optional.of(search_range), false);
+            assertEquals(composable_trimmedTimeRange.size(), result_trimmedTimeRange.size());
+            for(int i = 0; i < composable_trimmedTimeRange.size(); i++){
+                assertTrue((result_trimmedTimeRange.get(i)).isEquivalentTo(composable_trimmedTimeRange.get(i)));
+            }
+        }
+
+    }
+
+    @Test
+    public void testChildrenIfNullTimeRange() throws Exception{
+        try(Track track = new Track.TrackBuilder().build();)
+        {
+            assertThrows(NullPointerException.class,
+                    ()->{track.childrenIf(Composable.class, null, false);});
         }
     }
 }

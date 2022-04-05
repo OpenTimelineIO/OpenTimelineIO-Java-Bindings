@@ -137,3 +137,19 @@ JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Stack_getRangeOfAl
 
     return hashMapObj;
 }
+
+/*
+ * Class:     io_opentimeline_opentimelineio_Stack
+ * Method:    clipIfNative
+ * Signature: (Ljava/util/Optional;Z)[Lio/opentimeline/opentimelineio/Clip;
+ */
+JNIEXPORT jobjectArray JNICALL
+Java_io_opentimeline_opentimelineio_Stack_clipIfNative(
+        JNIEnv *env, jobject thisObj, jobject searchRangeTimeRangeOptional, jboolean shallowSearch){
+    if (searchRangeTimeRangeOptional == nullptr) {
+        throwNullPointerException(env, "");
+        return nullptr;
+    }
+    return getClipIfResult<Stack>(env, thisObj, searchRangeTimeRangeOptional, shallowSearch);
+}
+

@@ -10,6 +10,7 @@ import io.opentimeline.opentimelineio.exception.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * A kind of composition which can hold any serializable object.
@@ -85,7 +86,7 @@ public class SerializableCollection extends SerializableObjectWithMetadata {
     private native SerializableObject[] getChildrenNative();
 
     public void setChildren(List<SerializableObject> children) {
-        setChildrenNative((SerializableObject[]) children.toArray());
+        setChildrenNative(children.toArray(new SerializableObject[0]));
     }
 
     private native void setChildrenNative(SerializableObject[] children);
@@ -98,6 +99,7 @@ public class SerializableCollection extends SerializableObjectWithMetadata {
 
     public native boolean removeChild(int index) throws IndexOutOfBoundsException;
 
+    @Deprecated
     public <T extends Composable> Stream<T> eachChild(
             TimeRange searchRange, Class<T> descendedFrom) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         List<SerializableObject> children = this.getChildren();
@@ -134,9 +136,16 @@ public class SerializableCollection extends SerializableObjectWithMetadata {
         return resultStream;
     }
 
+    @Deprecated
     public Stream<Clip> eachClip(TimeRange searchRange) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return this.eachChild(searchRange, Clip.class);
     }
+
+    public List<Clip> clipIf(Optional<TimeRange> search_range, boolean shallow_search){
+        return Arrays.asList(clipIfNative(search_range, shallow_search));
+    }
+
+    public native Clip[] clipIfNative(Optional<TimeRange> search_range, boolean shallow_search);
 
     @Override
     public String toString() {

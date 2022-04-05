@@ -79,6 +79,22 @@ JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Timeline_getA
 JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Timeline_getVideoTracksNative
   (JNIEnv *, jobject);
 
+/*
+ * Class:     io_opentimeline_opentimelineio_Timeline
+ * Method:    childrenIfNative
+ * Signature: (Ljava/lang/Class;Ljava/util/Optional;Z)[Lio/opentimeline/opentimelineio/Composable;
+ */
+JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Timeline_childrenIfNative
+  (JNIEnv *, jobject, jclass, jobject, jboolean);
+
+/*
+ * Class:     io_opentimeline_opentimelineio_Timeline
+ * Method:    clipIfNative
+ * Signature: (Ljava/util/Optional;Z)[Lio/opentimeline/opentimelineio/Clip;
+ */
+JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Timeline_clipIfNative
+  (JNIEnv *, jobject, jobject, jboolean);
+
 #ifdef __cplusplus
 }
 #endif

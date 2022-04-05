@@ -47,6 +47,14 @@ JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Stack_getAvailable
 JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Stack_getRangeOfAllChildren
   (JNIEnv *, jobject);
 
+/*
+ * Class:     io_opentimeline_opentimelineio_Stack
+ * Method:    clipIfNative
+ * Signature: (Ljava/util/Optional;Z)[Lio/opentimeline/opentimelineio/Clip;
+ */
+JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Stack_clipIfNative
+  (JNIEnv *, jobject, jobject, jboolean);
+
 #ifdef __cplusplus
 }
 #endif

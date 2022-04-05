@@ -3,6 +3,8 @@
 
 package io.opentimeline;
 
+import io.opentimeline.opentime.RationalTime;
+import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
 import io.opentimeline.opentimelineio.exception.*;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -370,6 +373,15 @@ public class CompositionTest {
             clip2.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testChildrenIfNullTimeRange() throws Exception{
+        try(Composition composition = new Composition.CompositionBuilder().build();)
+        {
+            assertThrows(NullPointerException.class,
+                    ()->{composition.childrenIf(Composable.class, null, false);});
         }
     }
 }

@@ -440,3 +440,18 @@ JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Composition_getRan
     }
     return hashMapObj;
 }
+
+/*
+ * Class:     io_opentimeline_opentimelineio_Composition
+ * Method:    childrenIfNative
+ * Signature: (Ljava/lang/Class;Lio/opentimeline/opentime/TimeRange;Z)[Lio/opentimeline/opentimelineio/Composable;
+ */
+ JNIEXPORT jobjectArray JNICALL
+ Java_io_opentimeline_opentimelineio_Composition_childrenIfNative(
+         JNIEnv *env, jobject thisObj, jclass descendedFromClass, jobject searchRangeTimeRangeOptional, jboolean shallowSearch){
+     if (searchRangeTimeRangeOptional == nullptr) {
+         throwNullPointerException(env, "");
+         return nullptr;
+     }
+     return childrenIfWrapperUtil<Composition>(env, thisObj, descendedFromClass, searchRangeTimeRangeOptional, shallowSearch);
+ }

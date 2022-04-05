@@ -8,9 +8,11 @@ import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.exception.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * A stack represents a series of composables. Composables that are arranged such
@@ -128,12 +130,20 @@ public class Stack extends Composition {
 
     public native HashMap<Composable, TimeRange> getRangeOfAllChildren() throws IndexOutOfBoundsException, UnsupportedOperationException, CannotComputeAvailableRangeException;
 
+    @Deprecated
     public Stream<Clip> eachClip(
             TimeRange searchRange) throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return this.eachChild(searchRange, Clip.class, false);
     }
 
+    @Deprecated
     public Stream<Clip> eachClip() throws NotAChildException, ObjectWithoutDurationException, CannotComputeAvailableRangeException {
         return this.eachChild(null);
     }
+
+    public List<Clip> clipIf(Optional<TimeRange> search_range, boolean shallow_search){
+        return Arrays.asList(clipIfNative( search_range, shallow_search));
+    }
+
+    private native Clip[] clipIfNative(Optional<TimeRange> search_range, boolean shallow_search);
 }

@@ -137,6 +137,14 @@ JNIEXPORT jobject JNICALL Java_io_opentimeline_opentimelineio_Composition_trimCh
 
 /*
  * Class:     io_opentimeline_opentimelineio_Composition
+ * Method:    childrenIfNative
+ * Signature: (Ljava/lang/Class;Ljava/util/Optional;Z)[Lio/opentimeline/opentimelineio/Composable;
+ */
+JNIEXPORT jobjectArray JNICALL Java_io_opentimeline_opentimelineio_Composition_childrenIfNative
+  (JNIEnv *, jobject, jclass, jobject, jboolean);
+
+/*
+ * Class:     io_opentimeline_opentimelineio_Composition
  * Method:    hasChild
  * Signature: (Lio/opentimeline/opentimelineio/Composable;)Z
  */

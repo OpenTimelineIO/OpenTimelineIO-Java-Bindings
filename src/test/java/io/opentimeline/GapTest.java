@@ -37,6 +37,7 @@ public class GapTest {
                         "duration=io.opentimeline.opentime.RationalTime(value=0.0, rate=1.0)), " +
                         "effects=[], " +
                         "markers=[], " +
+                        "enabled=true, " +
                         "metadata=io.opentimeline.opentimelineio.AnyDictionary{})");
         try {
             gap.close();

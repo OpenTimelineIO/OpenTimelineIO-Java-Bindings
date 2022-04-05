@@ -3,15 +3,18 @@
 
 package io.opentimeline;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.opentimeline.opentime.RationalTime;
 import io.opentimeline.opentime.TimeRange;
 import io.opentimeline.opentimelineio.*;
-import io.opentimeline.opentimelineio.exception.*;
+import io.opentimeline.opentimelineio.exception.OpenTimelineIOException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import util.TestUtil;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class StackAlgoTest {
 
     Track trackZ = null;
+    Track trackZd = null;
+    Track track_d = null;
     Track trackABC = null;
     Track trackDgE = null;
     Track trackgFg = null;
@@ -59,6 +64,75 @@ public class StackAlgoTest {
                         "            \"name\": \"Sequence1\",\n" +
                         "            \"source_range\": null\n" +
                         "        }");
+
+        trackZd = (Track) SerializableObject.fromJSONString("{\n" +
+                "            \"OTIO_SCHEMA\": \"Track.1\",\n" +
+                "            \"children\": [\n" +
+                "                {\n" +
+                "                    \"OTIO_SCHEMA\": \"Clip.1\",\n" +
+                "                    \"effects\": [],\n" +
+                "                    \"markers\": [],\n" +
+                "                    \"media_reference\": null,\n" +
+                "                    \"enabled\": false,\n" +
+                "                    \"metadata\": {},\n" +
+                "                    \"name\": \"Z\",\n" +
+                "                    \"source_range\": {\n" +
+                "                        \"OTIO_SCHEMA\": \"TimeRange.1\",\n" +
+                "                        \"duration\": {\n" +
+                "                            \"OTIO_SCHEMA\": \"RationalTime.1\",\n" +
+                "                            \"rate\": 24,\n" +
+                "                            \"value\": 150\n" +
+                "                        },\n" +
+                "                        \"start_time\": {\n" +
+                "                            \"OTIO_SCHEMA\": \"RationalTime.1\",\n" +
+                "                            \"rate\": 24,\n" +
+                "                            \"value\": 0.0\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"effects\": [],\n" +
+                "            \"kind\": \"Video\",\n" +
+                "            \"markers\": [],\n" +
+                "            \"metadata\": {},\n" +
+                "            \"name\": \"Sequence1\",\n" +
+                "            \"source_range\": null\n" +
+                "        }");
+
+        track_d = (Track) SerializableObject.fromJSONString("{\n" +
+                "            \"OTIO_SCHEMA\": \"Track.1\",\n" +
+                "            \"children\": [\n" +
+                "                {\n" +
+                "                    \"OTIO_SCHEMA\": \"Clip.1\",\n" +
+                "                    \"effects\": [],\n" +
+                "                    \"markers\": [],\n" +
+                "                    \"media_reference\": null,\n" +
+                "                    \"enabled\": true,\n" +
+                "                    \"metadata\": {},\n" +
+                "                    \"name\": \"Z\",\n" +
+                "                    \"source_range\": {\n" +
+                "                        \"OTIO_SCHEMA\": \"TimeRange.1\",\n" +
+                "                        \"duration\": {\n" +
+                "                            \"OTIO_SCHEMA\": \"RationalTime.1\",\n" +
+                "                            \"rate\": 24,\n" +
+                "                            \"value\": 150\n" +
+                "                        },\n" +
+                "                        \"start_time\": {\n" +
+                "                            \"OTIO_SCHEMA\": \"RationalTime.1\",\n" +
+                "                            \"rate\": 24,\n" +
+                "                            \"value\": 0.0\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"effects\": [],\n" +
+                "            \"kind\": \"Video\",\n" +
+                "            \"markers\": [],\n" +
+                "            \"enabled\": false,\n" +
+                "            \"metadata\": {},\n" +
+                "            \"name\": \"Sequence1\",\n" +
+                "            \"source_range\": null\n" +
+                "        }");
 
         trackABC = (Track) SerializableObject.fromJSONString("" +
                         "{\n" +
@@ -529,6 +603,70 @@ public class StackAlgoTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testFlattenDisabledClip() throws OpenTimelineIOException, IOException {
+        Stack stack = new Stack.StackBuilder().build();
+        assertTrue(stack.appendChild(trackABC));
+        assertTrue(stack.appendChild(trackZ));
+        Track flatTrack = new Algorithms().flattenStack(stack);
+        flatTrack.setName(trackZ.getName());
+        assertTrue(TestUtil.isJSONEqual(flatTrack.toJSONString(), this.trackZ.toJSONString()));
+
+        try {
+            stack.close();
+            flatTrack.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        stack = new Stack.StackBuilder().build();
+        assertTrue(stack.appendChild(trackABC));
+        assertTrue(stack.appendChild(trackZd));
+        flatTrack = new Algorithms().flattenStack(stack);
+        flatTrack.setName(trackABC.getName());
+        assertTrue(TestUtil.isJSONEqual(flatTrack.toJSONString(), this.trackABC.toJSONString()));
+
+        try {
+            stack.close();
+            flatTrack.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testFlattenDisabledTrack() throws OpenTimelineIOException, IOException {
+        Stack stack = new Stack.StackBuilder().build();
+        assertTrue(stack.appendChild(trackABC));
+        assertTrue(stack.appendChild(trackZ));
+        Track flatTrack = new Algorithms().flattenStack(stack);
+        flatTrack.setName(trackZ.getName());
+        assertTrue(TestUtil.isJSONEqual(flatTrack.toJSONString(), this.trackZ.toJSONString()));
+
+        try {
+            stack.close();
+            flatTrack.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        stack = new Stack.StackBuilder().build();
+        assertTrue(stack.appendChild(trackABC));
+        assertTrue(stack.appendChild(track_d));
+        flatTrack = new Algorithms().flattenStack(stack);
+        flatTrack.setName(trackABC.getName());
+        assertTrue(TestUtil.isJSONEqual(flatTrack.toJSONString(), this.trackABC.toJSONString()));
+
+        try {
+            stack.close();
+            flatTrack.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     @AfterEach
     public void cleanup() {

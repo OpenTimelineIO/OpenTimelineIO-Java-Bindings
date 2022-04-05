@@ -56,6 +56,7 @@ public class ItemTest {
                         "duration=io.opentimeline.opentime.RationalTime(value=10.0, rate=1.0)), " +
                         "effects=[], " +
                         "markers=[], " +
+                        "enabled=true, " +
                         "metadata=io.opentimeline.opentimelineio.AnyDictionary{})");
         try {
             it.close();
@@ -214,6 +215,20 @@ public class ItemTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testEnabled() {
+        TimeRange tr = new TimeRange.TimeRangeBuilder()
+                .setDuration(new RationalTime(10, 1))
+                .build();
+        Item item = new Item.ItemBuilder()
+                .setSourceRange(tr)
+                .build();
+        assertTrue(item.isEnabled());
+
+        item.setEnabled(false);
+        assertFalse(item.isEnabled());
     }
 
     @Test

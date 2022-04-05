@@ -340,9 +340,10 @@ public class OTIOFactory {
             TimeRange sourceRange,
             AnyDictionary metadata,
             List<Effect> effects,
-            List<Marker> markers) {
+            List<Marker> markers,
+            boolean enabled) {
         cleanUp();
-        Item item = new Item(name, sourceRange, metadata, effects, markers);
+        Item item = new Item(name, sourceRange, metadata, effects, markers, enabled);
         references.add(new OTIOFinalizer(item.getNativeManager(), otioNativeReferenceQueue));
         return item;
     }

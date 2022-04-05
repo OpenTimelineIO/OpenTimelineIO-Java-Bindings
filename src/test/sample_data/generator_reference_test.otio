@@ -11,7 +11,8 @@
                     {
                         "OTIO_SCHEMA": "Clip.1", 
                         "effects": [], 
-                        "markers": [], 
+                        "markers": [],
+                        "enabled": true,
                         "media_reference": {
                             "OTIO_SCHEMA" : "GeneratorReference.1",
                             "available_range" : {
@@ -52,7 +53,8 @@
                 ], 
                 "effects": [], 
                 "kind": "Video", 
-                "markers": [], 
+                "markers": [],
+                "enabled": true,
                 "metadata": {}, 
                 "name": "Sequence1", 
                 "source_range": null
@@ -60,7 +62,8 @@
         ], 
         "effects": [], 
         "markers": [], 
-        "metadata": {}, 
+        "metadata": {},
+        "enabled": true,
         "name": "tracks", 
         "source_range": null
     }

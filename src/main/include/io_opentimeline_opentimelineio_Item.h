@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     io_opentimeline_opentimelineio_Item
  * Method:    initialize
- * Signature: (Ljava/lang/String;Lio/opentimeline/opentime/TimeRange;Lio/opentimeline/opentimelineio/AnyDictionary;[Lio/opentimeline/opentimelineio/Effect;[Lio/opentimeline/opentimelineio/Marker;)V
+ * Signature: (Ljava/lang/String;Lio/opentimeline/opentime/TimeRange;Lio/opentimeline/opentimelineio/AnyDictionary;[Lio/opentimeline/opentimelineio/Effect;[Lio/opentimeline/opentimelineio/Marker;Z)V
  */
 JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_Item_initialize
-  (JNIEnv *, jobject, jstring, jobject, jobject, jobjectArray, jobjectArray);
+  (JNIEnv *, jobject, jstring, jobject, jobject, jobjectArray, jobjectArray, jboolean);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Item
@@ -30,6 +30,22 @@ JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_Item_isVisible
  */
 JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_Item_isOverlapping
   (JNIEnv *, jobject);
+
+/*
+ * Class:     io_opentimeline_opentimelineio_Item
+ * Method:    isEnabled
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_io_opentimeline_opentimelineio_Item_isEnabled
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     io_opentimeline_opentimelineio_Item
+ * Method:    setEnabled
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_io_opentimeline_opentimelineio_Item_setEnabled
+  (JNIEnv *, jobject, jboolean);
 
 /*
  * Class:     io_opentimeline_opentimelineio_Item

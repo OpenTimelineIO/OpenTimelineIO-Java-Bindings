@@ -75,13 +75,13 @@ jobs:
         fi
     - name: Upload artifact
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Package-${{ matrix.os }}-${{ matrix.architecture }}
         path: build/natives/lib/Release
     - name: Upload Windows artifact
       if: matrix.os == 'windows-latest'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Package-${{ matrix.os }}-${{ matrix.architecture }}
         path: build/natives/bin/Release
@@ -120,12 +120,12 @@ jobs:
       - name: Create pom file for maven
         run: ./gradlew createPom
       - name: Upload pom file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: PomFile
           path: ./build/pom/
       - name: Upload final JAR
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: FinalJAR
           path: build/libs

@@ -27,7 +27,7 @@ jobs:
         shell: bash
         run: ./gradlew build -x test -PandroidBuild -PandroidSDKPath=$ANDROID_HOME
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Android-JAR
           path: build/libs
